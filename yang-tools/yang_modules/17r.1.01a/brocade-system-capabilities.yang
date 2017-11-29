@@ -1,0 +1,125 @@
+/*********************************************************************
+ * Copyright (c) 2016 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-system-capabilities.yang: Brocade System Capabilities model
+ *
+ * June 2016, Sajad Qadri
+ *
+ *
+ ********************************************************************/
+module brocade-system-capabilities {
+  namespace "urn:brocade.com:mgmt:brocade-system-capabilities";
+  prefix capabilities;
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 1745 Technology Drive,
+             San Jose, CA 95110
+             U.S.A
+     Tel: +1-408-392-6061
+     E-mail: support@Brocade.com
+     web: www.brocade.com";
+  description
+    "This module describes the System Capabilities of the platform.";
+
+  revision 2016-05-20 {
+    description
+      "Initial version of this management module.";
+  }
+
+  container capabilities {
+    config false;
+    container power {
+      leaf lc_sfm {
+        type boolean;
+      }
+      leaf psu_on_off {
+        type boolean;
+      }
+    }
+    container temperature {
+      leaf tmpr_detail {
+        type boolean;
+      }
+    }
+    container qos {
+      container mqc {
+        leaf span {
+          type boolean;
+        }
+        leaf vlan-based-actions {
+          type boolean;
+        }
+        leaf bd-based-actions {
+          type boolean;
+        }
+      }
+    }
+    container l3 {
+      leaf rpf {
+        type boolean;
+      }
+    }
+    container l2 {
+      leaf port_profile {
+        type boolean;
+      }
+      leaf overlap_vlan {
+        type boolean;
+      }
+      leaf rspan {
+        type boolean;
+      }
+      leaf mac_move {
+        type boolean;
+      }
+      leaf consistency_check {
+        type boolean;
+      }
+      leaf learning_mode {
+        type boolean;
+      }
+      leaf priority_tag {
+        type boolean;
+      }
+      leaf internal_nsm {
+        type boolean;
+      }
+    }
+    container ipv6 {
+      leaf ipv6Raguard {
+        type boolean;
+      }
+    }
+    container ssm {
+      leaf aclTrafficType {
+        type boolean;
+      }
+    }
+    container lag {
+      leaf PortchannelRedundancy {
+        type boolean;
+      }
+    }
+    container license {
+      leaf eula_display {
+        type boolean;
+      }
+      leaf dpod_display {
+        type boolean;
+      }
+      leaf slot_display {
+        type boolean;
+      }
+    }
+    leaf tm {
+      type boolean;
+    }
+    container openflow {
+      leaf ingress {
+        type boolean;
+      }
+    }
+  }
+}

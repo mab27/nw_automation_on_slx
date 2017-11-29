@@ -1,0 +1,161 @@
+/*********************************************************************
+ * Copyright (c) 2011 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-bridge-domain.yang: Brocade Bridge Domain data model
+ *
+ *
+ *
+ ********************************************************************/
+module brocade-bridge-domain {
+  namespace "urn:brocade.com:mgmt:brocade-bridge-domain";
+  prefix bridge-domain;
+
+  import brocade-common-def {
+    prefix common-def;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import brocade-lif {
+    prefix import-lif;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way,
+             San Jose, CA 95134
+              U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage Bridge-Domain .";
+
+  revision 2011-06-21 {
+    description
+      "Initial version of this management module
+       brocade-bridgeDomain.";
+  }
+
+  typedef ui32-bridge-domain-range {
+    type string {
+      pattern "(([1-9][0-9]{0,2})|([1-3][0-9]{3})|(40[0-8][0-9])|(409[0-6]))(-((1[0-9]{1,2})|([2-9][0-9]{0,2})|([1-3][0-9]{3})|(40[0-8][0-9])|(409[0-6])))?((,((1[0-9]{1,2})|([2-9][0-9]{0,2})|([1-3][0-9]{3})|(40[0-8][0-9])|(409[0-6]))(-((1[0-9]{1,2})|([2-9][0-9]{0,2})|([1-3][0-9]{3})|(40[0-8][0-9])|(409[0-6])))?)?)*";
+      length "1..253";
+    }
+    description
+      "The definition for specifying the member-bridge-domain range.";
+  }
+
+  typedef bridge-domain-id-type {
+    type uint32 {
+      range "1..4096";
+    }
+    description
+      "The definition for specifying a bridge-domain  identifier.";
+  }
+
+  list bridge-domain {
+    key "bridge-domain-id bridge-domain-type";
+    leaf bridge-domain-id {
+      type bridge-domain-id-type;
+      description
+        "The definition for specifying a bridge-domain  identifier.";
+    }
+    leaf bridge-domain-type {
+      type enumeration {
+        enum "p2mp" {
+          value 1;
+        }
+        enum "p2p" {
+          value 2;
+        }
+      }
+      description
+        "This leaf specifies Bridge Domain Type.";
+    }
+    uses bd_cfg_cmds;
+  }
+
+  grouping bd_cfg_cmds {
+    leaf vc-id-num {
+      type uint32 {
+        range "1..4294967295" {
+          error-message
+            "vc-id  must be in the
+             range 1 - 4294967295";
+        }
+      }
+      description
+        "The leaf specifies the VC-ID under bridge-domain.";
+    }
+    leaf description {
+      type string {
+        length "1 .. 63";
+      }
+    }
+    list peer {
+      key "peer-ip";
+      leaf peer-ip {
+        type inet:ipv4-address;
+      }
+      leaf load-balance {
+        type empty;
+      }
+      leaf cos {
+        type uint32 {
+          range "0..7";
+        }
+      }
+      leaf-list lsp {
+        max-elements "32";
+        type string {
+          length "1..64";
+        }
+      }
+    }
+    leaf statistics {
+      type empty;
+      description
+        "Enable Statistics on Bridge-domain";
+    }
+    container logical-interface {
+      list ethernet {
+        key "lif-bind-id";
+        leaf lif-bind-id {
+          type import-lif:lif-interface-type;
+        }
+      }
+      list port-channel {
+        key "pc-lif-bind-id";
+        leaf pc-lif-bind-id {
+          type import-lif:lif-port-channel-type;
+        }
+      }
+    }
+    leaf pw-profile-name {
+      description
+        "Configure PW profile name";
+      type common-def:name-string64;
+    }
+    leaf bpdu-drop-enable {
+      type empty;
+      description
+        "Drop forwarding L2 protocol BPDU packets on end-points";
+    }
+    leaf local-switching {
+      type empty;
+      description
+        "Enable local switching on Bridge-domain";
+    }
+    container mac-address {
+      description
+        "MAC Address";
+      leaf withdrawal {
+        description
+          "MAC address withdrawal";
+        type empty;
+      }
+    }
+  }
+}

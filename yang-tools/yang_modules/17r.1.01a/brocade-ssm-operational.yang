@@ -1,0 +1,155 @@
+/*************************************************************************
+ *   Copyright (C) 2017-2022 Brocade Communications Systems, Inc.          *
+ *   All rights reserved.                                                  *
+ ************************************************************************/
+module brocade-ssm-operational {
+  namespace "urn:brocade.com:mgmt:brocade-ssm-operational";
+  prefix ssm-operational;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal:\t130 Holger Way
+        San Jose, CA 95134 U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage ssm";
+
+  revision 2017-10-12 {
+    description
+      "First implementation of ssm module";
+  }
+
+  container vxlan-acl-state {
+    description
+      " Vxlan ACL information";
+    config false;
+    list extended-data {
+      description
+        "Extended ACL";
+      key "acl-name";
+      leaf acl-name {
+        description
+          "input_Acl_name";
+        type string;
+      }
+      leaf seq-num {
+        description
+          "sequence number";
+        type uint32;
+      }
+      leaf permit-deny {
+        description
+          "permit or deny";
+        type string;
+      }
+      leaf dst-vtep-ip {
+        description
+          "dst vtep ip or any";
+        type inet:ipv4-address;
+      }
+      leaf src-vtep-ip {
+        description
+          "src vtep ip or any";
+        type inet:ipv4-address;
+      }
+      leaf vni {
+        description
+          "vni number or any";
+        type string;
+      }
+      leaf vni-mask {
+        description
+          "vni mask";
+        type string;
+      }
+      leaf native-tag {
+        description
+          "native tag";
+        type string;
+      }
+      leaf dst-ip {
+        description
+          "dst ip or any";
+        type inet:ipv4-address;
+      }
+      leaf dst-ip-mask {
+        description
+          "dst ip mask";
+        type uint16;
+      }
+      leaf src-ip {
+        description
+          "src ip or any";
+        type inet:ipv4-address;
+      }
+      leaf src-ip-mask {
+        description
+          "src ip mask";
+        type uint16;
+      }
+      leaf dst-port {
+        description
+          "dst port number";
+        type uint16;
+      }
+      leaf src-port {
+        description
+          "src port number";
+        type uint16;
+      }
+      leaf count {
+        description
+          "count";
+        type uint64;
+      }
+      leaf byte-count {
+        description
+          "byte_count";
+        type uint64;
+      }
+      leaf transit-name {
+        description
+          "transit_name";
+        type string;
+      }
+      leaf sflow {
+        description
+          "sflow enable or disable";
+        type boolean;
+      }
+      leaf redir-interface {
+        description
+          "redirect interface";
+        type string;
+      }
+      leaf mirror-interface {
+        description
+          "mirror interface";
+        type string;
+      }
+    }
+  }
+  list overlay-transit-state {
+    description
+      " Vxlan Transit information";
+    config false;
+    key "overlay-transit-name";
+    leaf overlay-transit-name {
+      description
+        "overlay_transit_name";
+      type string;
+    }
+    leaf binded-overlay-acl {
+      description
+        "binded_overlay_acl";
+      type string;
+    }
+  }
+}

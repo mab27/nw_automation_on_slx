@@ -1,0 +1,224 @@
+/*********************************************************************
+ * Copyright (c) 2011 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-ip-config.yang: Brocade IP Forwarding data model.
+ *
+ * jusitnh
+ *
+ *
+ ********************************************************************/
+module brocade-ip-config {
+  namespace "urn:brocade.com:mgmt:brocade-ip-config";
+  prefix ip-config;
+
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-common-def {
+    prefix common-def;
+  }
+  import brocade-intf-loopback {
+    prefix intf-loopback;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  revision 2017-05-03 {
+    description
+      "Added CLI for configuring IP MTU on all Physical interfaces and VE interfaces at global level.";
+  }
+  revision 2016-11-24 {
+    description
+      "Adding IP Unnumbered Interface feature support.";
+  }
+  revision 2011-10-31 {
+    description
+      "Initial version of this management module.";
+  }
+
+  typedef ip-unnumbered-donor-interface-type_t {
+    type enumeration {
+      enum "ethernet" {
+        value 8;
+        description
+          "Ethernet interface";
+      }
+      enum "ve" {
+        value 5;
+        description
+          "VE interface";
+      }
+      enum "loopback" {
+        value 9;
+        description
+          "Loopback interface";
+      }
+    }
+    description
+      "The type of the donor-interface.";
+  }
+
+  typedef ip-unnumbered-donor-interface-name_t {
+    type union {
+      type interface:interface-type;
+      type interface:vlan-type;
+      type intf-loopback:intf-loopback-port-type;
+    }
+  }
+
+  grouping ip-unnumbered-intf-config {
+    container unnumbered {
+      leaf ip-donor-interface-type {
+        type ip-unnumbered-donor-interface-type_t;
+      }
+      leaf ip-donor-interface-name {
+        type ip-unnumbered-donor-interface-name_t;
+      }
+    }
+  }
+
+  typedef ip-mtu {
+    type uint32 {
+      range "1300..9194";
+    }
+  }
+
+  grouping phy-intf-ip-config {
+    container ip-config {
+      leaf mtu {
+        type ip-mtu;
+        default "1500";
+      }
+      leaf proxy-arp {
+        type empty;
+      }
+      container arp {
+        leaf learn-any {
+          description
+            "Learn ARP";
+          type empty;
+        }
+      }
+      leaf arp-aging-timeout {
+        type uint32 {
+          range "0..240";
+        }
+        default "25";
+      }
+      list address {
+        ordered-by user;
+        key "address";
+        leaf address {
+          type union {
+            type common-def:ipv4-prefix-mask;
+            type inet:ipv4-prefix;
+          }
+        }
+        leaf secondary {
+          type empty;
+        }
+        leaf ospf-passive {
+          type empty;
+        }
+        leaf ospf-ignore {
+          type empty;
+        }
+      }
+      uses ip-unnumbered-intf-config;
+    }
+  }
+
+  grouping intf-vlan-ip-config {
+    container ip-config {
+      leaf mtu {
+        type ip-mtu;
+        default "1500";
+      }
+      container arp {
+        leaf learn-any {
+          description
+            "Learn ARP";
+          type empty;
+        }
+      }
+      leaf proxy-arp {
+        type empty;
+      }
+      leaf arp-aging-timeout {
+        type uint32 {
+          range "0..240";
+        }
+        default "25";
+        description
+          "Set arp age timeout value to interface 
+           (default value 25)";
+      }
+      list address {
+        ordered-by user;
+        key "address";
+        leaf address {
+          type union {
+            type common-def:ipv4-prefix-mask;
+            type inet:ipv4-prefix;
+          }
+        }
+        leaf secondary {
+          type empty;
+        }
+        leaf ospf-passive {
+          type empty;
+        }
+        leaf ospf-ignore {
+          type empty;
+        }
+      }
+    }
+  }
+
+  grouping loopback-intf-ip-config {
+    container ip-config {
+      list address {
+        key "address";
+        leaf address {
+          type union {
+            type intf-loopback:intf-loopback-ipv4addr-type;
+            type inet:ipv4-prefix;
+          }
+        }
+      }
+    }
+  }
+
+  augment "/interface:interface/interface:ethernet/interface:ip" {
+    uses phy-intf-ip-config;
+  }
+  augment "/common-def:routing-system/interface:interface/intf-loopback:loopback" {
+    container ip {
+      uses loopback-intf-ip-config;
+    }
+  }
+  augment "/common-def:routing-system/interface:interface/interface:ve" {
+    uses interface:interface-vrf-config;
+    container ip {
+      uses intf-vlan-ip-config;
+    }
+    leaf shutdown {
+      type empty;
+    }
+  }
+  augment "/interface:global-mtu-conf" {
+    container ip {
+      leaf global-ip-mtu {
+        type ip-mtu;
+        description
+          "The size of the largest packet which can be sent/
+           received on the interface, specified in bytes.
+           For interfaces that are used for transmitting network
+           datagrams, this is the size of the largest network
+           datagram that can be sent on the interface.";
+        default "1500";
+      }
+    }
+  }
+}

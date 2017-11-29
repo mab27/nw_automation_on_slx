@@ -1,0 +1,6662 @@
+/*************************************************************************
+ *   Copyright (C) 2017-2022 Brocade Communications Systems, Inc.          *
+ *   All rights reserved.                                                  *
+ ************************************************************************/
+module brocade-mpls-operational {
+  namespace "urn:brocade.com:mgmt:brocade-mpls-operational";
+  prefix mpls-operational;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal:\t130 Holger Way
+        San Jose, CA 95134 U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage mpls";
+
+  revision 2017-10-12 {
+    description
+      "First implementation of mpls module";
+  }
+
+  typedef autobw-mode {
+    description
+      "Auto-bandwidth operational mode";
+    type enumeration {
+      enum "monitor-and-signal" {
+        value 0;
+        description
+          "Auto-bandwidth adjusted rate is signaled";
+      }
+      enum "monitor-only" {
+        value 1;
+        description
+          "Auto-bandwidth is just used for monitoring traffic rate";
+      }
+    }
+  }
+
+  typedef bypass-lsp-type {
+    description
+      "Bypass LSP type";
+    type enumeration {
+      enum "static-bypass" {
+        value 1;
+        description
+          "static bypass LSP";
+      }
+      enum "dynamic-bypass" {
+        value 2;
+        description
+          "Dynamic bypass LSP";
+      }
+    }
+  }
+
+  typedef dcm-interface-type {
+    description
+      "Type of interface";
+    type enumeration {
+      enum "dcm-interface-type-unknown" {
+        value 1;
+        description
+          "Ethernet interface";
+      }
+      enum "dcm-interface-type-ethernet" {
+        value 2;
+        description
+          "Ethernet interface";
+      }
+      enum "dcm-interface-type-port-channel" {
+        value 5;
+        description
+          "Port Channel";
+      }
+      enum "dcm-interface-type-ve" {
+        value 6;
+        description
+          "VLAN interface";
+      }
+      enum "dcm-interface-type-loopback" {
+        value 7;
+        description
+          "Loopback interface";
+      }
+      enum "dcm-interface-type-fiber-channel" {
+        value 8;
+        description
+          "Fiber Channel interface";
+      }
+    }
+  }
+
+  typedef feature-config-source {
+    description
+      "Where the particulat configuration is taken from";
+    type enumeration {
+      enum "global-config" {
+        value 1;
+        description
+          "Global configuration";
+      }
+      enum "local-config" {
+        value 2;
+        description
+          "Local configuration";
+      }
+      enum "default-config" {
+        value 3;
+        description
+          "Default configuration";
+      }
+    }
+  }
+
+  typedef feature-config-status {
+    description
+      "Is the feature enabled or disabled and by global or local configuration";
+    type enumeration {
+      enum "disabled" {
+        value 0;
+        description
+          "Feature is disabled";
+      }
+      enum "enabled-global" {
+        value 1;
+        description
+          "Feature is enabled by global configuration";
+      }
+      enum "enabled-local" {
+        value 2;
+        description
+          "Feature is enabled by local configuration";
+      }
+      enum "disabled-global" {
+        value 3;
+        description
+          "Feature is disabled by global configuration";
+      }
+      enum "disabled-local" {
+        value 4;
+        description
+          "Feature is disabled by local configuration override (globally enabled)";
+      }
+    }
+  }
+
+  typedef fec-filter-type {
+    description
+      "Filter type";
+    type enumeration {
+      enum "filtered-all" {
+        value 1;
+        description
+          "Used for all(in and out)filtered FECs";
+      }
+      enum "filtered-in" {
+        value 2;
+        description
+          "Used for inbound filtered FECs";
+      }
+      enum "filtered-out" {
+        value 3;
+        description
+          "Used for outbound filtered FECs";
+      }
+    }
+  }
+
+  typedef frr-cspf-group-computation-mode {
+    description
+      "FRR CSPF groupd computation mode";
+    type enumeration {
+      enum "frr-cspf-group-comp-mode-disabled" {
+        value 0;
+        description
+          "Disabled";
+      }
+      enum "frr-cspf-group-comp-mode-add-penalty" {
+        value 1;
+        description
+          "Add penalty";
+      }
+      enum "frr-cspf-group-comp-mode-exclude-groups" {
+        value 2;
+        description
+          "Exclude groups";
+      }
+      enum "frr-cspf-group-comp-mode-high-penalty" {
+        value 3;
+        description
+          "High penalty";
+      }
+    }
+  }
+
+  typedef frr-method {
+    description
+      "FRR uses detour or backup LSPs";
+    type enumeration {
+      enum "frr-method-backup" {
+        value 0;
+        description
+          "FRR uses backup LSPs";
+      }
+      enum "frr-method-detour" {
+        value 1;
+        description
+          "FRR uses detour LSPs";
+      }
+    }
+  }
+
+  typedef lsp-admin-group-list-type {
+    description
+      "Type of LSP admin group";
+    type enumeration {
+      enum "lsp-admin-group-list-primary" {
+        value 1;
+        description
+          "Admin groups set configured for primary path";
+      }
+      enum "lsp-admin-group-list-frr" {
+        value 2;
+        description
+          "Admin groups set configured for FRR path";
+      }
+      enum "lsp-admin-group-list-secondary" {
+        value 3;
+        description
+          "Admin groups set configured for secondary path";
+      }
+    }
+  }
+
+  typedef lsp-cspf-computation-mode {
+    description
+      "CSPF Computation mode";
+    type enumeration {
+      enum "cspf-computation-mode-default" {
+        value 1;
+        description
+          "Cspf computation mode default";
+      }
+      enum "cspf-computation-mode-use-bypass-metric" {
+        value 2;
+        description
+          "Cspf computation mode, bypass metric";
+      }
+      enum "cspf-computation-mode-use-bypass-liberal" {
+        value 3;
+        description
+          "Cspf computation mode, bypass liberal";
+      }
+      enum "cspf-computation-mode-use-te-metric" {
+        value 4;
+        description
+          "Cspf computation mode, TE metric";
+      }
+      enum "cspf-computation-mode-use-igp-metric" {
+        value 5;
+        description
+          "Cspf computation mode, IGP metric";
+      }
+      enum "cspf-computation-mode-use-te-metric-global" {
+        value 6;
+        description
+          "Cspf computation mode, TE metric global";
+      }
+      enum "cspf-computation-mode-use-igp-metric-global" {
+        value 7;
+        description
+          "Cspf computation mode, IGP metric global";
+      }
+    }
+  }
+
+  typedef lsp-frr-protection-type {
+    description
+      "LSP FRR protection type";
+    type enumeration {
+      enum "link-protection" {
+        value 1;
+        description
+          "Link protection";
+      }
+      enum "node-protection" {
+        value 2;
+        description
+          "Node protection";
+      }
+    }
+  }
+
+  typedef lsp-hop-type {
+    description
+      "LSP Hop type";
+    type enumeration {
+      enum "lsp-hop-type-cspf-path-hops" {
+        value 1;
+        description
+          "CSPF path hops";
+      }
+      enum "lsp-hop-type-cspf-exclude-hops" {
+        value 2;
+        description
+          "CSPF exclude hops";
+      }
+      enum "lsp-hop-type-rsvp-rro-hops" {
+        value 3;
+        description
+          "RSVP session RRO hops";
+      }
+    }
+  }
+
+  typedef lsp-operational-status {
+    description
+      "LSP operational status";
+    type enumeration {
+      enum "operational-up" {
+        value 1;
+        description
+          "LSP operational up";
+      }
+      enum "operational-down" {
+        value 2;
+        description
+          "LSP operational down";
+      }
+    }
+  }
+
+  typedef lsp-path-selection-mode {
+    description
+      "LSP path selection mode";
+    type enumeration {
+      enum "manual" {
+        value 1;
+        description
+          "Manual path selection mode";
+      }
+      enum "unconditional" {
+        value 2;
+        description
+          "Unconditional path selection mode";
+      }
+    }
+  }
+
+  typedef lsp-selected-path {
+    description
+      "Selected LSP path";
+    type enumeration {
+      enum "primary-path" {
+        value 1;
+        description
+          "Primary path";
+      }
+      enum "secondary-path" {
+        value 2;
+        description
+          "Secondary path";
+      }
+    }
+  }
+
+  typedef lsp-type {
+    description
+      "LSP type";
+    type enumeration {
+      enum "regular" {
+        value 1;
+        description
+          "Regular LSP";
+      }
+      enum "bypass" {
+        value 2;
+        description
+          "Bypass LSP";
+      }
+    }
+  }
+
+  typedef mpls-cspf-grp-comp-mode {
+    description
+      "MPLS CSPF group comp mode";
+    type enumeration {
+      enum "mpls-cspf-grp-comp-mode-default" {
+        value 0;
+        description
+          "MPLS cspf group comp default";
+      }
+      enum "mpls-cspf-grp-comp-mode-add-penalty" {
+        value 1;
+        description
+          "MPLS cspf group comp default";
+      }
+      enum "mpls-cspf-grp-comp-mode-exclude-groups" {
+        value 2;
+        description
+          "MPLS cspf group comp default";
+      }
+      enum "mpls-cspf-grp-comp-mode-high-cost" {
+        value 3;
+        description
+          "MPLS cspf group comp default";
+      }
+      enum "mpls-cspf-grp-comp-mode-max" {
+        value 4;
+        description
+          "MPLS cspf group comp default";
+      }
+    }
+  }
+
+  typedef mpls-forwarding-entry-type {
+    description
+      "Special attributes of the forwarding entry";
+    type enumeration {
+      enum "mpls-forwarding-entry-backup" {
+        value 1;
+        description
+          "Backup";
+      }
+      enum "mpls-forwarding-entry-detour" {
+        value 2;
+        description
+          "Detour";
+      }
+    }
+  }
+
+  typedef mpls-if-type {
+    description
+      "Type of the interface";
+    type enumeration {
+      enum "unknown-interface" {
+        value 1;
+        description
+          "Unknown interface type";
+      }
+      enum "ethernet-interface" {
+        value 2;
+        description
+          "Ethernet";
+      }
+      enum "port-channel-interface" {
+        value 5;
+        description
+          "Port channel";
+      }
+      enum "ve-interface" {
+        value 6;
+        description
+          "Virtual Ethernet";
+      }
+      enum "loopback-interface" {
+        value 7;
+        description
+          "Loopback interface";
+      }
+      enum "fbr-channel-interface" {
+        value 8;
+        description
+          "FBR channel";
+      }
+    }
+  }
+
+  typedef mpls-ldp-stats-error-group {
+    description
+      "LSP stats and error group";
+    type enumeration {
+      enum "per-session-stats" {
+        value 0;
+        description
+          "Per session stats or error counters";
+      }
+      enum "global-stats-all" {
+        value 1;
+        description
+          "Global stats or errors from begining";
+      }
+      enum "global-stats-since-last-clear" {
+        value 2;
+        description
+          "Global stats or errors since last clear";
+      }
+    }
+  }
+
+  typedef mpls-protocol {
+    description
+      "MPLS protocol";
+    type enumeration {
+      enum "mpls-protocol-none" {
+        value 0;
+        description
+          "Protocol not defined";
+      }
+      enum "mpls-protocol-ldp" {
+        value 1;
+        description
+          "Label Distribusion Protocol";
+      }
+      enum "mpls-protocol-rsvp" {
+        value 2;
+        description
+          "RSVP Protocol";
+      }
+    }
+  }
+
+  typedef mpls-protocol-type {
+    description
+      "Mpls protocol type";
+    type enumeration {
+      enum "staticp" {
+        value 0;
+        description
+          "staticp";
+      }
+      enum "rsvp" {
+        value 1;
+        description
+          "rsvp";
+      }
+      enum "ldp" {
+        value 2;
+        description
+          "ldp";
+      }
+    }
+  }
+
+  typedef qos-ttl-mode {
+    description
+      "QOS TTL policy";
+    type enumeration {
+      enum "qt-uniform" {
+        value 0;
+        description
+          "Uniform";
+      }
+      enum "qt-pipe" {
+        value 1;
+        description
+          "Pipe";
+      }
+    }
+  }
+
+  typedef session-filter-type {
+    description
+      "Filter type";
+    type enumeration {
+      enum "sess-filtered" {
+        value 1;
+        description
+          "all filtered";
+      }
+      enum "sess-filtered-in" {
+        value 2;
+        description
+          "in filtered";
+      }
+      enum "sess-filtered-out" {
+        value 3;
+        description
+          "out filtered";
+      }
+    }
+  }
+
+  typedef session-protection-type {
+    description
+      "Session protect which network element";
+    type enumeration {
+      enum "session-protection-type-node" {
+        value 0;
+        description
+          "Session protects a node";
+      }
+      enum "session-protection-type-link" {
+        value 1;
+        description
+          "Session protects a link";
+      }
+    }
+  }
+
+  typedef session-reservation-style {
+    description
+      "Session reservation style";
+    type enumeration {
+      enum "reservation-style-wildcard-filter" {
+        value 0;
+        description
+          "Reservation style wildcard filter";
+      }
+      enum "reservation-style-fixed-filter" {
+        value 1;
+        description
+          "Reservation style fixed filter";
+      }
+      enum "reservation-style-shared-explicit" {
+        value 2;
+        description
+          "Reservation style shared explicit";
+      }
+      enum "reservation-style-unknown" {
+        value 3;
+        description
+          "Reservation style unknown";
+      }
+    }
+  }
+
+  typedef session-role {
+    description
+      "Whether a given session is ingress, egress or transit";
+    type enumeration {
+      enum "session-role-unspecified" {
+        value 0;
+        description
+          "Unspecified session";
+      }
+      enum "session-role-ingress" {
+        value 1;
+        description
+          "Ingress session";
+      }
+      enum "session-role-egress" {
+        value 2;
+        description
+          "Egress session";
+      }
+      enum "session-role-transit" {
+        value 3;
+        description
+          "Transit session";
+      }
+    }
+  }
+
+  typedef session-type {
+    description
+      "Type of session";
+    type enumeration {
+      enum "session-type-none" {
+        value 0;
+        description
+          "No special type";
+      }
+      enum "ingress-detour" {
+        value 1;
+        description
+          "Ingerss detour";
+      }
+      enum "transit-detour" {
+        value 2;
+        description
+          "Transit detour";
+      }
+      enum "merged-detour" {
+        value 3;
+        description
+          "Merged detour";
+      }
+      enum "egress-detour" {
+        value 4;
+        description
+          "Egress detour";
+      }
+      enum "ingress-backup" {
+        value 5;
+        description
+          "Ingress backup";
+      }
+      enum "merged-backup" {
+        value 6;
+        description
+          "Merged backup";
+      }
+      enum "egress-backup" {
+        value 7;
+        description
+          "Egress backup";
+      }
+      enum "repaired-session" {
+        value 8;
+        description
+          "Repaired backup";
+      }
+      enum "bypass-ingress" {
+        value 9;
+        description
+          "Bypass ingress";
+      }
+    }
+  }
+
+  typedef te-protocol {
+    description
+      "MPLS TE protocol";
+    type enumeration {
+      enum "mpls-te-none" {
+        value 0;
+        description
+          "MPLS TE NONE";
+      }
+      enum "mpls-te-ospf" {
+        value 1;
+        description
+          "MPLS TE OSPF";
+      }
+      enum "mpls-te-isis" {
+        value 2;
+        description
+          "MPLS TE ISIS";
+      }
+    }
+  }
+
+  container mpls-state {
+    description
+      "MPLS Operational Information";
+    config false;
+    leaf paths-configured {
+      description
+        "Paths configured";
+      type uint32;
+    }
+    leaf lsps-configured {
+      description
+        "LSPs configured";
+      type uint32;
+    }
+    leaf lsps-enabled {
+      description
+        "LSPs enabled";
+      type uint32;
+    }
+    leaf lsps-operational {
+      description
+        "LSPs operational";
+      type uint32;
+    }
+    leaf detour-lsps-up {
+      description
+        "Detour LSPs UP";
+      type uint32;
+    }
+    leaf backup-lsps-up {
+      description
+        "Backup LSPs UP";
+      type uint32;
+    }
+    leaf bypass-lsps {
+      description
+        "Bypass LSPs";
+      type uint32;
+    }
+    leaf bypass-lsps-up {
+      description
+        "Bypass LSPs UP";
+      type uint32;
+    }
+    leaf bypass-lsps-enabled {
+      description
+        "Bypass LSPs enabled";
+      type uint32;
+    }
+    leaf ldp-lsps-operational {
+      description
+        "LDP LSPs operational";
+      type uint32;
+    }
+    leaf transit-lsps-configured {
+      description
+        "Transit LSPs configured";
+      type uint32;
+    }
+    leaf transit-lsps-enabled {
+      description
+        "Transit LSPs enabled";
+      type uint32;
+    }
+    leaf transit-lsps-operational {
+      description
+        "Transit LSPs operational";
+      type uint32;
+    }
+    leaf cspf-groups-configured {
+      description
+        "CSPF groups configured";
+      type uint32;
+    }
+    leaf tunnels-supported {
+      description
+        "Tunnels supported";
+      type uint32;
+    }
+    leaf tunnels-allocated {
+      description
+        "Tunnels allocated";
+      type uint32;
+    }
+    leaf cross-connects-supported {
+      description
+        "Cross Connects supported";
+      type uint32;
+    }
+    leaf cross-connects-allocated {
+      description
+        "Cross Connects allocated";
+      type uint32;
+    }
+    leaf auto-bw-templates-supported {
+      description
+        "Auto bandwidth templates supported";
+      type uint32;
+    }
+    leaf auto-bw-templates-configured {
+      description
+        "Auto bandwidth templates configured";
+      type uint32;
+    }
+    leaf times-enabled {
+      description
+        "Number of times MPLS has been enabled";
+      type uint32;
+    }
+    container ldp {
+      description
+        "LDP Operational Information";
+      leaf ldp-initialized {
+        description
+          "ldp_initialized";
+        type boolean;
+      }
+      leaf lsr-id {
+        description
+          "lsr_id";
+        type inet:ipv4-address;
+      }
+      leaf lsr-id-configured {
+        description
+          "lsr_id_configured";
+        type boolean;
+      }
+      leaf loopback {
+        description
+          "loopback";
+        type uint8;
+      }
+      leaf hello-interval-link {
+        description
+          "hello_interval_link";
+        type uint32;
+      }
+      leaf hello-interval-target {
+        description
+          "hello_interval_target";
+        type uint32;
+      }
+      leaf hold-time-sent-link {
+        description
+          "hold_time_sent_link";
+        type uint32;
+      }
+      leaf hold-time-sent-target {
+        description
+          "hold_time_sent_target";
+        type uint32;
+      }
+      leaf ka-interval {
+        description
+          "ka_interval";
+        type uint32;
+      }
+      leaf ka-multiple {
+        description
+          "ka_multiple";
+        type uint32;
+      }
+      leaf ka-timeout {
+        description
+          "ka_timeout";
+        type uint32;
+      }
+      leaf ka-timeout-default {
+        description
+          "ka_timeout_default";
+        type boolean;
+      }
+      leaf load-sharing {
+        description
+          "load_sharing";
+        type uint8;
+      }
+      leaf advertise-fecs-for-prefix-list {
+        description
+          "advertise_fecs_for_prefix_list";
+        type string;
+      }
+      leaf advertise-fecs-for-prefix-list-exists {
+        description
+          "advertise_fecs_for_prefix_list_exists";
+        type boolean;
+      }
+      leaf inbound-fecs-filtering-prefix-list {
+        description
+          "inbound_fecs_filtering_prefix_list";
+        type string;
+      }
+      leaf inbound-fecs-filtering-prefix-list-exists {
+        description
+          "inbound_fecs_filtering_prefix_list_exists";
+        type boolean;
+      }
+      leaf outbound-fecs-filtering-prefix-list {
+        description
+          "outbound_fecs_filtering_prefix_list";
+        type string;
+      }
+      leaf outbound-fecs-filtering-prefix-list-exists {
+        description
+          "outbound_fecs_filtering_prefix_list_exists";
+        type boolean;
+      }
+      leaf tunnel-metric {
+        description
+          "tunnel_metric";
+        type uint16;
+      }
+      leaf fec-128-used-for-auto-disc-current {
+        description
+          "fec_128_used_for_auto_disc_current";
+        type boolean;
+      }
+      leaf fec-128-used-for-auto-disc-configured {
+        description
+          "fec_128_used_for_auto_disc_configured";
+        type boolean;
+      }
+      leaf end-of-lib {
+        description
+          "end_of_lib";
+        type boolean;
+      }
+      leaf eol-notification-time {
+        description
+          "eol_notification_time";
+        type uint32;
+      }
+      leaf tx-silence-time {
+        description
+          "tx_silence_time";
+        type uint32;
+      }
+      leaf rx-silence-time {
+        description
+          "rx_silence_time";
+        type uint32;
+      }
+      leaf gr-enable {
+        description
+          "gr_enable";
+        type boolean;
+      }
+      leaf gr-helper {
+        description
+          "gr_helper";
+        type boolean;
+      }
+      leaf gr-reconnect-time {
+        description
+          "gr_reconnect_time";
+        type uint32;
+      }
+      leaf gr-max-peer-reconnect-time {
+        description
+          "gr_max_peer_reconnect_time";
+        type uint32;
+      }
+      leaf gr-recovery-time {
+        description
+          "gr_recovery_time";
+        type uint32;
+      }
+      leaf gr-max-peer-recovery-time {
+        description
+          "gr_max_peer_recovery_time";
+        type uint32;
+      }
+      leaf forwarding-state-timer-running {
+        description
+          "forwarding_state_timer_running";
+        type boolean;
+      }
+      leaf forwarding-state-timer-remaining {
+        description
+          "forwarding_state_timer_remaining";
+        type uint32;
+      }
+      leaf lwd-delay {
+        description
+          "lwd_delay";
+        type uint32;
+      }
+      leaf lwd-default {
+        description
+          "lwd_default";
+        type boolean;
+      }
+      container ldp-session-summary {
+        description
+          "";
+        leaf num-link-sessions {
+          description
+            "mpls_num_link_sessions";
+          type uint32;
+        }
+        leaf num-operational-link-sessions {
+          description
+            "mpls_num_operational_link_sessions";
+          type uint32;
+        }
+        leaf num-targeted-sessions {
+          description
+            "mpls_num_targeted_sessions";
+          type uint32;
+        }
+        leaf num-operational-targeted-sessions {
+          description
+            "mpls_num_operational_targeted_sessions";
+          type uint32;
+        }
+      }
+      container tunnels {
+        description
+          "LDP Tunnels";
+        leaf total-tunnel-count {
+          description
+            "total tunnel count";
+          type uint32;
+        }
+        list ldp-tunnels {
+          description
+            "ldp tunnel";
+          uses group-mpls-tunnel-base;
+          key "tunnel-destination prefix-length";
+          leaf tunnel-destination {
+            description
+              "tunnel destination";
+            type inet:ipv4-address;
+          }
+          leaf prefix-length {
+            description
+              "prefix length";
+            type uint32;
+          }
+        }
+      }
+      container statistics {
+        description
+          "Global LDP stats";
+        list protocol-errors {
+          key "stats-group";
+          uses group-ldp-protocol-errors-instance;
+        }
+        list protocol-stats {
+          key "stats-group";
+          uses group-ldp-protocol-stats-instance;
+        }
+      }
+      container ldp-fec-statistics {
+        description
+          "LDP FEC statistics";
+        leaf number-of-prefix-fec {
+          description
+            "The total number of prefix FECs in the LDP FEC database";
+          type uint32;
+        }
+        leaf number-of-prefix-fec-installed {
+          description
+            "Total number of prefix FECs installed";
+          type uint32;
+        }
+        leaf number-of-prefix-fec-filtered-in {
+          description
+            "Number of FECs from this peer which are filtered due to the inbound FEC filter configurations";
+          type uint32;
+        }
+        leaf number-of-prefix-fec-filtered-out {
+          description
+            "Number of FECs from this peer which are filtered due to the outbound FEC filter configurations";
+          type uint32;
+        }
+        leaf number-of-vc-fec-128 {
+          description
+            "The total number of VC FECs for type 128.    The FEC type for VC FEC can be 128 or 129";
+          type uint32;
+        }
+        leaf number-of-vc-fec-129 {
+          description
+            "The total number of VC FECs for type 129. The FEC type for VC FEC can be 128 or 129";
+          type uint32;
+        }
+        leaf number-of-vc-fec-installed {
+          description
+            "Total number of vc FECs installed";
+          type uint32;
+        }
+        leaf number-of-route-upd-proc-errors {
+          description
+            "The total number of route update processing errors for L3 FEC prefix";
+          type uint32;
+        }
+        leaf number-of-vc-fec-proc-errors {
+          description
+            "The total number of L3 VC FEC internal processing errors";
+          type uint32;
+        }
+        leaf number-of-prefix-fec-lwd {
+          description
+            "The total number of FECs which currently have the label withdrawal delay timer running";
+          type uint32;
+        }
+        leaf number-of-vc-fec {
+          description
+            "The total number of vc FECs in the LDP FEC database";
+          type uint32;
+        }
+      }
+      list interface {
+        description
+          " LDP interface";
+        key "interface-name";
+        leaf interface-index {
+          description
+            "Interface index";
+          type uint32;
+        }
+        leaf interface-name {
+          description
+            "ldp interface name";
+          type string;
+        }
+        leaf label-space {
+          description
+            "ldp interface label space";
+          type uint32;
+        }
+        leaf neighbor-count {
+          description
+            "ldp interface neighbour count";
+          type uint32;
+        }
+        leaf hello-interval {
+          description
+            "ldp interface hello interval";
+          type uint32;
+        }
+        leaf hello-timeout {
+          description
+            "ldp interface hello timeout";
+          type uint32;
+        }
+        leaf hello-next {
+          description
+            "ldp interface hello next";
+          type uint32;
+        }
+      }
+      list ldp-database {
+        description
+          "LDP database operational Information";
+        key "peer-ip own-ip";
+        leaf peer-ip {
+          description
+            "LDP Peer IP Address";
+          type inet:ipv4-address;
+        }
+        leaf own-ip {
+          description
+            "LDP Own IP Address";
+          type inet:ipv4-address;
+        }
+        list upstream {
+          description
+            "Upstream mappings for sessions in LDP database";
+          uses group-ldp-database-stream-base;
+          key "index";
+          leaf index {
+            description
+              "This is a pseudo key for the mapping. Not guaranteed to stay constant";
+            type uint32;
+          }
+        }
+        list downstream {
+          description
+            "Upstream mappings for sessions in LDP database";
+          uses group-ldp-database-stream-base;
+          key "index";
+          leaf index {
+            description
+              "This is a pseudo key for the mapping. Not guaranteed to stay constant";
+            type uint32;
+          }
+          leaf state {
+            description
+              "mpls ldp database fec state  ";
+            type string;
+          }
+          leaf filtered {
+            description
+              "mpls ldp database fec filtered  ";
+            type boolean;
+          }
+          leaf lwd {
+            description
+              "mpls ldp database fec lwd  ";
+            type boolean;
+          }
+        }
+      }
+      list targeted-peer {
+        description
+          " LDP Targeted Peer";
+        key "mpls-ldp-targeted-peer-id";
+        leaf mpls-ldp-targeted-peer-id {
+          description
+            "LDP Targeted Peer IP Address";
+          type inet:ipv4-address;
+        }
+      }
+      list path {
+        description
+          " LDP Path information";
+        key "path-key";
+        leaf path-key {
+          description
+            "Path Key";
+          type uint32;
+        }
+        leaf destination-route {
+          description
+            "mpls_ldp_destination_route";
+          type inet:ipv4-prefix;
+        }
+        list upstream-sessions {
+          description
+            "Upstream Session";
+          key "ip";
+          leaf ip {
+            description
+              "ip address";
+            type inet:ipv4-address;
+          }
+          leaf labelspace {
+            description
+              "labelspace";
+            type uint32;
+          }
+          leaf label {
+            description
+              "label";
+            type uint32;
+          }
+        }
+        list downstream-sessions {
+          description
+            "Upstream Session";
+          key "ip interface";
+          leaf ip {
+            description
+              "ip address";
+            type inet:ipv4-address;
+          }
+          leaf interface {
+            description
+              "interface";
+            type string;
+          }
+          leaf labelspace {
+            description
+              "labelspace";
+            type uint32;
+          }
+          leaf label {
+            description
+              "label";
+            type uint32;
+          }
+        }
+      }
+      list ldp-neighbors {
+        description
+          "LDP neighbor details";
+        key "neighbor-ldpid labelspaceid";
+        leaf neighbor-ldpid {
+          description
+            "Neighbor LDP ID";
+          type inet:ipv4-address;
+        }
+        leaf labelspaceid {
+          description
+            "labelspaceId";
+          type uint8;
+        }
+        leaf neighbor-transport {
+          description
+            "Neighbor transport";
+          type inet:ipv4-address;
+        }
+        leaf interface-name {
+          description
+            "Ldp interface name";
+          type string;
+        }
+        leaf max-hold-time {
+          description
+            "Max hold time";
+          type uint32;
+        }
+        leaf time-left {
+          description
+            "time left";
+          type uint32;
+        }
+        leaf up-time {
+          description
+            "up time";
+          type string;
+        }
+        leaf configured-hold-time {
+          description
+            "configured hold time";
+          type uint32;
+        }
+        leaf neighbor-proposed-hold-time {
+          description
+            "neighbor proposed hold time";
+          type uint32;
+        }
+      }
+      list ldp-session {
+        description
+          "";
+        key "peer-ldp-id";
+        leaf peer-ldp-id {
+          description
+            "peer_ldp_id";
+          type string;
+        }
+        leaf peer-lblspc-id {
+          description
+            "peer_lblspc_id";
+          type string;
+        }
+        leaf state {
+          description
+            "state";
+          type string;
+        }
+        leaf adjacency {
+          description
+            "adjacency";
+          type string;
+        }
+        leaf role {
+          description
+            "role";
+          type string;
+        }
+        leaf max-hold {
+          description
+            "maxHold";
+          type uint32;
+        }
+        leaf time-left {
+          description
+            "timeLeft";
+          type uint32;
+        }
+        leaf session-status {
+          description
+            "sessionStatus";
+          type string;
+        }
+        leaf local-ldp-id {
+          description
+            "localLdpId";
+          type string;
+        }
+        leaf local-lblspc-id {
+          description
+            "local_lblspc_id";
+          type string;
+        }
+        leaf next-keepalive {
+          description
+            "nextKeepalive";
+          type uint32;
+        }
+        leaf entity-index {
+          description
+            "entityIndex";
+          type uint32;
+        }
+        leaf targeted-adj-added {
+          description
+            "targetedAdjAdded";
+          type string;
+        }
+        leaf is-retry {
+          description
+            "isRetry";
+          type boolean;
+        }
+        leaf next-retry {
+          description
+            "nextRetry";
+          type uint32;
+        }
+        leaf keepalive-interval {
+          description
+            "keepaliveInterval";
+          type uint32;
+        }
+        leaf local-keepalive-timeout {
+          description
+            "localKeepaliveTimeout";
+          type uint32;
+        }
+        leaf peer-proposed-keepalive-timeout {
+          description
+            "peerProposedKeepaliveTimeout";
+          type uint32;
+        }
+        leaf session-up-time {
+          description
+            "sessionUpTime";
+          type string;
+        }
+        leaf md5-auth-key {
+          description
+            "md5AuthKey";
+          type string;
+        }
+        leaf tcp-conn-local {
+          description
+            "tcpConnLocal";
+          type string;
+        }
+        leaf tcp-conn-remote {
+          description
+            "tcpConnRemote";
+          type string;
+        }
+        leaf tcp-state {
+          description
+            "tcpState";
+          type string;
+        }
+        leaf num-fecs-received-from-peer {
+          description
+            "numFecsReceivedFromPeer";
+          type uint32;
+        }
+        leaf num-fecs-installed-from-peer {
+          description
+            "numFecsInstalledFromPeer";
+          type uint32;
+        }
+        leaf is-fecs-pending-uninstall {
+          description
+            "isFecsPendingUninstall";
+          type boolean;
+        }
+        leaf num-fecs-filtered-out {
+          description
+            "numFecsFilteredOut";
+          type uint32;
+        }
+        leaf num-fecs-filtered-in {
+          description
+            "numFecsFilteredIn";
+          type uint32;
+        }
+        leaf filter-prefix-list-name {
+          description
+            "dataFilterPrefixList";
+          type string;
+        }
+        leaf filter-prefix-list-exists {
+          description
+            "dataFilterPrefixListExists";
+          type boolean;
+        }
+        leaf is-only-gr-valid {
+          description
+            "isOnlyGRValid";
+          type boolean;
+        }
+        leaf gr-enabled {
+          description
+            "grEnabled";
+          type boolean;
+        }
+        leaf peer-reconnect-time {
+          description
+            "peerReconectTime";
+          type uint32;
+        }
+        leaf peer-recovery-time {
+          description
+            "peerRecoveryTime";
+          type uint32;
+        }
+        leaf reconnect-time-in-use {
+          description
+            "";
+          type uint32;
+        }
+        leaf reconnect-time-remaining {
+          description
+            "";
+          type uint32;
+        }
+        leaf recovery-time-in-use {
+          description
+            "";
+          type uint32;
+        }
+        leaf recovery-time-remaining {
+          description
+            "";
+          type uint32;
+        }
+        leaf gr-state {
+          description
+            "grState";
+          type string;
+        }
+        leaf local-eol-unrecognized-notification {
+          description
+            "localEolUnrecognizedNotification";
+          type boolean;
+        }
+        leaf remote-eol-unrecognized-notification {
+          description
+            "remoteEolUnrecognizedNotification";
+          type boolean;
+        }
+        leaf does-session-support-eol {
+          description
+            "doesSessionSupportEol";
+          type boolean;
+        }
+        leaf local-state {
+          description
+            "localState";
+          type boolean;
+        }
+        leaf remote-state {
+          description
+            "remoteState";
+          type boolean;
+        }
+        leaf eol-notification-time {
+          description
+            "eolNotificationTime";
+          type uint32;
+        }
+        leaf eol-notification-time-remaining {
+          description
+            "eolNotificationTimeRemaining";
+          type uint32;
+        }
+        leaf eol-tx-label-silence-time {
+          description
+            "eolTxLabelSilenceTime";
+          type uint32;
+        }
+        leaf eol-tx-label-silence-time-remaining {
+          description
+            "eolTxLabelSilenceTimeRunning";
+          type uint32;
+        }
+        leaf eol-rx-label-silence-time {
+          description
+            "eolRxLabelSilenceTime";
+          type uint32;
+        }
+        leaf eol-rx-label-silence-time-remaining {
+          description
+            "eolRxLabelSilenceTimeRunning";
+          type uint32;
+        }
+        leaf filtered {
+          description
+            "Filter Type";
+          type session-filter-type;
+        }
+        leaf-list interfaces {
+          description
+            "interface list";
+          type string;
+        }
+        leaf-list addresses {
+          description
+            "address list";
+          type string;
+        }
+        container session-ldp-stats {
+          description
+            "Session LDP stats";
+          list protocol-errors {
+            key "stats-group";
+            uses group-ldp-protocol-errors-instance;
+          }
+          list protocol-stats {
+            key "stats-group";
+            uses group-ldp-protocol-stats-instance;
+          }
+        }
+        list filtered-fecs-in {
+          key "fec-addr";
+          uses group-filtered-fecs;
+        }
+        list filtered-fecs-out {
+          key "fec-addr";
+          uses group-filtered-fecs;
+        }
+      }
+      list ldp-fec-prefix {
+        description
+          "LDP Prefix FEC information";
+        key "destination";
+        leaf destination {
+          description
+            "The IP Prefix associated with the host address or the prefix FEC type";
+          type string;
+        }
+        leaf state {
+          description
+            "State of the FEC which indicates the FEC advertised to any LDP session (state equal to 'current'). When it has no session, it is either called 'cur_no_sess' (currently no session) for local FECs or is marked 'retained' for non-local FECs";
+          type string;
+        }
+        leaf ingress {
+          description
+            "Whether the FEC is an ingress FEC";
+          type string;
+        }
+        leaf egress {
+          description
+            "Whether the FEC is an egress FEC";
+          type string;
+        }
+        leaf filtered {
+          description
+            "Whether FEC is filtered. Value could be 'In' or 'Out'";
+          type string;
+        }
+        leaf lwd {
+          description
+            "Label withdrawal delay state";
+          type string;
+        }
+        leaf filter-type {
+          description
+            "Tells if inbound or outbound or all filtered FECs have to be shown";
+          type fec-filter-type;
+        }
+        leaf prefix-filtered {
+          description
+            "filter name";
+          type string;
+        }
+        leaf longer {
+          description
+            "Tells if detailed output is needed for LDP FECs";
+          type boolean;
+        }
+        leaf prefix-feccb {
+          description
+            "Memory address of the FEC CB";
+          type uint32;
+        }
+        leaf prefix-idx {
+          description
+            "A monotonically increasing number assigned to each FEC in the LDP internal FEC tree";
+          type uint32;
+        }
+        leaf prefix-type {
+          description
+            "FEC type - Prefix FEC is type 2 and Host Address is assigned type 3";
+          type uint32;
+        }
+        leaf prefix-pend-notif {
+          description
+            "Any notification pending on this FEC";
+          type string;
+        }
+        leaf prefix-um-dist-done {
+          description
+            "Specifies when Upstream Mapping Distribution is complete";
+          type string;
+        }
+        leaf prefix-lwd-started {
+          description
+            "lwd_started";
+          type string;
+        }
+        leaf prefix-is-ldp-o-rsvp {
+          description
+            "prefix is ldp or rsvp";
+          type boolean;
+        }
+        leaf prefix-excess-dms {
+          description
+            "Tells if number of downstream mappings exceeds the threshold value. only 8 of the Downstreams may be installed";
+          type boolean;
+        }
+        list nexthops {
+          description
+            "";
+          key "nexthop";
+          leaf nexthop {
+            description
+              "For an ingress FEC, this mentions the nexthop IP address";
+            type string;
+          }
+          leaf out-intf {
+            description
+              "For an ingress FEC, this mentions the output interface to reach to the Next-hop. The Out-Intf field displays the egress interface associated with the FEC entry. When applicable, the Out-Intf field displays a VE interface specified by the vid variable";
+            type string;
+          }
+        }
+        list prefix-downstream {
+          description
+            "LDP prefix fec for downstream mapping";
+          uses group-ldp-fec-stream;
+          key "mapping-index";
+          leaf mapping-index {
+            description
+              "Pseudo key for mapping index";
+            type uint32;
+          }
+        }
+        list prefix-upstream {
+          description
+            "LDP prefix fec for upstream mapping";
+          uses group-ldp-fec-stream;
+          key "mapping-index";
+          leaf mapping-index {
+            description
+              "Pseudo key for mapping index";
+            type uint32;
+          }
+        }
+      }
+      list ldp-fec-vc {
+        description
+          "LDP VC FEC information";
+        key "vc-id";
+        leaf vc-id {
+          description
+            "The VC ID associated with the VC FEC";
+          type uint32;
+        }
+        leaf peer-id {
+          description
+            "peer id";
+          type inet:ipv4-address;
+        }
+        leaf peer-lblspc {
+          description
+            "peer labelspace";
+          type uint32;
+        }
+        leaf state {
+          description
+            "State of the FEC which indicates the FEC advertised to any LDP session (state equal to 'current'). When it has no session, it is either called 'cur_no_sess' (currently no session) for local FECs or is marked 'retained' for non-local FECs";
+          type string;
+        }
+        leaf peer-vc-type {
+          description
+            "peer vc type";
+          type uint32;
+        }
+        leaf ingress {
+          description
+            "Whether the FEC is an ingress FEC";
+          type string;
+        }
+        leaf egress {
+          description
+            "Whether the FEC is an egress FEC";
+          type string;
+        }
+        leaf vc-feccb {
+          description
+            "Memory address of the FEC CB";
+          type uint32;
+        }
+        leaf vc-idx {
+          description
+            "A monotonically increasing number assigned to each FEC in the LDP internal FEC tree";
+          type uint32;
+        }
+        leaf vc-fec-type {
+          description
+            "FEC type For VC FEC this value can be 128 or 129";
+          type uint32;
+        }
+        leaf prefix-pend-notif {
+          description
+            "Any notification pending on this FEC";
+          type string;
+        }
+        leaf prefix-um-dist-done {
+          description
+            "Specifies when Upstream Mapping Distribution is complete";
+          type string;
+        }
+        leaf vc-type {
+          description
+            "The VC type associated with the VC FEC";
+          type uint32;
+        }
+        leaf vc-grp-id {
+          description
+            "The Group ID associated with the VC FEC";
+          type uint32;
+        }
+        leaf vc-local-mtu {
+          description
+            "The local MTU for a specified VC FEC";
+          type uint32;
+        }
+        leaf vc-remote-mtu {
+          description
+            "The remote MTU for a specified VC FEC";
+          type uint32;
+        }
+        leaf vc-mtu-enforcement {
+          description
+            "The user configured MTU enforcement setting that displays Enabled when a specified VC ID is up";
+          type uint32;
+        }
+        leaf vc-agi {
+          description
+            "vc agi";
+          type string;
+        }
+        list vc-downstream {
+          description
+            "LDP VC fec for downstream mapping";
+          uses group-ldp-fec-stream;
+          key "mapping-index";
+          leaf mapping-index {
+            description
+              "Pseudo key for mapping index";
+            type uint32;
+          }
+        }
+        list vc-upstream {
+          description
+            "LDP VC fec for upstream mapping";
+          uses group-ldp-fec-stream;
+          key "mapping-index";
+          leaf mapping-index {
+            description
+              "Pseudo key for mapping index";
+            type uint32;
+          }
+        }
+      }
+    }
+    container memory {
+      description
+        "MPLS memory information";
+      leaf total-non-pool-memory {
+        description
+          "Total non pool memory";
+        type uint32;
+      }
+      list pools {
+        description
+          "Memory pools";
+        key "pool-index";
+        leaf pool-index {
+          description
+            "Pool index";
+          type uint32;
+        }
+        list sub-pools {
+          description
+            "Memory sub pools";
+          key "sub-pool-index";
+          leaf sub-pool-index {
+            description
+              "Sub-pool index";
+            type uint32;
+          }
+          leaf gen-size {
+            description
+              "Generation size";
+            type uint32;
+          }
+          leaf block-size {
+            description
+              "Block size";
+            type uint32;
+          }
+          leaf gen-blocks {
+            description
+              "Generation blocks";
+            type uint32;
+          }
+          leaf current-gens {
+            description
+              "Current generations";
+            type uint32;
+          }
+          leaf current-blocks {
+            description
+              "Current blocks";
+            type uint32;
+          }
+          leaf free-blocks {
+            description
+              "Free blocks";
+            type uint32;
+          }
+        }
+      }
+      list stats {
+        description
+          "1";
+        key "mem-stats-index";
+        leaf mem-stats-index {
+          description
+            "Memory stats index";
+          type uint32;
+        }
+        leaf mem-type {
+          description
+            "Memory type";
+          type string;
+        }
+        leaf num-alloc {
+          description
+            "Number of allocations";
+          type uint32;
+        }
+        leaf total-bytes {
+          description
+            "Total bytes";
+          type uint32;
+        }
+        leaf total-allocs {
+          description
+            "Total allocations";
+          type uint32;
+        }
+        leaf total-frees {
+          description
+            "Total frees";
+          type uint32;
+        }
+        leaf peak-alloc {
+          description
+            "Peak allocations";
+          type uint32;
+        }
+        leaf alloc-fails {
+          description
+            "Allocation Fails";
+          type uint32;
+        }
+        leaf free-fails {
+          description
+            "Free fails";
+          type uint32;
+        }
+      }
+    }
+    container policy {
+      description
+        "MPLS Policy";
+      leaf cspf-intf {
+        description
+          "CSPF Interface constraint";
+        type uint8;
+      }
+      leaf cspf-group-computation-mode {
+        description
+          "CSPF Group Computation Mode";
+        type mpls-cspf-grp-comp-mode;
+      }
+      leaf cspf-comp-mode {
+        description
+          "CSPF Computation Mode";
+        type uint32;
+      }
+      leaf cspf-comp-ignore-overload-bit {
+        description
+          "CSPF Computation Ignore Overload Bit";
+        type uint8;
+      }
+      leaf implicit-commit-value {
+        description
+          "MPLS Implicit Commit value";
+        type uint32;
+      }
+      leaf qos-ttl-mode {
+        description
+          "MPLS Qos TTL Mode";
+        type qos-ttl-mode;
+      }
+      leaf rtm-route-filter-enabled {
+        description
+          "RTM route filter enabled";
+        type boolean;
+      }
+      leaf rtm-route-filter-all-ibgp-enabled {
+        description
+          "RTM route filter all IBGP enabled";
+        type boolean;
+      }
+      leaf ingress-tnnl-actg {
+        description
+          "MPLS Ingress Tunnel Accounting";
+        type uint8;
+      }
+      leaf transit-session-actg {
+        description
+          "MPLS Transit Session Accounting";
+        type uint8;
+      }
+      leaf load-interval {
+        description
+          "MPLS Load Interval";
+        type uint16;
+      }
+      leaf te-policy-protocol {
+        description
+          "MPLS TE Protocol";
+        type te-protocol;
+      }
+      leaf te-policy-flags {
+        description
+          "MPLS TE policy flags";
+        type uint16;
+      }
+      leaf te-policy-area {
+        description
+          "MPLS TE area";
+        type uint32;
+      }
+      leaf handle-isis-nbr-down {
+        description
+          "MPLS Handle ISIS neighbor down";
+        type uint8;
+      }
+      leaf handle-ospf-nbr-down {
+        description
+          "MPLS Handle OSPF neighbor down";
+        type uint8;
+      }
+      leaf max-lsp-retries {
+        description
+          "MPLS max lsp retries";
+        type uint16;
+      }
+      leaf fast-retry-on {
+        description
+          "MPLS fast retry on";
+        type uint8;
+      }
+      leaf lsp-retry-interval {
+        description
+          "MPLS lsp retry interval";
+        type uint16;
+      }
+      leaf frr-backup-retry-interval {
+        description
+          "MPLS FRR backup retry interval";
+        type uint32;
+      }
+      leaf auto-bandwidth-enabled {
+        description
+          "MPLS Autobw";
+        type uint8;
+      }
+      leaf autobw-sample-interval {
+        description
+          "MPLS Autobw sample interval";
+        type uint32;
+      }
+      leaf autobw-num-sample-record {
+        description
+          "MPLS Autobw num sample record";
+        type uint32;
+      }
+      leaf soft-preempt-cleanup-timer {
+        description
+          "MPLS Soft Preempt cleanup timer";
+        type uint16;
+      }
+      leaf rsvp-periodic-flooding-timer {
+        description
+          "MPLS RSVP periodic flooding timer";
+        type uint16;
+      }
+      list admin-groups {
+        description
+          "MPLS Admin Group Entry";
+        key "name";
+        leaf name {
+          description
+            "Name of admin group";
+          type string;
+        }
+        leaf group-number {
+          description
+            "Admin group number";
+          type uint8;
+        }
+      }
+      list rsvp-flooding-thresholds {
+        description
+          "RSVP Flooding Threshold";
+        key "threshold-type";
+        leaf threshold-type {
+          description
+            "Type Of Threshold";
+          type string;
+        }
+        leaf-list flooding-thresholds {
+          description
+            "Flooding Thresholds";
+          type uint32;
+        }
+      }
+    }
+    container rsvp {
+      description
+        "MPLS RSVP Operational Information";
+      leaf protocol-status {
+        description
+          "RSVP protocol status (enabled or disabled)";
+        type boolean;
+      }
+      leaf refresh-interval {
+        description
+          "Refresh interval (R)";
+        type uint16;
+      }
+      leaf refresh-multiple {
+        description
+          "Refresh multiple (K)";
+        type uint16;
+      }
+      leaf transport-address {
+        description
+          "Transport Address";
+        type inet:ipv4-address;
+      }
+      leaf delay-resv-sending {
+        description
+          "Delayed RESV sending";
+        type boolean;
+      }
+      leaf backup-bandwidth-requirement {
+        description
+          "Backup bandwidth requirement's interpretation";
+        type boolean;
+      }
+      leaf-list msgid-epoch {
+        description
+          "Message id epoch";
+        type uint32;
+      }
+      container statistics {
+        description
+          "MPLS RSVP global statistics";
+        container packet-error-counters {
+          description
+            "RSVP error packet counters";
+          leaf rx-pkt-bad-length {
+            description
+              "RSVP received packet bad length";
+            type uint64;
+          }
+          leaf rx-pkt-unknown-type {
+            description
+              "RSVP received packet unknown type";
+            type uint64;
+          }
+          leaf rx-pkt-bad-version {
+            description
+              "RSVP received packet bad version";
+            type uint64;
+          }
+          leaf rx-pkt-bad-checksum {
+            description
+              "RSVP received packet bad checksum";
+            type uint64;
+          }
+          leaf mem-alloc-fail {
+            description
+              "Memory allocation failed for RSVP packet";
+            type uint64;
+          }
+          leaf rx-md5-auth-error {
+            description
+              "RSVP received MD5 auth error";
+            type uint64;
+          }
+          leaf path-state-timeout {
+            description
+              "Path state timeout";
+            type uint64;
+          }
+          leaf resv-state-timeout {
+            description
+              "Resv state timeout";
+            type uint64;
+          }
+          leaf pkt-with-msg-id-drop {
+            description
+              "Packet with message id drop error";
+            type uint64;
+          }
+          leaf pkt-with-sref-drop {
+            description
+              "Packet with SREF drop error";
+            type uint64;
+          }
+          leaf rx-pkt-bad-length-since-last-clear {
+            description
+              "RSVP received packet bad length since last clear";
+            type uint64;
+          }
+          leaf rx-pkt-unknown-type-since-last-clear {
+            description
+              "RSVP received packet unknown type since last clear";
+            type uint64;
+          }
+          leaf rx-pkt-bad-version-since-last-clear {
+            description
+              "RSVP received packet bad version since last clear";
+            type uint64;
+          }
+          leaf rx-pkt-bad-checksum-since-last-clear {
+            description
+              "RSVP received packet bad checksum since last clear";
+            type uint64;
+          }
+          leaf mem-alloc-fail-since-last-clear {
+            description
+              "Memory allocation failed for RSVP packet since last clear";
+            type uint64;
+          }
+          leaf rx-md5-auth-error-since-last-clear {
+            description
+              "RSVP received MD5 auth error since last clear";
+            type uint64;
+          }
+          leaf path-state-timeout-since-last-clear {
+            description
+              "Path state timeout since last clear";
+            type uint64;
+          }
+          leaf resv-state-timeout-since-last-clear {
+            description
+              "Resv state timeout since last clear";
+            type uint64;
+          }
+          leaf pkt-with-msg-id-drop-since-last-clear {
+            description
+              "Packet with message id drop error since last clear";
+            type uint64;
+          }
+          leaf pkt-with-sref-drop-since-last-clear {
+            description
+              "Packet with SREF drop error since last clear";
+            type uint64;
+          }
+          leaf path-errors {
+            description
+              "RSVP Path message errors";
+            type uint64;
+          }
+          leaf resv-errors {
+            description
+              "RSVP Resv message errors";
+            type uint64;
+          }
+          leaf patherr-errors {
+            description
+              "RSVP PathErr message errors";
+            type uint64;
+          }
+          leaf resverr-errors {
+            description
+              "RSVP ResvErr message errors";
+            type uint64;
+          }
+          leaf pathtear-errors {
+            description
+              "RSVP PathTear message errors";
+            type uint64;
+          }
+          leaf resvtear-errors {
+            description
+              "RSVP ResvTear message errors";
+            type uint64;
+          }
+          leaf resvconf-errors {
+            description
+              "RSVP ResvConf message errors";
+            type uint64;
+          }
+          leaf bundle-errors {
+            description
+              "RSVP Bundle message errors";
+            type uint64;
+          }
+          leaf ack-errors {
+            description
+              "RSVP acknowledgement errors";
+            type uint64;
+          }
+          leaf sumrefresh-errors {
+            description
+              "RSVP SumRefresh message errors";
+            type uint64;
+          }
+          leaf hello-errors {
+            description
+              "RSVP hello message errors";
+            type uint64;
+          }
+          leaf nackobject-errors {
+            description
+              "RSVP NACK message errors";
+            type uint64;
+          }
+          leaf path-errors-since-last-clear {
+            description
+              "RSVP Path message errors since last clear";
+            type uint64;
+          }
+          leaf resv-errors-since-last-clear {
+            description
+              "RSVP Resv message errors since last clear";
+            type uint64;
+          }
+          leaf patherr-errors-since-last-clear {
+            description
+              "RSVP PathErr message errors since last clear";
+            type uint64;
+          }
+          leaf resverr-errors-since-last-clear {
+            description
+              "RSVP ResvErr message errors since last clear";
+            type uint64;
+          }
+          leaf pathtear-errors-since-last-clear {
+            description
+              "RSVP PathTear message errors since last clear";
+            type uint64;
+          }
+          leaf resvtear-errors-since-last-clear {
+            description
+              "RSVP ResvTear message errors since last clear";
+            type uint64;
+          }
+          leaf resvconf-errors-since-last-clear {
+            description
+              "RSVP ResvConf message errors since last clear";
+            type uint64;
+          }
+          leaf bundle-errors-since-last-clear {
+            description
+              "RSVP Bundle message errors since last clear";
+            type uint64;
+          }
+          leaf ack-errors-since-last-clear {
+            description
+              "RSVP acknowledgement errors sice last clear";
+            type uint64;
+          }
+          leaf sumrefresh-errors-since-last-clear {
+            description
+              "RSVP SumRefresh message errors since last clear";
+            type uint64;
+          }
+          leaf hello-errors-since-last-clear {
+            description
+              "RSVP hello message errors since last clear";
+            type uint64;
+          }
+          leaf nackobject-errors-since-last-clear {
+            description
+              "RSVP NACK message errors since last clear";
+            type uint64;
+          }
+        }
+        container packet-counters {
+          uses group-rsvp-packet-counters;
+        }
+      }
+      container igp-sync {
+        description
+          "MPLS Rsvp IGP Synchronization information";
+        leaf isis-nbr-down-enabled {
+          description
+            "ISIS neighbour down enabled";
+          type boolean;
+        }
+        leaf ospf-nbr-down-enabled {
+          description
+            "OSPF neighbour down enabled";
+          type boolean;
+        }
+        list link {
+          description
+            "MPLS Rsvp IGP Synchronization Link information";
+          key "ip-address nbr-ip-address";
+          leaf ip-address {
+            description
+              "Link ip address";
+            type inet:ipv4-address;
+          }
+          leaf nbr-ip-address {
+            description
+              "Link remote end neighbor address";
+            type inet:ipv4-address;
+          }
+          leaf remote-ip {
+            description
+              "Link remote end Ip address";
+            type inet:ipv4-address;
+          }
+          leaf lsp-count {
+            description
+              "Number of LSPs using the link";
+            type uint32;
+          }
+          list lsp {
+            key "lsp-name path-name";
+            uses group-rsvp-igp-sync-lsp;
+          }
+        }
+        list lsp {
+          key "lsp-name path-name";
+          uses group-rsvp-igp-sync-lsp;
+        }
+      }
+      list interfaces {
+        description
+          "MPLS RSVP interface information";
+        key "interface-name";
+        leaf interface-name {
+          description
+            "MPLS RSVP interface name";
+          type string;
+        }
+        leaf interface-type {
+          description
+            "MPLS RSVP interface type";
+          type dcm-interface-type;
+        }
+        leaf interface-index {
+          description
+            "MPLS RSVP interface ID";
+          type uint32;
+        }
+        leaf admin-status {
+          description
+            "MPLS RSVP interface admin status";
+          type boolean;
+        }
+        leaf oper-status {
+          description
+            "MPLS RSVP interface operational status";
+          type boolean;
+        }
+        leaf is-tunnel-interface {
+          description
+            "Is this a tunnle interface";
+          type boolean;
+        }
+        leaf hello-interval {
+          description
+            "MPLS RSVP interface hello interval";
+          type uint32;
+        }
+        leaf hello-tolerance {
+          description
+            "MPLS RSVP interface hello tolerance";
+          type uint32;
+        }
+        leaf hello-status {
+          description
+            "1";
+          type feature-config-status;
+        }
+        leaf is-md5-auth-enabled {
+          description
+            "Is MD5 authentication enabled on the interface";
+          type boolean;
+        }
+        leaf reliable-messages {
+          description
+            "Reliable messaging config on interface";
+          type feature-config-status;
+        }
+        leaf bundle-messages {
+          description
+            "Bundle messaging config on interface";
+          type feature-config-status;
+        }
+        leaf summary-refresh {
+          description
+            "Summary refresh config on interface";
+          type feature-config-status;
+        }
+        leaf active-outsegs {
+          description
+            "1";
+          type uint32;
+        }
+        leaf inactive-outsegs {
+          description
+            "1";
+          type uint32;
+        }
+        leaf bandwith-resv-outsegs {
+          description
+            "1";
+          type uint32;
+        }
+        leaf active-backup-outsegs {
+          description
+            "1";
+          type uint32;
+        }
+        leaf inactive-backup-outsegs {
+          description
+            "1";
+          type uint32;
+        }
+        leaf interface-preempts {
+          description
+            "1";
+          type uint32;
+        }
+        leaf interface-resv-soft-preempts {
+          description
+            "1";
+          type uint32;
+        }
+        leaf interface-flooding-up-threshold {
+          description
+            "Interface flood up threshold is taken from global, local or default settings";
+          type feature-config-source;
+        }
+        leaf interface-flooding-down-threshold {
+          description
+            "Interface flood down threshold is taken from global, local or default settings";
+          type feature-config-source;
+        }
+        leaf duplicate-preempts-dropped {
+          description
+            "MPLS RSVP interface duplicate preempts dropped";
+          type uint32;
+        }
+        leaf bypass-interface {
+          description
+            "Bypass interface present";
+          type boolean;
+        }
+        leaf interface-tunnel-name {
+          description
+            "Interface tunnel name (if this is a tunnel interface)";
+          type string;
+        }
+        leaf bypass-tunnel-interface-name {
+          description
+            "Bypass tunnel interface name";
+          type string;
+        }
+        leaf-list interface-te-up-thresholds {
+          description
+            "1";
+          type uint32;
+        }
+        leaf-list interface-te-down-thresholds {
+          description
+            "1";
+          type uint32;
+        }
+        container error-counters {
+          description
+            "RSVP interface error counters";
+          leaf recv-md5-auth-errors {
+            description
+              "MD5 authentication errors";
+            type uint64;
+          }
+          leaf pkt-with-msgid-drop {
+            description
+              "Packets with message ID drop";
+            type uint64;
+          }
+          leaf pkt-with-sref-drop {
+            description
+              "Packets with summary refresh drop";
+            type uint64;
+          }
+          leaf nackobject-errors {
+            description
+              "RSVP NACK message errors";
+            type uint64;
+          }
+          leaf recv-md5-auth-errors-since-last-clear {
+            description
+              "MD5 authentication errors since last clear";
+            type uint64;
+          }
+          leaf pkt-with-msgid-drop-since-last-clear {
+            description
+              "Packets with message ID drop since last clear";
+            type uint64;
+          }
+          leaf pkt-with-sref-drop-since-last-clear {
+            description
+              "Packets with summary refresh drop since last clear";
+            type uint64;
+          }
+          leaf nackobject-errors-since-last-clear {
+            description
+              "RSVP NACK message errors since last clear";
+            type uint64;
+          }
+        }
+        container packet-counters {
+          uses group-rsvp-packet-counters;
+        }
+      }
+      list sessions {
+        description
+          "MPLS RSVP Sessions";
+        key "dest-ip-addr src-ip-addr tunnel-id session-role";
+        leaf dest-ip-addr {
+          description
+            "Destination ip address";
+          type inet:ipv4-address;
+        }
+        leaf src-ip-addr {
+          description
+            "Srouce ip address";
+          type inet:ipv4-address;
+        }
+        leaf tunnel-id {
+          description
+            "Tunnel ID";
+          type uint16;
+        }
+        leaf session-role {
+          description
+            "If this session role is ingress, egress or transit";
+          type session-role;
+        }
+        leaf session-operational-status {
+          description
+            "If the session up or not";
+          type boolean;
+        }
+        list psbs {
+          description
+            "MPLS RSVP session path state";
+          key "path-index";
+          leaf path-index {
+            description
+              "Index of path which is a pseudo key";
+            type uint32;
+          }
+          leaf session-name {
+            description
+              "Session name";
+            type string;
+          }
+          leaf session-type {
+            description
+              "Session type";
+            type session-type;
+          }
+          leaf path-operational-status {
+            description
+              "If the path up or not";
+            type boolean;
+          }
+          leaf session-in-label {
+            description
+              "Session in label";
+            type uint32;
+          }
+          leaf session-out-label {
+            description
+              "Session out label";
+            type uint32;
+          }
+          leaf session-out-interface {
+            description
+              "Out-going interface for the session";
+            type string;
+          }
+          leaf lsp-id {
+            description
+              "LSP ID";
+            type uint32;
+          }
+          leaf flap-lock {
+            description
+              "Flap lock";
+            type uint32;
+          }
+          leaf path-refresh {
+            description
+              "Path refresh";
+            type uint32;
+          }
+          leaf path-refresh-ttd {
+            description
+              "Path fresesh ttd";
+            type uint32;
+          }
+          leaf resv-refresh {
+            description
+              "Resv refresh";
+            type uint32;
+          }
+          leaf resv-refresh-ttd {
+            description
+              "Resv refresh ttd";
+            type uint32;
+          }
+          leaf tspec-peak {
+            description
+              "Tspec peak";
+            type uint32;
+          }
+          leaf tspec-rate {
+            description
+              "Tspec rate";
+            type uint32;
+          }
+          leaf tspec-size {
+            description
+              "Tspec size";
+            type uint32;
+          }
+          leaf tspec-minimum {
+            description
+              "Tspec minimum";
+            type uint32;
+          }
+          leaf tspec-m {
+            description
+              "Tspec m";
+            type uint32;
+          }
+          leaf psb-setup-priority {
+            description
+              "PSB setup priority";
+            type uint8;
+          }
+          leaf psb-hold-priority {
+            description
+              "PSB hold priority";
+            type uint8;
+          }
+          leaf session-attribute-all-flags {
+            description
+              "All session attribute flags";
+            type uint8;
+          }
+          leaf sa-flag-label-recording {
+            description
+              "Session attribute flag label recording";
+            type boolean;
+          }
+          leaf sa-flag-soft-preemption-desired {
+            description
+              "Session attribute flag soft preemption desired";
+            type boolean;
+          }
+          leaf sa-flag-se-style {
+            description
+              "Session attribute flag SE style";
+            type boolean;
+          }
+          leaf sa-flag-local-protect {
+            description
+              "Session attribute local protection desired";
+            type boolean;
+          }
+          leaf sa-flag-bandwidth-protect {
+            description
+              "Session attribute bandwidth protection desired";
+            type boolean;
+          }
+          leaf sa-flag-session-protection-type {
+            description
+              "Session attribute flag protection type";
+            type session-protection-type;
+          }
+          leaf session-soft-preemption-wait-timer {
+            description
+              "Session soft preemption wait timer";
+            type uint32;
+          }
+          leaf session-preemption-wait-timer {
+            description
+              "Session preemption wait timer";
+            type uint32;
+          }
+          leaf frr-detour {
+            description
+              "Fast re-route detour";
+            type boolean;
+          }
+          leaf frr-facility {
+            description
+              "Fast re-route facility";
+            type boolean;
+          }
+          leaf frr-unknown-backup-mode-desired {
+            description
+              "Is unknown backup mode desired";
+            type boolean;
+          }
+          leaf frr-unknown-flags {
+            description
+              "Unknown FRR flags";
+            type uint8;
+          }
+          leaf frr-psb-setup-priority {
+            description
+              "FRR PSB setup priority";
+            type uint8;
+          }
+          leaf frr-psb-hold-priority {
+            description
+              "FRR PSB hold priority";
+            type uint8;
+          }
+          leaf frr-bandwidth {
+            description
+              "FRR bandwidth";
+            type uint32;
+          }
+          leaf frr-hoplimit {
+            description
+              "FRR hoplimit";
+            type uint8;
+          }
+          leaf frr-method {
+            description
+              "Whether FRR use backup or detour LSPs";
+            type frr-method;
+          }
+          leaf frr-nh-node-protection-available {
+            description
+              "FRR nexthop node protection avalable";
+            type boolean;
+          }
+          leaf frr-nh-node-protection-in-use {
+            description
+              "FRR nexthop node protection is in use";
+            type boolean;
+          }
+          leaf frr-nh-link-protection-available {
+            description
+              "FRR nexthop link protection avalable";
+            type boolean;
+          }
+          leaf frr-nh-link-protection-in-use {
+            description
+              "FRR nexthop link protection is in use";
+            type boolean;
+          }
+          leaf frr-bandwidth-protection-available {
+            description
+              "FRR bandwidth protection available";
+            type boolean;
+          }
+          leaf frr-lsp-bringup-abandoned {
+            description
+              "Not attempting to bring up FRR LSP (true).Otherwise (false) attempts have failed";
+            type boolean;
+          }
+          leaf frr-updown-transitions {
+            description
+              "FRR up and down transition count";
+            type uint32;
+          }
+          leaf frr-retries {
+            description
+              "FRR retries";
+            type uint32;
+          }
+          leaf frr-session-protection-available {
+            description
+              "Is FRR protection avalable for the session";
+            type boolean;
+          }
+          leaf frr-next-retry {
+            description
+              "FRR next retry";
+            type uint32;
+          }
+          leaf frr-cost {
+            description
+              "FRR cost";
+            type uint32;
+          }
+          leaf frr-cspf-group-computation-mode {
+            description
+              "CSPF group computation mode";
+            type frr-cspf-group-computation-mode;
+          }
+          leaf frr-cspf-group-computation-mode-use-bypass-liberal {
+            description
+              "Liberal use of bypasses in CSPF group computation";
+            type boolean;
+          }
+          leaf is-downstream-backup-psb {
+            description
+              "Is downstream backup PSB";
+            type boolean;
+          }
+          leaf is-backup-psb {
+            description
+              "Is backup PSB";
+            type boolean;
+          }
+          leaf is-upstream-psb {
+            description
+              "Is upstream PSB";
+            type boolean;
+          }
+          leaf is-ps-frr-detour-sent {
+            description
+              "FRR detours sent";
+            type boolean;
+          }
+          leaf is-ps-frr-backup-sent {
+            description
+              "FRR backup sent";
+            type boolean;
+          }
+          leaf is-ps-frr-detour-received {
+            description
+              "FRR detours received";
+            type boolean;
+          }
+          leaf is-ps-frr-backup-received {
+            description
+              "FRR backup received";
+            type boolean;
+          }
+          leaf path-received-from-ip {
+            description
+              "IP address from which the PATH message was received";
+            type inet:ipv4-address;
+          }
+          leaf path-received-interface {
+            description
+              "Interface from which the PATH message was received";
+            type string;
+          }
+          leaf path-received-auth-on {
+            description
+              "Whether authentication (MD5) was used in received PATH message";
+            type boolean;
+          }
+          leaf path-received-message-id {
+            description
+              "Message ID received in PATH message";
+            type uint32;
+          }
+          leaf path-downstream-only {
+            description
+              "Downstream only";
+            type boolean;
+          }
+          leaf path-sent-to-ip {
+            description
+              "IP address from which the PATH message was sent";
+            type inet:ipv4-address;
+          }
+          leaf path-sent-interface {
+            description
+              "Interface from which the PATH message was sent";
+            type string;
+          }
+          leaf path-sent-auth-on {
+            description
+              "Whether authentication (MD5) was used in sent PATH message";
+            type boolean;
+          }
+          leaf path-sent-message-id {
+            description
+              "Message ID sent in PATH message";
+            type uint32;
+          }
+          leaf resv-received-from-ip {
+            description
+              "IP address from which the RESV message was received";
+            type inet:ipv4-address;
+          }
+          leaf resv-received-interface {
+            description
+              "Interface from which the RESV message was received";
+            type string;
+          }
+          leaf resv-received-auth-on {
+            description
+              "Whether authentication (MD5) was used in received RESV message";
+            type boolean;
+          }
+          leaf resv-received-message-id {
+            description
+              "Message ID received in RESV message";
+            type uint32;
+          }
+          leaf session-riding-bypass-name {
+            description
+              "Bypass LSP protecting this session";
+            type string;
+          }
+          leaf session-style {
+            description
+              "Style of session";
+            type session-reservation-style;
+          }
+          leaf-list points-of-local-repair-detour-rcvd {
+            description
+              "Points of local repair on received path message";
+            type inet:ipv4-address;
+          }
+          leaf-list avoid-nodes-detour-rcvd {
+            description
+              "Avoid nodes on received path message";
+            type inet:ipv4-address;
+          }
+          leaf-list points-of-local-repair-detour-sent {
+            description
+              "Points of local repair on sent path message";
+            type inet:ipv4-address;
+          }
+          leaf-list avoid-nodes-detour-sent {
+            description
+              "Avoid nodes on sent path message";
+            type inet:ipv4-address;
+          }
+          list session-ero-hops {
+            description
+              "MPLS RSVP explicit route object hop";
+            key "ip-addr";
+            leaf ip-addr {
+              description
+                "IP address of the hop";
+              type inet:ipv4-address;
+            }
+            leaf ero-flag-is-strict-hop {
+              description
+                "True if this a strict hop. False if it's a loose hop";
+              type boolean;
+            }
+          }
+          list session-rro-hops {
+            description
+              "MPLS RSVP record route object hop";
+            key "ip-addr";
+            leaf ip-addr {
+              description
+                "IP address of the hop";
+              type inet:ipv4-address;
+            }
+            leaf rro-flag-is-local-protect-available {
+              description
+                "RRO flag - is local protection available";
+              type boolean;
+            }
+            leaf rro-flag-is-local-protect-in-use {
+              description
+                "RRO flag - is local protection in use";
+              type boolean;
+            }
+            leaf rro-flag-rro-is-router-id {
+              description
+                "RRO flag - is the address a router id";
+              type boolean;
+            }
+            leaf rro-flag-rro-node-protect {
+              description
+                "Is this hop protecting a node";
+              type boolean;
+            }
+            leaf rro-flag-rro-bandwidth-protect {
+              description
+                "Is bandwidth protection available";
+              type boolean;
+            }
+          }
+        }
+      }
+      list neighbors {
+        description
+          "RSVP Neighbor Operational Information";
+        key "neighbor-ip-addr";
+        leaf neighbor-ip-addr {
+          description
+            "RSVP neighbor IP address";
+          type inet:ipv4-address;
+        }
+        leaf neighbor-interface {
+          description
+            "Interface on which neighbor is learnt";
+          type string;
+        }
+        leaf neighbor-status {
+          description
+            "Neighbor status";
+          type string;
+        }
+        leaf neighbor-last-status-change {
+          description
+            "Time since the status of RSVP neighbor last changed";
+          type string;
+        }
+        leaf rsvp-hello-tx {
+          description
+            "Number of RSVP Hello messages transmitted for the neighbor";
+          type uint32;
+        }
+        leaf rsvp-hello-rx {
+          description
+            "Number of RSVP Hello messages received for the neighbor";
+          type uint32;
+        }
+        leaf refresh-reduction-support {
+          description
+            "Status of Refresh Reduction support for the RSVP neighbor";
+          type boolean;
+        }
+        leaf msg-id-support {
+          description
+            "Status of Message ID support for the RSVP neighbor";
+          type boolean;
+        }
+        leaf active-lsps {
+          description
+            "Number of Active LSPs to or from the RSVP neighbor";
+          type uint32;
+        }
+        leaf rsvp-hello-interval {
+          description
+            "RSVP Hello interval for the neighbor";
+          type uint32;
+        }
+        leaf rsvp-hello-tolerance {
+          description
+            "RSVP Hello tolerance for the neighbor";
+          type uint32;
+        }
+        leaf neighbor-remote-instance {
+          description
+            "RSVP Hello Remote instance ID";
+          type uint32;
+        }
+        leaf neighbor-local-instance {
+          description
+            "RSVP Hello Local instance ID";
+          type uint32;
+        }
+        leaf last-hello-rx {
+          description
+            "Time elapsed since the last RSVP Hello message was received";
+          type uint32;
+        }
+        leaf next-hello-req-tx {
+          description
+            "Time remaining for the next RSVP Hello Request to be sent";
+          type uint32;
+        }
+      }
+    }
+    container dynamic-bypass {
+      description
+        "MPLS dynamic bypass";
+      container dynamic-bypass-global {
+        description
+          "MPLS dynamic bypass";
+        leaf config-enable {
+          description
+            "Dynamic bypass enabled";
+          type uint16;
+        }
+        leaf config-enable-all {
+          description
+            "Dynamic bypass all interfaces enabled";
+          type uint16;
+        }
+        leaf reoptimize-timer {
+          description
+            "Reoptimize timer";
+          type uint32;
+        }
+        leaf max-bypasses-per-mp {
+          description
+            "Max dynamic bypasses per merge point";
+          type uint16;
+        }
+        leaf max-bypasses {
+          description
+            "Max bypasses";
+          type uint16;
+        }
+        leaf bypass-count {
+          description
+            "Bypass count";
+          type uint16;
+        }
+      }
+      list dynamic-bypass-interface {
+        description
+          "MPLS dynamic bypass interface";
+        key "if-name";
+        leaf if-index {
+          description
+            "Interface index";
+          type uint32;
+        }
+        leaf if-name {
+          description
+            "Interface name";
+          type string;
+        }
+        leaf if-type {
+          description
+            "Interface type";
+          type mpls-if-type;
+        }
+        leaf active-status {
+          description
+            "Active Status";
+          type uint8;
+        }
+        leaf admin-type {
+          description
+            "Type of admin";
+          type uint8;
+        }
+        leaf admin-status {
+          description
+            "Admin status";
+          type uint8;
+        }
+        leaf hop-limit {
+          description
+            "Hop Limit";
+          type uint8;
+        }
+        leaf tie-breaking {
+          description
+            "Tie Breaking";
+          type uint8;
+        }
+        leaf cos {
+          description
+            "COS value";
+          type uint8;
+        }
+        leaf cspf-comp-mode {
+          description
+            "CSPF Computation Mode";
+          type uint8;
+        }
+        leaf setup-priority {
+          description
+            "Setup Priority";
+          type uint8;
+        }
+        leaf hold-priority {
+          description
+            "Hold Priority";
+          type uint8;
+        }
+        leaf traffic-eng-max-rate {
+          description
+            "Traffic Engineering max rate";
+          type uint32;
+        }
+        leaf traffic-eng-mean-rate {
+          description
+            "Traffic Engineering mean rate";
+          type uint32;
+        }
+        leaf traffic-eng-max-burst {
+          description
+            "Traffic Engineering max burst";
+          type uint32;
+        }
+        leaf from-addr {
+          description
+            "From address of the box";
+          type inet:ipv4-address;
+        }
+        leaf reoptimize-timer {
+          description
+            "Reoptimize timer";
+          type uint32;
+        }
+        leaf adaptive {
+          description
+            "Adaptive configuration";
+          type uint32;
+        }
+        leaf record-route {
+          description
+            "Record Route configuration";
+          type uint32;
+        }
+        leaf name-prefix {
+          description
+            "Dynamic bypass name prefix";
+          type string;
+        }
+        leaf primary-path {
+          description
+            "Primary path";
+          type string;
+        }
+        leaf max-bypasses-per-mp {
+          description
+            "Maximum Bypasses per merge point";
+          type uint16;
+        }
+        leaf bypass-count {
+          description
+            "Dynamic Bypass count for the interface";
+          type uint16;
+        }
+        leaf exclude-any {
+          description
+            "Exclude any admin group";
+          type uint32;
+        }
+        leaf include-all {
+          description
+            "Include all admin groups";
+          type uint32;
+        }
+        leaf include-any {
+          description
+            "Include any admin group";
+          type uint32;
+        }
+        leaf status-flags {
+          description
+            "Status flags";
+          type uint32;
+        }
+        leaf mp-count {
+          description
+            "Count of merge points";
+          type uint32;
+        }
+        list mp-infos {
+          description
+            "Merge point info";
+          key "router-id";
+          leaf router-id {
+            description
+              "Router id";
+            type inet:ipv4-address;
+          }
+          leaf bypass-count {
+            description
+              "Merge point bypass count";
+            type uint16;
+          }
+        }
+      }
+    }
+    container te {
+      description
+        "MPLS Traffic Engineering Operational Information";
+      leaf ospf-te-enabled {
+        description
+          "OSPF TE is configured";
+        type boolean;
+      }
+      leaf isis-te-enabled {
+        description
+          "ISIS TE is configured";
+        type boolean;
+      }
+      leaf ospf-area-id {
+        description
+          "Area Id of OSPF TE";
+        type inet:ipv4-address;
+      }
+      leaf isis-level-id {
+        description
+          "Level Id of ISIS TE";
+        type uint32;
+      }
+      container database {
+        description
+          "MPLS TE Database Operational Information";
+        leaf router-id {
+          description
+            "MPLS TE Router Id";
+          type inet:ipv4-address;
+        }
+        list area {
+          description
+            "MPLS TE Database Area Operational Information";
+          key "area-id level-id";
+          leaf igp-isis {
+            description
+              "ISIS TE is configured";
+            type boolean;
+          }
+          leaf igp-ospf {
+            description
+              "OSPF TE is configured";
+            type boolean;
+          }
+          leaf area-id {
+            description
+              "OSPF TE Area Id";
+            type inet:ipv4-address;
+          }
+          leaf level-id {
+            description
+              "ISIS TE Level Id";
+            type uint32;
+          }
+          leaf host-name {
+            description
+              "Host Name";
+            type string;
+          }
+          leaf router-id {
+            description
+              "MPLS TE Router Id";
+            type inet:ipv4-address;
+          }
+          leaf total-network-nodes {
+            description
+              "Total network nodes";
+            type uint32;
+          }
+          leaf total-router-nodes {
+            description
+              "Total router nodes";
+            type uint32;
+          }
+          leaf total-p2p-links {
+            description
+              "Total point to point links";
+            type uint32;
+          }
+          leaf total-p2mp-links {
+            description
+              "Total multi access links";
+            type uint32;
+          }
+          list node {
+            description
+              "MPLS TE Database Node Operational Information";
+            key "local-node-id local-router-id";
+            leaf igp-isis {
+              description
+                "ISIS is the IGP used for TE";
+              type boolean;
+            }
+            leaf igp-ospf {
+              description
+                "OSPF is the IGP used for TE";
+              type boolean;
+            }
+            leaf area-id {
+              description
+                "OSPF area id";
+              type inet:ipv4-address;
+            }
+            leaf level-id {
+              description
+                "ISIS Level Id";
+              type uint32;
+            }
+            leaf router {
+              description
+                "TE Router Node";
+              type boolean;
+            }
+            leaf network {
+              description
+                "TE Network Node";
+              type boolean;
+            }
+            leaf host-name {
+              description
+                "Node Host anme";
+              type string;
+            }
+            leaf local-node-id {
+              description
+                "ISIS Local Node Id";
+              type string;
+            }
+            leaf local-router-id {
+              description
+                "Local IPv4 router Id";
+              type inet:ipv4-address;
+            }
+            leaf gen-code {
+              description
+                "TE update generation code";
+              type uint32;
+            }
+            leaf lsa-id {
+              description
+                "OSPF LSA id";
+              type uint32;
+            }
+            leaf total-p2p-links {
+              description
+                "Total point to point links";
+              type uint32;
+            }
+            leaf total-p2mp-links {
+              description
+                "Total Multi access links";
+              type uint32;
+            }
+            leaf overloaded {
+              description
+                "ISIS Node overload set";
+              type uint32;
+            }
+            list link {
+              description
+                "MPLS TE Database Link detailed Operational Information";
+              key "local-node-id remote-node-id local-router-id remote-router-id local-ip remote-ip";
+              leaf igp-isis {
+                description
+                  "ISIS is the IGP used for TE";
+                type boolean;
+              }
+              leaf igp-ospf {
+                description
+                  "OSPF is the IGP used for TE";
+                type boolean;
+              }
+              leaf area-id {
+                description
+                  "OSPF area id";
+                type inet:ipv4-address;
+              }
+              leaf level-id {
+                description
+                  "ISIS Level Id";
+                type uint32;
+              }
+              leaf local-node-id {
+                description
+                  "ISIS Local Node Id";
+                type string;
+              }
+              leaf remote-node-id {
+                description
+                  "ISIS remote Node Id";
+                type string;
+              }
+              leaf local-router-id {
+                description
+                  "Local IPv4 router Id";
+                type inet:ipv4-address;
+              }
+              leaf remote-router-id {
+                description
+                  "Remote IPv4 router Id";
+                type inet:ipv4-address;
+              }
+              leaf local-host-name {
+                description
+                  "Local node host name";
+                type string;
+              }
+              leaf remote-host-name {
+                description
+                  "Remote node host name";
+                type string;
+              }
+              leaf router {
+                description
+                  "Router Node link";
+                type boolean;
+              }
+              leaf network {
+                description
+                  "Network Node Link";
+                type boolean;
+              }
+              leaf p2p {
+                description
+                  "Point to Point Link";
+                type boolean;
+              }
+              leaf p2mp {
+                description
+                  "Multi access Link";
+                type boolean;
+              }
+              leaf local-ip {
+                description
+                  "Local IPv4 link address";
+                type inet:ipv4-address;
+              }
+              leaf remote-ip {
+                description
+                  "Remote IPv4 link address";
+                type inet:ipv4-address;
+              }
+              leaf gen-code {
+                description
+                  "TE update generation code";
+                type uint32;
+              }
+              leaf lsa-id {
+                description
+                  "OSPF LSA id";
+                type uint32;
+              }
+              leaf pending-delete {
+                description
+                  "Link is pending to be deleted";
+                type uint32;
+              }
+              leaf igp-metric {
+                description
+                  "Link IGP Metric";
+                type uint32;
+              }
+              leaf te-metric {
+                description
+                  "Link TE Metric";
+                type uint32;
+              }
+              leaf admin-group {
+                description
+                  "Link Admin group";
+                type uint32;
+              }
+              leaf max-bandwidth {
+                description
+                  "Link maximum Bandwidth";
+                type uint32;
+              }
+              leaf max-reservable-bandwidth {
+                description
+                  "Maximum reservable Bandwidth";
+                type uint32;
+              }
+              leaf unreserved-priority-0-bandwidth {
+                description
+                  "Priority level-0 unreserved bandwidth";
+                type uint32;
+              }
+              leaf unreserved-priority-1-bandwidth {
+                description
+                  "Priority level-1 unreserved bandwidth";
+                type uint32;
+              }
+              leaf unreserved-priority-2-bandwidth {
+                description
+                  "Priority level-2 unreserved bandwidth";
+                type uint32;
+              }
+              leaf unreserved-priority-3-bandwidth {
+                description
+                  "Priority level-3 unreserved bandwidth";
+                type uint32;
+              }
+              leaf unreserved-priority-4-bandwidth {
+                description
+                  "Priority level-4 unreserved bandwidth";
+                type uint32;
+              }
+              leaf unreserved-priority-5-bandwidth {
+                description
+                  "Priority level-5 unreserved bandwidth";
+                type uint32;
+              }
+              leaf unreserved-priority-6-bandwidth {
+                description
+                  "Priority level-6 unreserved bandwidth";
+                type uint32;
+              }
+              leaf unreserved-priority-7-bandwidth {
+                description
+                  "Priority level-7 unreserved bandwidth";
+                type uint32;
+              }
+              list srlg {
+                key "name";
+                uses group-te-database-srlg;
+              }
+            }
+            list srlg {
+              key "name";
+              uses group-te-database-srlg;
+            }
+          }
+        }
+      }
+      list router-id-map {
+        description
+          "MPLS TE Router Id mapping brief Operational Information";
+        key "ip-address";
+        leaf ip-address {
+          description
+            "IP Address";
+          type inet:ipv4-address;
+        }
+        leaf router-id {
+          description
+            "Router Id";
+          type inet:ipv4-address;
+        }
+        leaf resolved {
+          description
+            "Resolved status";
+          type boolean;
+        }
+        leaf igp-isis {
+          description
+            "Resolved by ISIS";
+          type boolean;
+        }
+        leaf igp-ospf {
+          description
+            "Resolved by OSPF";
+          type boolean;
+        }
+        leaf isis-level {
+          description
+            "Resolved ISIS Level";
+          type uint32;
+        }
+        leaf ospf-area {
+          description
+            "Resolved OSPF area id";
+          type inet:ipv4-address;
+        }
+        leaf origin-ted {
+          description
+            "IP origined from TED";
+          type boolean;
+        }
+        leaf origin-path {
+          description
+            "IP origined from Path hop";
+          type uint32;
+        }
+        leaf origin-lsp {
+          description
+            "IP origined from LSP to address";
+          type uint32;
+        }
+        leaf origin-other {
+          description
+            "IP origined from other sources";
+          type boolean;
+        }
+      }
+    }
+    container autobw-threshold-table-summary {
+      description
+        "MPLS Auto Bandwidth Threshold TableSummary";
+      leaf total-number-of-autobw-threshold-table-entries {
+        description
+          "Number of Auto bandwidth Threshold Table Entries";
+        type uint32;
+      }
+    }
+    container statistics-oam {
+      description
+        "OAM packet statistics";
+      leaf usr-ping-count {
+        description
+          "Count of user initiated ping requests";
+        type uint32;
+      }
+      leaf usr-traceroute-count {
+        description
+          "Count of user initiated traceroute requests";
+        type uint32;
+      }
+      leaf echo-req-sent-count {
+        description
+          "Count of MPLS Echo requests sent";
+        type uint32;
+      }
+      leaf echo-req-received-count {
+        description
+          "Count of MPLS Echo requests received";
+        type uint32;
+      }
+      leaf echo-req-timeout-count {
+        description
+          "Count of MPLS Echo requests timedout";
+        type uint32;
+      }
+      leaf echo-resp-sent-count {
+        description
+          "Count of MPLS Echo responses sent";
+        type uint32;
+      }
+      leaf echo-resp-received-count {
+        description
+          "Count of MPLS Echo responses received";
+        type uint32;
+      }
+      list return-codes {
+        description
+          "OAM packet statistics return code";
+        key "number";
+        leaf name {
+          description
+            "code name";
+          type string;
+        }
+        leaf number {
+          description
+            "code number";
+          type uint32;
+        }
+        leaf tx-count {
+          description
+            "Count of TX";
+          type uint32;
+        }
+        leaf rx-count {
+          description
+            "Count of RX";
+          type uint32;
+        }
+      }
+    }
+    container bfd {
+      description
+        "MPLS BFD";
+      leaf admin-status {
+        description
+          "MPLS BFD Admin status";
+        type uint8;
+      }
+      leaf min-tx-interval {
+        description
+          "MPLS BFD Minimum Transmit interval in msecs";
+        type uint32;
+      }
+      leaf min-rx-interval {
+        description
+          "MPLS BFD Minimum Receive interval in msecs";
+        type uint32;
+      }
+      leaf detection-time-multiplier {
+        description
+          "MPLS BFD detection Multiplier";
+        type uint8;
+      }
+    }
+    list interface {
+      description
+        "MPLS interface information";
+      key "interface-name";
+      leaf interface-index {
+        description
+          "Interface index";
+        type uint32;
+      }
+      leaf interface-name {
+        description
+          "Interface name";
+        type string;
+      }
+      leaf admin-status {
+        description
+          "Admin status";
+        type boolean;
+      }
+      leaf oper-status {
+        description
+          "Operational status";
+        type boolean;
+      }
+      leaf mtu {
+        description
+          "Interface MTU";
+        type uint32;
+      }
+      leaf bypass-lsp-count {
+        description
+          "Bypass LSP count";
+        type uint32;
+      }
+      leaf max-lsp-priority-level {
+        description
+          "Maximum LSP priority level";
+        type uint32;
+      }
+      leaf is-ldp-enabled {
+        description
+          "Is LDP enabled on this interface";
+        type boolean;
+      }
+      leaf ldp-tunnel-count {
+        description
+          "LDP tunnels starting through this interface";
+        type uint32;
+      }
+      leaf ldp-transit-tunnel-count {
+        description
+          "LDP tunnels tunnels transiting through this interface";
+        type uint32;
+      }
+      leaf is-gre-port {
+        description
+          "Is this a GRE tunnel";
+        type boolean;
+      }
+      leaf admin-group {
+        description
+          "Admin group";
+        type uint32;
+      }
+      leaf admin-group-max {
+        description
+          "Maximum admin group";
+        type uint8;
+      }
+      leaf admin-group-min {
+        description
+          "Minimum admin group";
+        type uint8;
+      }
+      leaf te-metric {
+        description
+          "TE metric (IGP default used if not set)";
+        type uint32;
+      }
+      leaf max-bandwidth {
+        description
+          "Maximum bandwidth";
+        type uint32;
+      }
+      leaf max-resv-bandwidth {
+        description
+          "Maximum reservable bandwidth";
+        type uint32;
+      }
+      leaf max-resv-bandwidth-percentage {
+        description
+          "Max reservable bandwidth percentage";
+        type uint32;
+      }
+      leaf-list resv-bandwidth {
+        description
+          "Reservable bandwidth on different priority levels";
+        type uint32;
+      }
+      leaf-list advert-unreserved-bandwidth {
+        description
+          "Advertised unreserved bandwidth on different priority levels";
+        type uint32;
+      }
+      leaf-list under-provisioned-bandwidth {
+        description
+          "Under provisioned bandwidth (subject to soft preemption) on different priority levels";
+        type uint32;
+      }
+    }
+    list path {
+      description
+        "MPLS Path";
+      key "path-name";
+      leaf path-name {
+        description
+          "Path name";
+        type string;
+      }
+      leaf usage-count {
+        description
+          "Path usage count";
+        type uint32;
+      }
+      list path-hops {
+        description
+          "Path hop entry";
+        key "hop-address";
+        leaf hop-address {
+          description
+            "Path hop address";
+          type inet:ipv4-address;
+        }
+        leaf hop-type {
+          description
+            "Path hop type";
+          type uint8;
+        }
+      }
+      list path-lsps {
+        description
+          "Path lsp entry";
+        key "lsp-name";
+        leaf lsp-name {
+          description
+            "LSP name";
+          type string;
+        }
+        leaf lsp-type {
+          description
+            "LSP Type using the path";
+          type uint32;
+        }
+      }
+    }
+    list auto-bandwidth-template {
+      description
+        "MPLS Auto Bandwidth Template Information";
+      key "name";
+      leaf name {
+        description
+          "Auto Bandwidth Template Name";
+        type string;
+      }
+      leaf adjustment-interval {
+        description
+          "Periodic Interval at which adjustment is done ";
+        type uint32;
+      }
+      leaf adjustment-threshold {
+        description
+          "mpls_adjustmentThreshold";
+        type uint32;
+      }
+      leaf maximum-bandwidth {
+        description
+          "Maximum bandwidth value";
+        type uint32;
+      }
+      leaf minimum-bandwidth {
+        description
+          "Minimum bandiwdth value";
+        type uint32;
+      }
+      leaf overflow-limit {
+        description
+          "Minimum number of overflow to trigger adjustment";
+        type uint32;
+      }
+      leaf underflow-limit {
+        description
+          "Minimum number of underflow to triggere adjustment";
+        type uint32;
+      }
+      leaf mode {
+        description
+          "Monitor only or Monitor and Signal";
+        type boolean;
+      }
+      leaf sample-recording {
+        description
+          "Enable logging history of rate samples";
+        type boolean;
+      }
+      leaf associated-paths-count {
+        description
+          "Number of associated paths";
+        type uint32;
+      }
+      list associated-paths {
+        description
+          "MPLS Auto Bandwidth Template Associated Paths";
+        key "lsp-name";
+        leaf lsp-name {
+          description
+            "Name of the LSP";
+          type string;
+        }
+        leaf path-name {
+          description
+            "Name of the Path";
+          type string;
+        }
+        leaf is-active {
+          description
+            "Is the path active";
+          type boolean;
+        }
+      }
+    }
+    list autobw-threshold-table-entry {
+      description
+        "MPLS Auto Bandwidth Threshold Table Information";
+      key "bandwidth";
+      leaf bandwidth {
+        description
+          "Bandwidth Ceiling for a threshold ";
+        type uint32;
+      }
+      leaf threshold {
+        description
+          "Threshold in absolute bandwdith for the ceiling";
+        type uint32;
+      }
+      leaf is-percentage-threshold {
+        description
+          "Specifies if the threshold for MAX bandwidth is in percentage";
+        type boolean;
+      }
+    }
+    list lsp {
+      description
+        "MPLS LSP operational information";
+      key "lsp-name";
+      leaf lsp-name {
+        description
+          "LSP Name";
+        type string;
+      }
+      leaf lsp-type {
+        description
+          "LSP Type";
+        type lsp-type;
+      }
+      leaf bypass-lsp-type {
+        description
+          "Bypass LSP Type";
+        type bypass-lsp-type;
+      }
+      leaf interface {
+        description
+          "Bypass LSP interface";
+        type string;
+      }
+      leaf-list history {
+        description
+          "MPLS LSP history Information";
+        type string;
+      }
+      leaf-list autobw-history {
+        description
+          "Auto bandwidth history Information";
+        type string;
+      }
+      container basic {
+        description
+          "MPLS basic LSP operational information";
+        leaf tunnel-vif-index {
+          description
+            "lsp tunnel vif index";
+          type uint32;
+        }
+        leaf lsp-type-bypass {
+          description
+            "lsp_type_bypass";
+          type boolean;
+        }
+        leaf lsp-type-dynamic {
+          description
+            "lsp_type_dynamic";
+          type boolean;
+        }
+        leaf from-address-configured {
+          description
+            "lsp_from_address_configured";
+          type boolean;
+        }
+        leaf from-address {
+          description
+            "lsp_from_address";
+          type inet:ipv4-address;
+        }
+        leaf to-address {
+          description
+            "lsp_to_address";
+          type inet:ipv4-address;
+        }
+        leaf admin-up {
+          description
+            "lsp_admin_up";
+          type boolean;
+        }
+        leaf operational-status {
+          description
+            "LSP Operational status";
+          type lsp-operational-status;
+        }
+        leaf lsp-is-active {
+          description
+            "lsp_is_active";
+          type boolean;
+        }
+        leaf lsp-has-primary-path {
+          description
+            "lsp_has_primary_path";
+          type boolean;
+        }
+        leaf path-name {
+          description
+            "lsp_path_name";
+          type string;
+        }
+        leaf out-label {
+          description
+            "lsp_out_label";
+          type uint32;
+        }
+        leaf out-interface-name {
+          description
+            "lsp_out_interface_name";
+          type string;
+        }
+        leaf primary-up {
+          description
+            "lsp_primary_up";
+          type boolean;
+        }
+        leaf primary-active {
+          description
+            "lsp_primary_active";
+          type boolean;
+        }
+        leaf lsp-has-secondary {
+          description
+            "lsp_has_secondary";
+          type boolean;
+        }
+        leaf secondary-up {
+          description
+            "lsp_secondary_up";
+          type boolean;
+        }
+        leaf secondary-active {
+          description
+            "lsp_secondary_active";
+          type boolean;
+        }
+        leaf lsp-has-selected-secondary {
+          description
+            "lsp_has_selected_secondary";
+          type boolean;
+        }
+        leaf selected-secondary-up {
+          description
+            "lsp_selected_secondary_up";
+          type boolean;
+        }
+        leaf selected-secondary-active {
+          description
+            "lsp_selected_secondary_active";
+          type boolean;
+        }
+        leaf primary-is-selected {
+          description
+            "lsp_primary_is_selected";
+          type boolean;
+        }
+        leaf lsp-has-frr {
+          description
+            "lsp_has_frr";
+          type boolean;
+        }
+        leaf frr-up {
+          description
+            "lsp_frr_up";
+          type boolean;
+        }
+        leaf frr-active {
+          description
+            "lsp_frr_active";
+          type boolean;
+        }
+        leaf up-down-count {
+          description
+            "lsp_up_down_count";
+          type uint32;
+        }
+        leaf retry-count {
+          description
+            "lsp_retry_count";
+          type uint32;
+        }
+        leaf down-reason {
+          description
+            "lsp_down_reason";
+          type string;
+        }
+      }
+      container forwarding {
+        description
+          "MPLS LSP forwarding information";
+        leaf tunnel-vif-index {
+          description
+            "lsp tunnel vif index";
+          type uint32;
+        }
+        leaf lsp-id {
+          description
+            "lsp_forwarding_lsp_id";
+          type uint32;
+        }
+        leaf forwarding-up {
+          description
+            "lsp_forwarding_up";
+          type boolean;
+        }
+        leaf primary-active {
+          description
+            "lsp_forwarding_primary_active";
+          type boolean;
+        }
+        leaf primary-up {
+          description
+            "lsp_forwarding_primary_up";
+          type boolean;
+        }
+        leaf secondary-active {
+          description
+            "lsp_forwarding_secondary_active";
+          type boolean;
+        }
+        leaf secondary-up {
+          description
+            "lsp_forwarding_secondary_up";
+          type boolean;
+        }
+        leaf selected-secondary-active {
+          description
+            "lsp_forwarding_selected_secondary_active";
+          type boolean;
+        }
+        leaf selected-secondary-up {
+          description
+            "lsp_forwarding_selected_secondary_up";
+          type boolean;
+        }
+        leaf frr-active {
+          description
+            "lsp_forwarding_frr_active";
+          type boolean;
+        }
+        leaf frr-up {
+          description
+            "lsp_forwarding_frr_up";
+          type boolean;
+        }
+        leaf instance-id {
+          description
+            "lsp_forwarding_instance_id";
+          type uint32;
+        }
+        leaf out-port-id {
+          description
+            "lsp_forwarding_out_port_id";
+          type uint32;
+        }
+        leaf out-port-name {
+          description
+            "lsp_forwarding_out_port_name";
+          type string;
+        }
+        leaf out-label {
+          description
+            "lsp_forwarding_out_label";
+          type uint32;
+        }
+      }
+      container frr {
+        description
+          "MPLS LSP FRR information";
+        leaf configured {
+          description
+            "lsp_frr_configured";
+          type boolean;
+        }
+        leaf one-to-one {
+          description
+            "lsp_frr_one_to_one";
+          type boolean;
+        }
+        leaf one-to-many {
+          description
+            "lsp_frr_one_to_many";
+          type boolean;
+        }
+        leaf protection-type {
+          description
+            "FRR desired protection type";
+          type lsp-frr-protection-type;
+        }
+        leaf frr-up {
+          description
+            "lsp_frr_up";
+          type boolean;
+        }
+        leaf active {
+          description
+            "lsp_frr_active";
+          type boolean;
+        }
+        leaf priority-configured {
+          description
+            "lsp_frr_priority_configured";
+          type boolean;
+        }
+        leaf setup-priority {
+          description
+            "lsp_frr_setup_priority";
+          type uint8;
+        }
+        leaf holding-priority {
+          description
+            "lsp_frr_holding_priority";
+          type uint8;
+        }
+        leaf hop-limit-configured {
+          description
+            "lsp_frr_hop_limit_configured";
+          type boolean;
+        }
+        leaf hop-limit {
+          description
+            "lsp_frr_hop_limit";
+          type uint8;
+        }
+        leaf bandwidth-inherited {
+          description
+            "Frr bandwidth inherited";
+          type boolean;
+        }
+        leaf bandwidth-configured {
+          description
+            "lsp_frr_bandwidth_configured";
+          type boolean;
+        }
+        leaf bandwidth {
+          description
+            "lsp_frr_bandwidth";
+          type uint32;
+        }
+        leaf down-reason {
+          description
+            "lsp_frr_down_reason";
+          type string;
+        }
+        leaf computation-mode {
+          description
+            "lsp frr computation mode";
+          type lsp-cspf-computation-mode;
+        }
+        leaf group-computation-mode-default {
+          description
+            "lsp_frr_group_computation_mode_default";
+          type boolean;
+        }
+        leaf group-computation-mode-add-penalty {
+          description
+            "lsp_frr_group_computation_mode_add_penalty";
+          type boolean;
+        }
+        leaf group-computation-mode-exclude-groups {
+          description
+            "lsp_frr_group_computation_mode_exclude_groups";
+          type boolean;
+        }
+        leaf group-computation-mode-high-cost {
+          description
+            "lsp_frr_group_computation_mode_high_cost";
+          type boolean;
+        }
+        leaf out-port-id {
+          description
+            "lsp_frr_out_port_id";
+          type uint32;
+        }
+        leaf out-port-name {
+          description
+            "lsp_frr_out_port_name";
+          type string;
+        }
+        leaf out-label {
+          description
+            "lsp_frr_out_label";
+          type uint32;
+        }
+        leaf path-cost {
+          description
+            "lsp_frr_path_cost";
+          type uint32;
+        }
+        leaf bypass-name {
+          description
+            "lsp_frr_bypass_name";
+          type string;
+        }
+        leaf has-secondary-swithover-time {
+          description
+            "lsp_frr_has_secondary_swithover_time";
+          type uint32;
+        }
+        leaf secondary-swithover-time {
+          description
+            "lsp_frr_secondary_swithover_time";
+          type uint32;
+        }
+        leaf hold-time {
+          description
+            "lsp_frr_hold_time";
+          type uint32;
+        }
+        leaf global-revertive {
+          description
+            "lsp_frr_global_revertive";
+          type uint32;
+        }
+        leaf revertive-timer-expired {
+          description
+            "lsp_frr_revertive_timer_expired";
+          type uint32;
+        }
+        leaf fwdg-state-primary-up {
+          description
+            "lsp_frr_fwdg_state_primary_up";
+          type boolean;
+        }
+        leaf fwdg-state-primary-active {
+          description
+            "lsp_frr_fwdg_state_primary_active";
+          type boolean;
+        }
+        leaf fwdg-state-primary-down {
+          description
+            "lsp_frr_fwdg_state_primary_down";
+          type boolean;
+        }
+        leaf fwdg-state-secondary-up {
+          description
+            "lsp_frr_fwdg_state_secondary_up";
+          type boolean;
+        }
+        leaf fwdg-state-secondary-active {
+          description
+            "lsp_frr_fwdg_state_secondary_active";
+          type boolean;
+        }
+        leaf fwdg-state-secondary-down {
+          description
+            "lsp_frr_fwdg_state_secondary_down";
+          type boolean;
+        }
+        leaf fwdg-state-detour-up {
+          description
+            "lsp_frr_fwdg_state_detour_up";
+          type boolean;
+        }
+        leaf fwdg-state-detour-active {
+          description
+            "lsp_frr_fwdg_state_detour_active";
+          type boolean;
+        }
+        leaf fwdg-state-detour-down {
+          description
+            "lsp_frr_fwdg_state_detour_active";
+          type boolean;
+        }
+        leaf admin-group-configured {
+          description
+            "lsp_frr_admin_group_configured";
+          type boolean;
+        }
+        list admin-group-lists {
+          key "list-type";
+          uses group-lsp-admin-group-list;
+        }
+      }
+      container backup {
+        description
+          "MPLS LSP detail backup information";
+        leaf backup-present {
+          description
+            "lsp_backup_present";
+          type boolean;
+        }
+        leaf backup-count {
+          description
+            "lsp_backup_count";
+          type uint32;
+        }
+        leaf backup-ingress-count {
+          description
+            "lsp_backup_ingress_count";
+          type uint32;
+        }
+        leaf backup-ingress-active-count {
+          description
+            "lsp_backup_ingress_active_count";
+          type uint32;
+        }
+        leaf backup-transit-count {
+          description
+            "lsp_backup_transit_count";
+          type uint32;
+        }
+        leaf backup-transit-active-count {
+          description
+            "lsp_backup_transit_active_count";
+          type uint32;
+        }
+        list backup-ingress {
+          description
+            "MPLS LSP ingress backup information";
+          key "backup-from-address backup-to-address backup-name";
+          leaf backup-from-address {
+            description
+              "lsp_backup_from_address";
+            type inet:ipv4-address;
+          }
+          leaf backup-to-address {
+            description
+              "lsp_backup_to_address";
+            type inet:ipv4-address;
+          }
+          leaf backup-name {
+            description
+              "lsp_backup_name";
+            type string;
+          }
+          leaf backup-is-active {
+            description
+              "lsp_backup_is_active";
+            type boolean;
+          }
+        }
+        list backup-transit {
+          description
+            "MPLS LSP transit backup information";
+          key "backup-from-address backup-to-address backup-name";
+          leaf backup-from-address {
+            description
+              "lsp_backup_from_address";
+            type inet:ipv4-address;
+          }
+          leaf backup-to-address {
+            description
+              "lsp_backup_to_address";
+            type inet:ipv4-address;
+          }
+          leaf backup-name {
+            description
+              "lsp_backup_name";
+            type string;
+          }
+          leaf backup-is-active {
+            description
+              "lsp_backup_is_active";
+            type boolean;
+          }
+        }
+      }
+      container auto-bandwidth {
+        description
+          "Auto Bandwidth Running Information";
+        leaf adjustment-interval {
+          description
+            "Periodic Interval at which adjustment is done ";
+          type uint32;
+        }
+        leaf adjustment-threshold {
+          description
+            "mpls_adjustmentThreshold";
+          type uint32;
+        }
+        leaf maximum-bandwidth {
+          description
+            "Maximum bandwidth value";
+          type uint32;
+        }
+        leaf minimum-bandwidth {
+          description
+            "Minimum bandiwdth value";
+          type uint32;
+        }
+        leaf overflow-limit {
+          description
+            "Minimum number of overflow to trigger adjustment";
+          type uint32;
+        }
+        leaf underflow-limit {
+          description
+            "Minimum number of underflow to trigger adjustment";
+          type uint32;
+        }
+        leaf mode {
+          description
+            "Monitor only or Monitor and Signal";
+          type autobw-mode;
+        }
+        leaf sample-recording {
+          description
+            "Enable logging history of rate samples";
+          type boolean;
+        }
+        leaf is-adjustment-interval-inherited {
+          description
+            "Is parameter inherited from template";
+          type boolean;
+        }
+        leaf is-adjustment-threshold-inherited {
+          description
+            "Is parameter inherited from template";
+          type boolean;
+        }
+        leaf is-maximum-bandwidth-inherited {
+          description
+            "Is parameter inherited from template";
+          type boolean;
+        }
+        leaf is-minimum-bandwidth-inherited {
+          description
+            "Is parameter inherited from template";
+          type boolean;
+        }
+        leaf is-overflow-limit-inherited {
+          description
+            "Is parameter inherited from template";
+          type boolean;
+        }
+        leaf is-underflow-limit-inherited {
+          description
+            "Is parameter inherited from template";
+          type boolean;
+        }
+        leaf is-mode-inherited {
+          description
+            "Is parameter inherited from template";
+          type boolean;
+        }
+        leaf is-sample-recording-inherited {
+          description
+            "EIs parameter inherited from template";
+          type boolean;
+        }
+        leaf working-status {
+          description
+            "Auto Bandwidth working status";
+          type uint8;
+        }
+        leaf num-samples-collected {
+          description
+            "Number of samples collected";
+          type uint32;
+        }
+        leaf last-sample-traffic-rate {
+          description
+            "Last traffic rate sample";
+          type uint32;
+        }
+        leaf maximum-of-samples-collected {
+          description
+            "Maximum sample in the adjustment interval";
+          type uint32;
+        }
+        leaf maximum-of-underflow-samples {
+          description
+            "Maximum among the underflow samples";
+          type uint32;
+        }
+        leaf overflow-count {
+          description
+            "Number of consecutive samples overflown";
+          type uint32;
+        }
+        leaf underflow-count {
+          description
+            "Number of consecutive samples underflown";
+          type uint32;
+        }
+        leaf time-to-adjustment {
+          description
+            "Remaining seconds for adjustment-interval expiry";
+          type uint32;
+        }
+        leaf adjustment-status {
+          description
+            "Last adjustment status";
+          type uint8;
+        }
+        leaf previous-bandwidth {
+          description
+            "Previous LSP Bandwidth";
+          type uint32;
+        }
+        leaf new-bandwidth {
+          description
+            "Current LSP Bandwidth";
+          type uint32;
+        }
+        leaf adjustment-reason {
+          description
+            "Reason for adjustment";
+          type uint8;
+        }
+        leaf time-of-last-adjustment {
+          description
+            "Time of last adjustment";
+          type string;
+        }
+      }
+      list instances {
+        description
+          "MPLS LSP instancses information";
+        key "instance-id lsp-id";
+        leaf instance-id {
+          description
+            "lsp_instance_id";
+          type uint32;
+        }
+        leaf lsp-id {
+          description
+            "lsp tunnel index";
+          type uint32;
+        }
+        leaf current-instance {
+          description
+            "lsp_current_instance";
+          type boolean;
+        }
+        leaf new-instance {
+          description
+            "lsp_new_instance";
+          type boolean;
+        }
+        leaf old-instance {
+          description
+            "lsp_old_instance";
+          type boolean;
+        }
+        leaf is-primary {
+          description
+            "lsp_is_primary";
+          type boolean;
+        }
+        leaf is-current-secondary {
+          description
+            "lsp_is_current_secondary";
+          type boolean;
+        }
+        leaf is-selected-secondary {
+          description
+            "lsp_is_selected_secondary";
+          type boolean;
+        }
+        leaf instance-admin-up {
+          description
+            "lsp_instance_admin_up";
+          type boolean;
+        }
+        leaf instance-is-up {
+          description
+            "lsp_instance_is_up";
+          type boolean;
+        }
+        leaf instance-is-active {
+          description
+            "lsp_instance_is_active";
+          type boolean;
+        }
+        leaf is-adaptive {
+          description
+            "lsp_is_adaptive";
+          type boolean;
+        }
+        leaf is-bypass {
+          description
+            "lsp_is_bypass";
+          type boolean;
+        }
+        leaf is-dynamic-bypass {
+          description
+            "lsp_is_dynamic_bypass";
+          type boolean;
+        }
+        leaf config-admin-up {
+          description
+            "lsp_config_admin_up";
+          type boolean;
+        }
+        leaf config-from-address-configured {
+          description
+            "lsp_config_from_address_configured";
+          type boolean;
+        }
+        leaf config-from-address {
+          description
+            "lsp_config_from_address";
+          type inet:ipv4-address;
+        }
+        leaf config-to-address {
+          description
+            "lsp_config_to_address";
+          type inet:ipv4-address;
+        }
+        leaf config-type-bypass {
+          description
+            "lsp_config_type_bypass";
+          type boolean;
+        }
+        leaf config-type-dynamic {
+          description
+            "lsp_config_type_dynamic";
+          type boolean;
+        }
+        leaf config-adaptive {
+          description
+            "lsp_config_adaptive";
+          type boolean;
+        }
+        leaf config-ospf-area {
+          description
+            "lsp_config_ospf_area";
+          type inet:ipv4-address;
+        }
+        leaf config-isis-level {
+          description
+            "lsp_config_isis_level";
+          type uint32;
+        }
+        leaf config-number-of-retries-configured {
+          description
+            "lsp_config_number_of_retries_configured";
+          type boolean;
+        }
+        leaf config-number-of-retries {
+          description
+            "lsp_config_number_of_retries";
+          type uint32;
+        }
+        leaf config-path-select-mode {
+          description
+            "LSP path selection mode configured";
+          type lsp-path-selection-mode;
+        }
+        leaf config-path-selected-path {
+          description
+            "Selected LSP path";
+          type lsp-selected-path;
+        }
+        leaf config-path-selected-secondary-name {
+          description
+            "LSP name of selected secondary path";
+          type string;
+        }
+        leaf config-revert-time-configured {
+          description
+            "lsp_config_revert_time_configured";
+          type boolean;
+        }
+        leaf config-revert-time {
+          description
+            "lsp_config_revert_time";
+          type uint32;
+        }
+        leaf config-retry-count-configured {
+          description
+            "lsp_config_retry_count_configured";
+          type boolean;
+        }
+        leaf config-retry-count {
+          description
+            "lsp_config_retry_count";
+          type uint32;
+        }
+        leaf config-enable-ldp-tunnelling {
+          description
+            "lsp_config_enable_ldp_tunnelling";
+          type boolean;
+        }
+        leaf config-shortcut-ospf {
+          description
+            "lsp_config_shortcut_ospf";
+          type boolean;
+        }
+        leaf config-shortcut-area-configured {
+          description
+            "lsp_config_shortcut_area_configured";
+          type boolean;
+        }
+        leaf config-shortcut-area {
+          description
+            "lsp_config_shortcut_area";
+          type uint32;
+        }
+        leaf config-notify-ospf {
+          description
+            "lsp_config_notify_ospf";
+          type boolean;
+        }
+        leaf config-shortcut-isis {
+          description
+            "lsp_config_shortcut_isis";
+          type boolean;
+        }
+        leaf config-isis-shortcut-level-configured {
+          description
+            "lsp_config_isis_shortcut_level_configured";
+          type boolean;
+        }
+        leaf config-isis-shortcut-level {
+          description
+            "lsp_config_isis_shortcut_level";
+          type uint32;
+        }
+        leaf config-notify-isis {
+          description
+            "lsp_config_notify_isis";
+          type boolean;
+        }
+        leaf config-metric-configured {
+          description
+            "lsp_config_metric_configured";
+          type boolean;
+        }
+        leaf config-metric {
+          description
+            "lsp_config_metric";
+          type uint32;
+        }
+        leaf config-ospf-ignore-metric {
+          description
+            "lsp_config_ospf_ignore_metric";
+          type boolean;
+        }
+        leaf config-ospf-relative-metric {
+          description
+            "lsp_config_ospf_relative_metric";
+          type uint32;
+        }
+        leaf config-ospf-announce-metric {
+          description
+            "lsp_config_ospf_announce_metric";
+          type boolean;
+        }
+        leaf config-ospf-aaf {
+          description
+            "lsp_config_ospf_aaf";
+          type uint32;
+        }
+        leaf config-isis-ignore-metric {
+          description
+            "lsp_config_isis_ignore_metric";
+          type boolean;
+        }
+        leaf config-isis-relative-metric {
+          description
+            "lsp_config_isis_relative_metric";
+          type uint32;
+        }
+        leaf config-isis-announce-configured {
+          description
+            "lsp_config_isis_announce_configured";
+          type boolean;
+        }
+        leaf config-isis-announce-metric {
+          description
+            "lsp_config_isis_announce_metric";
+          type uint32;
+        }
+        leaf config-path-configured {
+          description
+            "lsp_config_path_configured";
+          type boolean;
+        }
+        leaf config-path {
+          description
+            "lsp_config_path";
+          type string;
+        }
+        leaf config-reoptimize-timer-configured {
+          description
+            "lsp_config_reoptimize_timer_configured";
+          type boolean;
+        }
+        leaf config-reoptimize-time {
+          description
+            "lsp_config_reoptimize_time";
+          type uint32;
+        }
+        leaf config-tspec-mtu-configured {
+          description
+            "lsp_config_tspec_mtu_configured";
+          type boolean;
+        }
+        leaf config-tspec-mtu {
+          description
+            "lsp_config_tspec_mtu";
+          type uint32;
+        }
+        leaf config-cos-configured {
+          description
+            "lsp_config_cos_configured";
+          type boolean;
+        }
+        leaf config-cos {
+          description
+            "lsp_config_cos";
+          type uint8;
+        }
+        leaf config-mtu-configured {
+          description
+            "lsp_config_mtu_configured";
+          type boolean;
+        }
+        leaf config-mtu {
+          description
+            "lsp_config_mtu";
+          type uint32;
+        }
+        leaf config-tie-breaking-configured {
+          description
+            "lsp_config_tie_breaking_configured";
+          type boolean;
+        }
+        leaf config-tie-break-random {
+          description
+            "lsp_config_tie_break_random";
+          type boolean;
+        }
+        leaf config-tie-break-least-fill {
+          description
+            "lsp_config_tie_break_least_fill";
+          type boolean;
+        }
+        leaf config-tie-break-most-fill {
+          description
+            "lsp_config_tie_break_most_fill";
+          type boolean;
+        }
+        leaf config-cspf-disabled {
+          description
+            "lsp_config_cspf_disabled";
+          type boolean;
+        }
+        leaf config-rro-disabled {
+          description
+            "lsp_config_rro_disabled";
+          type boolean;
+        }
+        leaf config-hot-standby {
+          description
+            "lsp_config_hot_standby";
+          type boolean;
+        }
+        leaf config-pinned {
+          description
+            "lsp_config_pinned";
+          type boolean;
+        }
+        leaf config-persistenct {
+          description
+            "lsp_config_persistenct";
+          type boolean;
+        }
+        leaf config-frr-global-revertive {
+          description
+            "lsp_config_frr_global_revertive";
+          type boolean;
+        }
+        leaf config-frr-hold-time {
+          description
+            "lsp_config_frr_hold_time";
+          type uint32;
+        }
+        leaf config-soft-prempt {
+          description
+            "lsp_config_soft_prempt";
+          type boolean;
+        }
+        leaf config-exclude-interface-change {
+          description
+            "lsp_config_exclude_interface_change";
+          type boolean;
+        }
+        leaf config-prority-configured {
+          description
+            "lsp_config_prority_configured";
+          type boolean;
+        }
+        leaf config-setup-prority {
+          description
+            "lsp_config_setup_prority";
+          type uint8;
+        }
+        leaf config-holding-prority {
+          description
+            "lsp_config_holding_prority";
+          type uint8;
+        }
+        leaf config-hop-limit-configured {
+          description
+            "lsp_config_hop_limit_configured";
+          type boolean;
+        }
+        leaf config-hop-limit {
+          description
+            "lsp_config_hop_limit";
+          type uint8;
+        }
+        leaf config-traffic-eng-rate-configured {
+          description
+            "lsp_config_traffic_eng_rate_configured";
+          type boolean;
+        }
+        leaf config-traffic-eng-mean-rate {
+          description
+            "lsp_config_traffic_eng_mean_rate";
+          type uint32;
+        }
+        leaf config-traffic-eng-max-rate {
+          description
+            "lsp_config_traffic_eng_max_rate";
+          type uint32;
+        }
+        leaf config-traffic-eng-max-burst {
+          description
+            "lsp_config_traffic_eng_max_burst";
+          type uint32;
+        }
+        leaf config-abw-configured {
+          description
+            "lsp_config_abw_configured";
+          type boolean;
+        }
+        leaf config-bfd-configured {
+          description
+            "lsp_config_bfd_configured";
+          type boolean;
+        }
+        leaf config-admin-group-configured {
+          description
+            "lsp_config_admin_group_configured";
+          type boolean;
+        }
+        leaf config-cspf-computation-mode {
+          description
+            "lsp configured cspf computation mode";
+          type lsp-cspf-computation-mode;
+        }
+        leaf path-computed-by-cspf {
+          description
+            "lsp_path_computed_by_cspf";
+          type boolean;
+        }
+        leaf path-computed-by-interface-constraint {
+          description
+            "lsp_path_computed_by_interface_constraint";
+          type boolean;
+        }
+        leaf cspf-computation-mode {
+          description
+            "lsp cspf computation mode";
+          type lsp-cspf-computation-mode;
+        }
+        leaf cspf-group-computation-mode-default {
+          description
+            "lsp_cspf_group_computation_mode_default";
+          type boolean;
+        }
+        leaf cspf-group-computation-mode-add-penalty {
+          description
+            "lsp_cspf_group_computation_mode_add_penalty";
+          type boolean;
+        }
+        leaf cspf-group-computation-mode-exclude-groups {
+          description
+            "lsp_cspf_group_computation_mode_exclude_groups";
+          type boolean;
+        }
+        leaf cspf-group-computation-mode-high-cost {
+          description
+            "lsp_cspf_group_computation_mode_high_cost";
+          type boolean;
+        }
+        leaf cspf-path-cost {
+          description
+            "lsp_cspf_path_cost";
+          type uint32;
+        }
+        leaf cspf-path-area {
+          description
+            "lsp_cspf_path_area";
+          type uint32;
+        }
+        leaf cspf-computation-error {
+          description
+            "lsp_cspf_computation_error";
+          type uint32;
+        }
+        leaf cspf-exclude-hops-present {
+          description
+            "lsp_cspf_exclude_hops_present";
+          type boolean;
+        }
+        leaf rsvp-session-present {
+          description
+            "lsp_rsvp_session_present";
+          type boolean;
+        }
+        leaf rsvp-session-state-up {
+          description
+            "lsp_rsvp_session_state_up";
+          type boolean;
+        }
+        leaf rsvp-session-state {
+          description
+            "lsp_rsvp_session_state";
+          type uint8;
+        }
+        leaf rsvp-session-path-error-code {
+          description
+            "lsp_rsvp_session_path_error_code";
+          type uint32;
+        }
+        leaf rsvp-session-path-error-value {
+          description
+            "lsp_rsvp_session_path_error_value";
+          type uint32;
+        }
+        leaf rsvp-session-path-error-node-address {
+          description
+            "lsp_rsvp_session_path_error_node_address";
+          type inet:ipv4-address;
+        }
+        leaf rsvp-session-rro-hops-present {
+          description
+            "lsp_rsvp_session_rro_hops_present";
+          type boolean;
+        }
+        leaf config-exclude-interface-configured {
+          description
+            "lsp_config_exclude_interface_configured";
+          type boolean;
+        }
+        leaf maximum-bandwidth {
+          description
+            "lsp_maximum_bandwidth";
+          type uint32;
+        }
+        leaf unreserved-priority-0-bandwidth {
+          description
+            "lsp_unreserved_priority_0_bandwidth";
+          type uint32;
+        }
+        leaf unreserved-priority-1-bandwidth {
+          description
+            "lsp_unreserved_priority_1_bandwidth";
+          type uint32;
+        }
+        leaf unreserved-priority-2-bandwidth {
+          description
+            "lsp_unreserved_priority_2_bandwidth";
+          type uint32;
+        }
+        leaf unreserved-priority-3-bandwidth {
+          description
+            "lsp_unreserved_priority_3_bandwidth";
+          type uint32;
+        }
+        leaf unreserved-priority-4-bandwidth {
+          description
+            "lsp_unreserved_priority_4_bandwidth";
+          type uint32;
+        }
+        leaf unreserved-priority-5-bandwidth {
+          description
+            "lsp_unreserved_priority_5_bandwidth";
+          type uint32;
+        }
+        leaf unreserved-priority-6-bandwidth {
+          description
+            "lsp_unreserved_priority_6_bandwidth";
+          type uint32;
+        }
+        leaf unreserved-priority-7-bandwidth {
+          description
+            "lsp_unreserved_priority_7_bandwidth";
+          type uint32;
+        }
+        leaf config-frr-configured {
+          description
+            "lsp_config_frr_configured";
+          type boolean;
+        }
+        leaf config-frr-one-to-one {
+          description
+            "lsp_config_frr_one_to_one";
+          type boolean;
+        }
+        leaf config-frr-one-to-many {
+          description
+            "lsp_config_frr_one_to_many";
+          type boolean;
+        }
+        leaf config-frr-priority-configured {
+          description
+            "lsp_config_frr_priority_configured";
+          type boolean;
+        }
+        leaf config-frr-setup-priority {
+          description
+            "lsp_config_frr_setup_priority";
+          type uint8;
+        }
+        leaf config-frr-holding-priority {
+          description
+            "lsp_config_frr_holding_priority";
+          type uint8;
+        }
+        leaf config-frr-hop-limit-configured {
+          description
+            "lsp_config_frr_hop_limit_configured";
+          type boolean;
+        }
+        leaf config-frr-hop-limit {
+          description
+            "lsp_config_frr_hop_limit";
+          type uint8;
+        }
+        leaf config-frr-bandwidth-inherited {
+          description
+            "Frr bandwidth inherited";
+          type boolean;
+        }
+        leaf config-frr-bandwidth-configured {
+          description
+            "lsp_config_frr_bandwidth_configured";
+          type boolean;
+        }
+        leaf config-frr-bandwidth {
+          description
+            "lsp_config_frr_bandwidth";
+          type uint32;
+        }
+        leaf config-frr-admin-group-configured {
+          description
+            "lsp_config_frr_admin_group_configured";
+          type boolean;
+        }
+        leaf reoptimize-ignore-count {
+          description
+            "lsp_reoptimize_ignore_count";
+          type uint32;
+        }
+        leaf reoptimize-time-count {
+          description
+            "lsp_reoptimize_time_count";
+          type uint32;
+        }
+        leaf instance-frr-configured {
+          description
+            "lsp_instance_frr_configured";
+          type uint32;
+        }
+        leaf instance-frr-up {
+          description
+            "lsp_instance_frr_up";
+          type uint32;
+        }
+        leaf instance-frr-active {
+          description
+            "lsp_instance_frr_active";
+          type uint32;
+        }
+        leaf instance-out-port-id {
+          description
+            "lsp_instance_out_port_id";
+          type uint32;
+        }
+        leaf instance-out-port-name {
+          description
+            "lsp_instance_out_port_name";
+          type string;
+        }
+        leaf instance-out-label {
+          description
+            "lsp_instance_out_label";
+          type uint32;
+        }
+        leaf instance-revert-time {
+          description
+            "lsp_instance_revert_time";
+          type uint32;
+        }
+        leaf instance-retry-count {
+          description
+            "lsp_instance_retry_count";
+          type uint32;
+        }
+        leaf instance-up-down-count {
+          description
+            "lsp_instance_up_down_count";
+          type uint32;
+        }
+        leaf instance-metric {
+          description
+            "lsp_instance_metric";
+          type uint8;
+        }
+        leaf instance-down-reason {
+          description
+            "lsp_instance_down_reason";
+          type string;
+        }
+        leaf current-signaled-mean-rate {
+          description
+            "current_signaled_mean_rate";
+          type uint32;
+        }
+        leaf-list config-exclude-interfaces {
+          description
+            "lsp_config_exclude_interface";
+          type string;
+        }
+        list lsp-hops {
+          description
+            "MPLS LSP hop info";
+          key "hop-index hop-address";
+          leaf hop-index {
+            description
+              "HOP index";
+            type uint32;
+          }
+          leaf hop-address {
+            description
+              "lsp_hop_address";
+            type inet:ipv4-address;
+          }
+          leaf lsp-hop-type {
+            description
+              "If the hop is CSPF path hops, CSPF exclude hops or RSVP session RRO hops";
+            type lsp-hop-type;
+          }
+          leaf is-strict-hop {
+            description
+              "True if this a strict hop. False if it's a loose hop";
+            type boolean;
+          }
+          leaf hop-is-router-id {
+            description
+              "lsp_hop_is_router_id";
+            type boolean;
+          }
+          leaf protection {
+            description
+              "lsp_hop_has_protection";
+            type boolean;
+          }
+          leaf node-protection {
+            description
+              "lsp_hop_has_node_protection";
+            type boolean;
+          }
+          leaf bandwidth-protection {
+            description
+              "lsp_hop_has_bandwidth_protection";
+            type boolean;
+          }
+          leaf protection-in-use {
+            description
+              "lsp_hop_has_protection_in_use";
+            type boolean;
+          }
+        }
+        container auto-bandwidth {
+          uses group-auto-bandwidth-config;
+        }
+        list admin-group-lists {
+          key "list-type";
+          uses group-lsp-admin-group-list;
+        }
+      }
+      list secondary-path {
+        description
+          "MPLS LSP secondary path information";
+        key "path-name instance-id";
+        leaf path-name {
+          description
+            "lsp_sec_path_path_name";
+          type string;
+        }
+        leaf instance-id {
+          description
+            "lsp_sec_path_instance_id";
+          type boolean;
+        }
+        leaf path-up {
+          description
+            "lsp_sec_path_up";
+          type boolean;
+        }
+        leaf active {
+          description
+            "lsp_sec_path_active";
+          type boolean;
+        }
+        leaf committed {
+          description
+            "lsp_sec_path_committed";
+          type boolean;
+        }
+        leaf is-new-instance {
+          description
+            "lsp_sec_path_is_new_instance";
+          type boolean;
+        }
+        leaf is-current-secondary {
+          description
+            "lsp_sec_path_is_current_secondary";
+          type boolean;
+        }
+        leaf is-selected-secondary {
+          description
+            "lsp_sec_path_is_selected_secondary";
+          type boolean;
+        }
+        leaf config-adaptive {
+          description
+            "lsp_sec_path_config_adaptive";
+          type boolean;
+        }
+        leaf config-reoptimize-timer-configured {
+          description
+            "lsp_sec_path_config_reoptimize_timer_configured";
+          type boolean;
+        }
+        leaf config-reoptimize-timer {
+          description
+            "lsp_sec_path_config_reoptimize_timer";
+          type uint32;
+        }
+        leaf config-reoptimize-timer-count {
+          description
+            "lsp_sec_path_config_reoptimize_timer_count";
+          type uint32;
+        }
+        leaf config-tspec-mtu-configured {
+          description
+            "lsp_sec_path_config_tspec_mtu_configured";
+          type boolean;
+        }
+        leaf config-tspec-mtu {
+          description
+            "lsp_sec_path_config_tspec_mtu";
+          type uint32;
+        }
+        leaf config-cos-configured {
+          description
+            "lsp_sec_path_config_cos_configured";
+          type boolean;
+        }
+        leaf config-cos {
+          description
+            "lsp_sec_path_config_cos";
+          type uint32;
+        }
+        leaf config-mtu-configured {
+          description
+            "lsp_sec_path_config_mtu_configured";
+          type boolean;
+        }
+        leaf config-mtu {
+          description
+            "lsp_sec_path_config_mtu";
+          type uint32;
+        }
+        leaf config-tie-breaking-configured {
+          description
+            "lsp_sec_path_config_tie_breaking_configured";
+          type boolean;
+        }
+        leaf config-tie-break-random {
+          description
+            "lsp_sec_path_config_tie_break_random";
+          type boolean;
+        }
+        leaf config-tie-break-least-fill {
+          description
+            "lsp_sec_path_config_tie_break_least_fill";
+          type boolean;
+        }
+        leaf config-tie-break-most-fill {
+          description
+            "lsp_sec_path_config_tie_break_most_fill";
+          type boolean;
+        }
+        leaf config-cspf-disabled {
+          description
+            "lsp_sec_path_config_cspf_disabled";
+          type boolean;
+        }
+        leaf config-rro-disabled {
+          description
+            "lsp_sec_path_config_rro_disabled";
+          type boolean;
+        }
+        leaf config-hot-standby {
+          description
+            "lsp_sec_path_config_hot_standby";
+          type boolean;
+        }
+        leaf config-pinned {
+          description
+            "lsp_sec_path_config_pinned";
+          type boolean;
+        }
+        leaf config-persistent {
+          description
+            "lsp_sec_path_config_persistent";
+          type boolean;
+        }
+        leaf config-soft-prempt {
+          description
+            "lsp_sec_path_config_soft_prempt";
+          type boolean;
+        }
+        leaf config-priority-configured {
+          description
+            "lsp_sec_path_config_priority_configured";
+          type boolean;
+        }
+        leaf config-setup-prority {
+          description
+            "lsp_sec_path_config_setup_prority";
+          type uint8;
+        }
+        leaf config-holding-prority {
+          description
+            "lsp_sec_path_config_holding_prority";
+          type uint8;
+        }
+        leaf config-hop-limit-configured {
+          description
+            "lsp_sec_path_config_hop_limit_configured";
+          type boolean;
+        }
+        leaf config-hop-limit {
+          description
+            "lsp_sec_path_config_hop_limit";
+          type uint8;
+        }
+        leaf config-traffic-eng-rate-configured {
+          description
+            "lsp_sec_path_config_traffic_eng_rate_configured";
+          type boolean;
+        }
+        leaf config-traffic-eng-mean-rate {
+          description
+            "lsp_sec_path_config_traffic_eng_mean_rate";
+          type uint32;
+        }
+        leaf config-traffic-eng-max-rate {
+          description
+            "lsp_sec_path_config_traffic_eng_max_rate";
+          type uint32;
+        }
+        leaf config-traffic-eng-max-burst {
+          description
+            "lsp_sec_path_config_traffic_eng_max_burst";
+          type uint32;
+        }
+        leaf config-abw-configured {
+          description
+            "lsp_sec_path_config_abw_configured";
+          type boolean;
+        }
+        leaf config-cspf-computation-mode {
+          description
+            "lsp sec path configured cspf computation mode";
+          type lsp-cspf-computation-mode;
+        }
+        leaf config-admin-group-configured {
+          description
+            "lsp_sec_path_config_admin_group_configured";
+          type boolean;
+        }
+        list admin-group-lists {
+          key "list-type";
+          uses group-lsp-admin-group-list;
+        }
+        container auto-bandwidth {
+          uses group-auto-bandwidth-config;
+        }
+      }
+    }
+    list forwarding-entry {
+      description
+        "Forwarding entries created by MPLS";
+      key "entry-index sync-index";
+      leaf entry-index {
+        description
+          "Index of the entry";
+        type uint32;
+      }
+      leaf sync-index {
+        description
+          "Index used to synchronize with linedard";
+        type uint32;
+      }
+      leaf dest-ip-prefix {
+        description
+          "IP prefix of the destination";
+        type inet:ipv4-prefix;
+      }
+      leaf in-label {
+        description
+          "Incoming label";
+        type uint32;
+      }
+      leaf out-label {
+        description
+          "Outgoing label";
+        type uint32;
+      }
+      leaf protocol {
+        description
+          "MPLS protocol";
+        type mpls-protocol;
+      }
+      leaf out-interface-name {
+        description
+          "Name of the outgoing interface";
+        type string;
+      }
+      leaf nexthop-ip-addr {
+        description
+          "IP address of the nexthop";
+        type inet:ipv4-address;
+      }
+      leaf type {
+        description
+          "MPLS protocol";
+        type mpls-forwarding-entry-type;
+      }
+    }
+    list route {
+      description
+        "Routes installed by MPLS";
+      key "entry-index";
+      leaf entry-index {
+        description
+          "Entry index. This is a pseudo key and refers to the index of the ordered sequnce. Not guranteed to stay unique over time";
+        type uint32;
+      }
+      leaf outseg-index {
+        description
+          "Out segment index";
+        type uint32;
+      }
+      leaf dest-ip-prefix {
+        description
+          "IP prefix of the destination";
+        type inet:ipv4-prefix;
+      }
+      leaf gateway-ip-addr {
+        description
+          "Gateway IP address";
+        type inet:ipv4-address;
+      }
+      leaf out-interface-name {
+        description
+          "Outgoing interface name";
+        type string;
+      }
+      leaf out-label {
+        description
+          "Outgoing lebel";
+        type uint32;
+      }
+      leaf protocol {
+        description
+          "MPLS protocol";
+        type mpls-protocol;
+      }
+      leaf vif-index {
+        description
+          "Virtual interface index";
+        type uint32;
+      }
+      leaf metric {
+        description
+          "Interface metric";
+        type uint32;
+      }
+      leaf use-count {
+        description
+          "Use count";
+        type uint32;
+      }
+    }
+    list tunnel-traffic-statistics {
+      description
+        "Tunnel Traffic Statistics";
+      uses group-traffic-statistics;
+      key "index";
+      leaf index {
+        description
+          "Tunnel Vif Index";
+        type uint32;
+      }
+      leaf protocol {
+        description
+          "MPLS protocol";
+        type mpls-protocol;
+      }
+      leaf name {
+        description
+          "Tunnel Name";
+        type string;
+      }
+      leaf is-bypass {
+        description
+          "Tunnel is Bypass";
+        type boolean;
+      }
+      leaf statistics-valid {
+        description
+          "Statistics are valid";
+        type boolean;
+      }
+    }
+    list transit-traffic-statistics {
+      description
+        "Transit Traffic Statistics";
+      uses group-traffic-statistics;
+      key "in-label";
+      leaf in-label {
+        description
+          "In Label";
+        type uint32;
+      }
+      leaf protocol {
+        description
+          "MPLS protocol";
+        type mpls-protocol;
+      }
+      leaf statistics-valid {
+        description
+          "Statistics are valid";
+        type boolean;
+      }
+    }
+  }
+
+  grouping group-auto-bandwidth-config {
+    description
+      "Auto Bandwidth config Information";
+    leaf config-template {
+      description
+        "Template used for Auto Bandwidth parameters";
+      type string;
+    }
+    leaf adjustment-interval {
+      description
+        "Periodic Interval at which adjustment is done ";
+      type uint32;
+    }
+    leaf adjustment-threshold {
+      description
+        "mpls_adjustmentThreshold";
+      type uint32;
+    }
+    leaf maximum-bandwidth {
+      description
+        "Maximum bandwidth value";
+      type uint32;
+    }
+    leaf minimum-bandwidth {
+      description
+        "Minimum bandiwdth value";
+      type uint32;
+    }
+    leaf overflow-limit {
+      description
+        "Minimum number of overflow to trigger adjustment";
+      type uint32;
+    }
+    leaf underflow-limit {
+      description
+        "Minimum number of underflow to trigger adjustment";
+      type uint32;
+    }
+    leaf mode {
+      description
+        "Monitor only or Monitor and Signal";
+      type autobw-mode;
+    }
+    leaf sample-recording {
+      description
+        "Enable logging history of rate samples";
+      type boolean;
+    }
+  }
+
+  grouping group-ldp-database-stream-base {
+    description
+      "ldp database stream base object";
+    leaf label {
+      description
+        "mpls ldp database fec label ";
+      type uint32;
+    }
+    leaf prefix {
+      description
+        "mpls ldp database fec prefix ";
+      type inet:ipv4-address;
+    }
+    leaf prefix-length {
+      description
+        "mpls ldp database fec prefix length";
+      type uint32;
+    }
+    leaf fec-type {
+      description
+        "mpls ldp database fec type";
+      type uint32;
+    }
+    leaf stale {
+      description
+        "mpls ldp database fec stale";
+      type boolean;
+    }
+  }
+
+  grouping group-ldp-fec-stream {
+    description
+      "";
+    leaf local-ldp-id {
+      description
+        "Local LDP ID of the LDP session to which this up/down-stream mapping CB belongs";
+      type inet:ipv4-address;
+    }
+    leaf local-ldp-lblspc {
+      description
+        "local ldp labelspace";
+      type uint32;
+    }
+    leaf peer-ldp-id {
+      description
+        "Remote LDP ID of the LDP session to which this up/down-stream mapping CB belongs";
+      type inet:ipv4-address;
+    }
+    leaf peer-ldp-lblspc {
+      description
+        "peer ldp labelspace";
+      type uint32;
+    }
+    leaf label {
+      description
+        "MPLS label advertised to the upstream LDP LSR";
+      type uint32;
+    }
+    leaf state {
+      description
+        "State of label. Either installed or retained";
+      type string;
+    }
+    leaf fec-filtered-state {
+      description
+        "fec filtered state";
+      type uint32;
+    }
+    leaf fec-stale {
+      description
+        "tells if FEC is stale or not";
+      type uint32;
+    }
+    leaf feccb {
+      description
+        "Memory address of the up/down-stream mapping CB";
+      type uint32;
+    }
+    leaf fec-dm-state-dw {
+      description
+        "FEC downstream mapping state";
+      type uint32;
+    }
+  }
+
+  grouping group-mpls-tunnel-base {
+    description
+      "mpls tunnel base";
+    leaf tunnel-interface-index {
+      description
+        "tunnel interface index";
+      type uint32;
+    }
+    leaf tunnel-metric {
+      description
+        "tunnel metric";
+      type uint32;
+    }
+    leaf name {
+      description
+        "name";
+      type string;
+    }
+    leaf tunnel-vif {
+      description
+        "Tunnel vif";
+      type uint32;
+    }
+    leaf protocol-type {
+      description
+        "Protocol Type";
+      type mpls-protocol-type;
+    }
+    list out-segments {
+      description
+        "out segment";
+      key "outgoing-interface";
+      leaf outgoing-interface {
+        description
+          "Outgoing Interface";
+        type string;
+      }
+      leaf next-hop-ipaddress {
+        description
+          "Next Hop IP address";
+        type inet:ipv4-address;
+      }
+    }
+  }
+
+  grouping group-rsvp-packet-counters {
+    description
+      "RSVP packet counters";
+    leaf path-tx {
+      description
+        "RSVP Path messages sent";
+      type uint64;
+    }
+    leaf resv-tx {
+      description
+        "RSVP Resv messages sent";
+      type uint64;
+    }
+    leaf patherr-tx {
+      description
+        "RSVP PathErr messages sent";
+      type uint64;
+    }
+    leaf resverr-tx {
+      description
+        "RSVP ResvErr messages sent";
+      type uint64;
+    }
+    leaf pathtear-tx {
+      description
+        "RSVP PathTear messages sent";
+      type uint64;
+    }
+    leaf resvtear-tx {
+      description
+        "RSVP ResvTear messages sent";
+      type uint64;
+    }
+    leaf resvconf-tx {
+      description
+        "RSVP ResvConf messages sent";
+      type uint64;
+    }
+    leaf bundle-tx {
+      description
+        "RSVP Bundle messages sent";
+      type uint64;
+    }
+    leaf ack-tx {
+      description
+        "RSVP acknowledgements sent";
+      type uint64;
+    }
+    leaf sumrefresh-tx {
+      description
+        "RSVP SumRefresh messages sent";
+      type uint64;
+    }
+    leaf hello-tx {
+      description
+        "RSVP hello messages sent";
+      type uint64;
+    }
+    leaf path-rx {
+      description
+        "RSVP Path messages received";
+      type uint64;
+    }
+    leaf resv-rx {
+      description
+        "RSVP Resv messages received";
+      type uint64;
+    }
+    leaf patherr-rx {
+      description
+        "RSVP PathErr messages received";
+      type uint64;
+    }
+    leaf resverr-rx {
+      description
+        "RSVP ResvErr messages received";
+      type uint64;
+    }
+    leaf pathtear-rx {
+      description
+        "RSVP PathTear messages received";
+      type uint64;
+    }
+    leaf resvtear-rx {
+      description
+        "RSVP ResvTear messages received";
+      type uint64;
+    }
+    leaf resvconf-rx {
+      description
+        "RSVP ResvConf messages received";
+      type uint64;
+    }
+    leaf bundle-rx {
+      description
+        "RSVP Bundle messages received";
+      type uint64;
+    }
+    leaf ack-rx {
+      description
+        "RSVP acknowledgements received";
+      type uint64;
+    }
+    leaf sumrefresh-rx {
+      description
+        "RSVP SumRefresh messages received";
+      type uint64;
+    }
+    leaf hello-rx {
+      description
+        "RSVP hello messages received";
+      type uint64;
+    }
+    leaf path-tx-since-last-clear {
+      description
+        "RSVP Path messages sent since last clear";
+      type uint64;
+    }
+    leaf resv-tx-since-last-clear {
+      description
+        "RSVP Resv messages sent since last clear";
+      type uint64;
+    }
+    leaf patherr-tx-since-last-clear {
+      description
+        "RSVP PathErr messages sent since last clear";
+      type uint64;
+    }
+    leaf resverr-tx-since-last-clear {
+      description
+        "RSVP ResvErr messages sent since last clear";
+      type uint64;
+    }
+    leaf pathtear-tx-since-last-clear {
+      description
+        "RSVP PathTear messages sent since last clear";
+      type uint64;
+    }
+    leaf resvtear-tx-since-last-clear {
+      description
+        "RSVP ResvTear messages sent since last clear";
+      type uint64;
+    }
+    leaf resvconf-tx-since-last-clear {
+      description
+        "RSVP ResvConf messages sent since last clear";
+      type uint64;
+    }
+    leaf bundle-tx-since-last-clear {
+      description
+        "RSVP Bundle messages sent since last clear";
+      type uint64;
+    }
+    leaf ack-tx-since-last-clear {
+      description
+        "RSVP acknowledgements sent since last clear";
+      type uint64;
+    }
+    leaf sumrefresh-tx-since-last-clear {
+      description
+        "RSVP SumRefresh messages sent since last clear";
+      type uint64;
+    }
+    leaf hello-tx-since-last-clear {
+      description
+        "RSVP hello messages sent since last clear";
+      type uint64;
+    }
+    leaf path-rx-since-last-clear {
+      description
+        "RSVP Path messages received since last clear";
+      type uint64;
+    }
+    leaf resv-rx-since-last-clear {
+      description
+        "RSVP Resv messages received since last clear";
+      type uint64;
+    }
+    leaf patherr-rx-since-last-clear {
+      description
+        "RSVP PathErr messages received since last clear";
+      type uint64;
+    }
+    leaf resverr-rx-since-last-clear {
+      description
+        "RSVP ResvErr messages received since last clear";
+      type uint64;
+    }
+    leaf pathtear-rx-since-last-clear {
+      description
+        "RSVP PathTear messages received since last clear";
+      type uint64;
+    }
+    leaf resvtear-rx-since-last-clear {
+      description
+        "RSVP ResvTear messages received since last clear";
+      type uint64;
+    }
+    leaf resvconf-rx-since-last-clear {
+      description
+        "RSVP ResvConf messages received since last clear";
+      type uint64;
+    }
+    leaf bundle-rx-since-last-clear {
+      description
+        "RSVP Bundle messages received since last clear";
+      type uint64;
+    }
+    leaf ack-rx-since-last-clear {
+      description
+        "RSVP acknowledgements received since last clear";
+      type uint64;
+    }
+    leaf sumrefresh-rx-since-last-clear {
+      description
+        "RSVP SumRefresh messages received since last clear";
+      type uint64;
+    }
+    leaf hello-rx-since-last-clear {
+      description
+        "RSVP hello messages received since last clear";
+      type uint64;
+    }
+  }
+
+  grouping group-traffic-statistics {
+    description
+      "Traffic Statistics";
+    leaf number-of-packets {
+      description
+        "Total number of packets";
+      type uint64;
+    }
+    leaf number-of-packets-since-clear {
+      description
+        "Total number of packets since lst clear";
+      type uint64;
+    }
+    leaf number-of-bytes {
+      description
+        "Total number of bytes";
+      type uint64;
+    }
+    leaf number-of-bytes-since-clear {
+      description
+        "Total number of bytes since last clear";
+      type uint64;
+    }
+    leaf packets-per-second {
+      description
+        "Packets per second";
+      type uint64;
+    }
+    leaf bytes-per-second {
+      description
+        "Bytes per second";
+      type uint64;
+    }
+    leaf averaging-interval-seconds {
+      description
+        "Averaging Interval";
+      type uint32;
+    }
+  }
+
+  grouping group-filtered-fecs {
+    description
+      "";
+    leaf fec-addr {
+      description
+        "fecAddr";
+      type inet:ipv4-address;
+    }
+    leaf label {
+      description
+        "label";
+      type uint32;
+    }
+    leaf prefix-len {
+      description
+        "fecPrefixLen";
+      type uint8;
+    }
+  }
+
+  grouping group-ldp-protocol-errors-instance {
+    description
+      "ldp protocol errors instance";
+    leaf stats-group {
+      description
+        "Describes if the stats are for a given session, global-all or global-since-last-clear";
+      type mpls-ldp-stats-error-group;
+    }
+    list protocol-error {
+      description
+        "protocol errors";
+      key "error-type";
+      leaf error-type {
+        description
+          "Error Counts";
+        type uint32;
+      }
+      leaf count {
+        description
+          "count";
+        type uint32;
+      }
+    }
+  }
+
+  grouping group-ldp-protocol-stats-instance {
+    description
+      "ldp protocol stats instance";
+    leaf stats-group {
+      description
+        "Describes if the stats are for a given session, global-all or global-since-last-clear";
+      type mpls-ldp-stats-error-group;
+    }
+    list protocol-stat {
+      description
+        "protocol stats rx/tx";
+      key "stat-type";
+      leaf stat-type {
+        description
+          "Stat Counts";
+        type uint32;
+      }
+      leaf rx-count {
+        description
+          "Receive Count";
+        type uint32;
+      }
+      leaf tx-count {
+        description
+          "Transmit Count";
+        type uint32;
+      }
+    }
+  }
+
+  grouping group-lsp-admin-group-list {
+    description
+      "MPLS LSP list of admin groups";
+    leaf list-type {
+      description
+        "List type";
+      type lsp-admin-group-list-type;
+    }
+    list admin-group {
+      description
+        "MPLS LSP admin group";
+      key "admin-group-id";
+      leaf admin-group-id {
+        description
+          "lsp_admin_group_id";
+        type uint32;
+      }
+      leaf admin-group-name {
+        description
+          "lsp_admin_group_name";
+        type string;
+      }
+      leaf exclude-any {
+        description
+          "This LSP will exclude any links that belong to any admin groups with exclude_any set to true. Has highest preference";
+        type boolean;
+      }
+      leaf include-all {
+        description
+          "This LSP will use any links that are part of all admin groups where include_all is set to true. Has preference after exclude_any";
+        type boolean;
+      }
+      leaf include-any {
+        description
+          "This LSP will use any links that are part of any admin groups where include_any is set to true. Has least preference";
+        type boolean;
+      }
+    }
+  }
+
+  grouping group-rsvp-igp-sync-hop-data {
+    description
+      "MPLS Rsvp IGP Synchronization Hop information";
+    leaf index {
+      description
+        "Hop index";
+      type uint32;
+    }
+    leaf ip-address {
+      description
+        "Hop IPv4 address";
+      type inet:ipv4-address;
+    }
+    leaf nbr-ip-address {
+      description
+        "Hop remote neighbor IPv4 address";
+      type inet:ipv4-address;
+    }
+  }
+
+  grouping group-rsvp-igp-sync-lsp {
+    description
+      "MPLS Rsvp IGP Synchronization LSP information";
+    leaf lsp-name {
+      description
+        "LSP name";
+      type string;
+    }
+    leaf path-name {
+      description
+        "LSP Path name";
+      type string;
+    }
+    leaf cspf-enabled {
+      description
+        "CSPF enabled for LSP";
+      type boolean;
+    }
+    leaf rro-enabled {
+      description
+        "RRO enabled for LSP";
+      type boolean;
+    }
+    leaf frr-enabled {
+      description
+        "FRR enabled for LSP";
+      type boolean;
+    }
+    leaf nbr-down-enabled {
+      description
+        "LSP Neighbour down is enabled";
+      type boolean;
+    }
+    leaf link-count {
+      description
+        "Total links used by the LSP";
+      type uint32;
+    }
+    leaf nbr-down-inprogress {
+      description
+        "Neighbor down processing is in progress";
+      type boolean;
+    }
+    leaf cspf-hop-count {
+      description
+        "CSPF hop count";
+      type uint32;
+    }
+    leaf rro-hop-count {
+      description
+        "RRO hop rout";
+      type uint32;
+    }
+    list link {
+      key "index";
+      uses group-rsvp-igp-sync-hop-data;
+    }
+    list cspf-hop {
+      key "index";
+      uses group-rsvp-igp-sync-hop-data;
+    }
+    list rro-hop {
+      key "index";
+      uses group-rsvp-igp-sync-hop-data;
+    }
+  }
+
+  grouping group-te-database-srlg {
+    description
+      "MPLS TE Database SRLG or CSPF-Group Operational Information";
+    leaf name {
+      description
+        "Group name";
+      type string;
+    }
+    leaf penalty {
+      description
+        "Group penalty";
+      type uint32;
+    }
+  }
+}

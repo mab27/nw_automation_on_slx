@@ -1,0 +1,2749 @@
+/*************************************************************************
+ *   Copyright (C) 2017-2022 Brocade Communications Systems, Inc.          *
+ *   All rights reserved.                                                  *
+ ************************************************************************/
+module brocade-isis-operational {
+  namespace "urn:brocade.com:mgmt:brocade-isis-operational";
+  prefix isis-operational;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal:\t130 Holger Way
+        San Jose, CA 95134 U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage isis";
+
+  revision 2017-10-12 {
+    description
+      "First implementation of isis module";
+  }
+
+  typedef auth-mode {
+    description
+      "IS-IS authentication mode";
+    type enumeration {
+      enum "none" {
+        value 0;
+        description
+          "No Authentication";
+      }
+      enum "cleartext" {
+        value 1;
+        description
+          "Clear text";
+      }
+      enum "md5" {
+        value 2;
+        description
+          "MD5";
+      }
+    }
+  }
+
+  typedef is-redist-metric-type {
+    description
+      "IS-IS redistribution metric value type";
+    type enumeration {
+      enum "is-metric-internal" {
+        value 0;
+        description
+          "The metric value is comparable to metric values used by IS-IS";
+      }
+      enum "is-metric-external" {
+        value 1;
+        description
+          "The metric value is always higher than the IS-IS internal metric";
+      }
+    }
+  }
+
+  typedef isis-adj-prot-type {
+    description
+      "ISIS Adjacency Protocol Type";
+    type enumeration {
+      enum "adj-prot-ip" {
+        value 2;
+        description
+          "IPv4 Adjacency Protocol Type";
+      }
+      enum "adj-prot-ip6" {
+        value 8;
+        description
+          "IPv6 Adjacency Protocol Type";
+      }
+      enum "adj-prot-ipv4-ip6" {
+        value 10;
+        description
+          "IPv4 and IPv6 Adjacency Protocol Type";
+      }
+    }
+  }
+
+  typedef isis-adj-type {
+    description
+      "ISIS Adjacency Type";
+    type enumeration {
+      enum "is-adj-unknown" {
+        value 0;
+        description
+          "Invalid Adjacency type";
+      }
+      enum "is-adj-es" {
+        value 1;
+        description
+          "ISIS ES Adjacency Type";
+      }
+      enum "is-adj-l1" {
+        value 2;
+        description
+          "ISIS Level-1 Adjacency Type";
+      }
+      enum "is-adj-l2" {
+        value 4;
+        description
+          "ISIS level-2 Adjacency Type";
+      }
+      enum "is-adj-ptpt" {
+        value 8;
+        description
+          "ISIS Point-to-Point Adjacency Type";
+      }
+      enum "is-adj-stct" {
+        value 16;
+        description
+          "ISIS Shortcut Adjacency Type";
+      }
+    }
+  }
+
+  typedef isis-afi {
+    description
+      "AFI";
+    type enumeration {
+      enum "isis-ipv4-afi" {
+        value 0;
+        description
+          "IPv4";
+      }
+      enum "isis-ipv6-afi" {
+        value 1;
+        description
+          "IPv6";
+      }
+    }
+  }
+
+  typedef isis-circ-encap {
+    description
+      "Circuit Encapsulation";
+    type enumeration {
+      enum "undef" {
+        value 0;
+        description
+          "Undefined Encap type";
+      }
+      enum "chdlc" {
+        value 1;
+        description
+          "cHDLC";
+      }
+      enum "ppp" {
+        value 2;
+        description
+          "PPP";
+      }
+    }
+  }
+
+  typedef isis-circ-type {
+    description
+      "Type of ISIS circuit";
+    type enumeration {
+      enum "is-circ-unknown" {
+        value 0;
+        description
+          "Invalid Circuit type";
+      }
+      enum "is-circ-ptpt" {
+        value 1;
+        description
+          "ISIS Point-to-Point circuit";
+      }
+      enum "is-circ-lan" {
+        value 2;
+        description
+          "ISIS Broadcast circuit";
+      }
+    }
+  }
+
+  typedef isis-dcm-3way-adj-state {
+    description
+      "ISIS 3 Way Hand Shake Adjacency State Values";
+    type enumeration {
+      enum "adj-3way-state-up" {
+        value 0;
+        description
+          "";
+      }
+      enum "adj-3way-state-init" {
+        value 1;
+        description
+          "";
+      }
+      enum "adj-3way-state-down" {
+        value 2;
+        description
+          "";
+      }
+      enum "adj-3way-state-accept" {
+        value 3;
+        description
+          "";
+      }
+      enum "adj-3way-state-invalid" {
+        value 4;
+        description
+          "";
+      }
+    }
+  }
+
+  typedef isis-interface-type {
+    description
+      "Type of interface";
+    type enumeration {
+      enum "invalid" {
+        value 0;
+        description
+          "Invalid interface";
+      }
+      enum "eth" {
+        value 1;
+        description
+          "Ethernet interface";
+      }
+      enum "ve" {
+        value 2;
+        description
+          "VE interface";
+      }
+      enum "loopback" {
+        value 3;
+        description
+          "Loopback interface";
+      }
+    }
+  }
+
+  typedef isis-level {
+    description
+      "IS-IS Operation mode";
+    type enumeration {
+      enum "isis-level1-2" {
+        value 0;
+        description
+          "Level 1/2";
+      }
+      enum "isis-level1" {
+        value 1;
+        description
+          "Level 1";
+      }
+      enum "isis-level2" {
+        value 2;
+        description
+          "Level 2";
+      }
+    }
+  }
+
+  typedef isis-safi {
+    description
+      "SAFI";
+    type enumeration {
+      enum "isis-ipv4-unicast-safi" {
+        value 0;
+        description
+          "IPv4";
+      }
+      enum "isis-ipv6-unicast-safi" {
+        value 1;
+        description
+          "IPv6";
+      }
+    }
+  }
+
+  typedef isis-spf-level {
+    description
+      "";
+    type enumeration {
+      enum "level-1" {
+        value 1;
+        description
+          "";
+      }
+      enum "level-2" {
+        value 2;
+        description
+          "";
+      }
+      enum "level-1-2" {
+        value 3;
+        description
+          " Get both level-1 and level-2";
+      }
+    }
+  }
+
+  typedef isis-spf-log-reason-code {
+    description
+      "";
+    type enumeration {
+      enum "isis-spf-reason-none" {
+        value 0;
+        description
+          "";
+      }
+      enum "isis-spf-reason-kickall" {
+        value 1;
+        description
+          "";
+      }
+      enum "isis-spf-reason-build-table" {
+        value 2;
+        description
+          "";
+      }
+      enum "isis-spf-reason-ipv4-alt" {
+        value 3;
+        description
+          "";
+      }
+      enum "isis-spf-reason-ipv4-traverse" {
+        value 4;
+        description
+          "";
+      }
+      enum "isis-spf-reason-ipv6-alt" {
+        value 5;
+        description
+          "";
+      }
+      enum "isis-spf-reason-ipv6-traverse" {
+        value 6;
+        description
+          "";
+      }
+      enum "isis-spf-reason-pspf-purge-lsp" {
+        value 7;
+        description
+          "";
+      }
+      enum "isis-spf-reason-pspf-new-lsp" {
+        value 8;
+        description
+          "";
+      }
+      enum "isis-spf-reason-build-plsp-nondis" {
+        value 9;
+        description
+          "";
+      }
+      enum "isis-spf-reason-build-plsp" {
+        value 10;
+        description
+          "";
+      }
+      enum "isis-spf-reason-summary-addr-chg" {
+        value 11;
+        description
+          "";
+      }
+      enum "isis-spf-reason-adj-state-chg" {
+        value 12;
+        description
+          "";
+      }
+      enum "isis-spf-reason-attflag" {
+        value 13;
+        description
+          "";
+      }
+      enum "isis-spf-reason-admin-dist" {
+        value 14;
+        description
+          "";
+      }
+      enum "isis-spf-reason-lsp-header" {
+        value 15;
+        description
+          "";
+      }
+      enum "isis-spf-reason-ipaddr-cfg-change" {
+        value 16;
+        description
+          "";
+      }
+      enum "isis-spf-reason-adj-change" {
+        value 17;
+        description
+          "";
+      }
+      enum "isis-spf-reason-area-change" {
+        value 18;
+        description
+          "";
+      }
+      enum "isis-spf-reason-ipaddr-change" {
+        value 19;
+        description
+          "";
+      }
+      enum "isis-spf-reason-ipv6addr-change" {
+        value 20;
+        description
+          "";
+      }
+      enum "isis-spf-reason-level-change" {
+        value 21;
+        description
+          "";
+      }
+      enum "isis-spf-reason-lsp-db-clear" {
+        value 22;
+        description
+          "";
+      }
+      enum "isis-spf-reason-metric-change" {
+        value 23;
+        description
+          "";
+      }
+      enum "isis-spf-reason-tlv-change" {
+        value 24;
+        description
+          "";
+      }
+      enum "isis-spf-reason-tlv-content-change" {
+        value 25;
+        description
+          "";
+      }
+      enum "isis-spf-reason-pspf-not-enable" {
+        value 26;
+        description
+          "";
+      }
+      enum "isis-spf-reason-overload" {
+        value 27;
+        description
+          "";
+      }
+      enum "isis-spf-reason-circ-change" {
+        value 28;
+        description
+          "";
+      }
+      enum "isis-spf-reason-redis-list-change" {
+        value 29;
+        description
+          "";
+      }
+      enum "isis-spf-reason-redis-policy-change" {
+        value 30;
+        description
+          "";
+      }
+      enum "isis-spf-reason-max-paths" {
+        value 31;
+        description
+          "";
+      }
+      enum "isis-spf-reason-rtm-ecmp-change" {
+        value 32;
+        description
+          "";
+      }
+      enum "isis-spf-reason-clear-route" {
+        value 33;
+        description
+          "";
+      }
+      enum "isis-spf-reason-clear-all-route" {
+        value 34;
+        description
+          "";
+      }
+      enum "isis-spf-reason-nlpid-change" {
+        value 35;
+        description
+          "";
+      }
+      enum "isis-spf-reason-router-enable" {
+        value 36;
+        description
+          "";
+      }
+      enum "isis-spf-reason-isis-port-cfg" {
+        value 37;
+        description
+          "";
+      }
+      enum "isis-spf-reason-user-trig" {
+        value 38;
+        description
+          "";
+      }
+      enum "isis-spf-reason-overload-exit" {
+        value 39;
+        description
+          "";
+      }
+      enum "isis-spf-reason-recal-interlevel-route" {
+        value 40;
+        description
+          "";
+      }
+      enum "isis-spf-reason-ispf" {
+        value 41;
+        description
+          "";
+      }
+      enum "isis-spf-reason-tnl-state-chg" {
+        value 42;
+        description
+          "";
+      }
+      enum "isis-spf-reason-ip6metric-change" {
+        value 43;
+        description
+          "";
+      }
+      enum "isis-spf-reason-istct-spf" {
+        value 44;
+        description
+          "";
+      }
+      enum "isis-spf-reason-ipv4-bfd-down" {
+        value 45;
+        description
+          "";
+      }
+      enum "isis-spf-reason-ipv6-bfd-down" {
+        value 46;
+        description
+          "";
+      }
+      enum "isis-spf-reason-ipv6-max-paths" {
+        value 47;
+        description
+          "";
+      }
+      enum "isis-spf-reason-multi-topo-config-change" {
+        value 48;
+        description
+          "";
+      }
+    }
+  }
+
+  typedef isis-status {
+    description
+      "Status";
+    type enumeration {
+      enum "is-disabled" {
+        value 0;
+        description
+          "Disabled";
+      }
+      enum "is-enabled" {
+        value 1;
+        description
+          "Enabled";
+      }
+    }
+  }
+
+  container adj-neighbor-entries-state {
+    description
+      "ISIS Adjacency Neighbor Entries";
+    config false;
+    list adj-neighbor {
+      description
+        "ISIS Adjacency Neighbor Entry";
+      key "neighbor-id";
+      leaf adj-state-change-time {
+        description
+          "Adjacency State Change Time in seconds";
+        type uint32;
+      }
+      leaf adj-type {
+        description
+          "Type of ISIS Adjacency";
+        type isis-adj-type;
+      }
+      leaf adj-state {
+        description
+          "Adjacency State";
+        type string;
+      }
+      leaf neighbor-id {
+        description
+          "Neighbor ID";
+        type string;
+      }
+      leaf circuit-intf-name {
+        description
+          "Circut Interface Name";
+        type string;
+      }
+      leaf snpa {
+        description
+          "Subnetwork Point of Attachment";
+        type string;
+      }
+      leaf adj-holding-time {
+        description
+          "Adjacency Holding Time";
+        type uint8;
+      }
+      leaf adj-priority {
+        description
+          "Adjacency Priority";
+        type uint8;
+      }
+      leaf adj-mtprot {
+        description
+          "Adjacency Multi-topology Protocol Type";
+        type isis-adj-prot-type;
+      }
+      leaf adj-prot {
+        description
+          "Adjacency Protocol Type";
+        type isis-adj-prot-type;
+      }
+      leaf remaining-time {
+        description
+          "Neighbor Gracefully Restarting Remaining Time in seconds";
+        type uint32;
+      }
+      leaf adj-3way-state {
+        description
+          "Adjacency 3 Way Hand Shaking State";
+        type isis-dcm-3way-adj-state;
+      }
+      leaf host-name {
+        description
+          "Host Name";
+        type string;
+      }
+      leaf adj-lan-name {
+        description
+          "Lan Name";
+        type string;
+      }
+      leaf adj-lan-id {
+        description
+          "Adjacency LAN ID";
+        type uint8;
+      }
+      leaf adj-p2p-circ-id {
+        description
+          "Adjacency Point-to-Point Circuit ID";
+        type uint32;
+      }
+      leaf adj-num-adds {
+        description
+          "Number Of NSAPS/Areas Associated To The Adjacency";
+        type uint8;
+      }
+      leaf adj-use {
+        description
+          "Adjacency Level Usage";
+        type isis-spf-level;
+      }
+      leaf ip-circuit-id {
+        description
+          "ISIS IP Circuit ID";
+        type uint32;
+      }
+      leaf adj-address {
+        description
+          "IPv4 Circuit Address ";
+        type inet:ipv4-address;
+      }
+      leaf ip6-circuit-id {
+        description
+          "ISIS IPv6 Circuit ID";
+        type uint32;
+      }
+      leaf adj-ip6-address {
+        description
+          "IPv6 Circuit Address";
+        type string;
+      }
+      leaf bfd-holdover-interval {
+        description
+          "ISIS BFD Holdover Interval";
+        type uint8;
+      }
+      leaf adj-bfd-holdover-time {
+        description
+          "ISIS Adjacency BFD holdover timer";
+        type uint8;
+      }
+      leaf bfd-state {
+        description
+          "ISIS BFD State";
+        type string;
+      }
+      list adj-area {
+        description
+          "Area Addresses";
+        key "adj-asi-area-name";
+        leaf adj-asi-area-name {
+          description
+            "Area Address";
+          type string;
+        }
+      }
+    }
+  }
+  container counts-state {
+    description
+      "IS-IS Counters";
+    config false;
+    leaf areamis {
+      description
+        "Area Mismatch";
+      type uint32;
+    }
+    leaf maxareamis {
+      description
+        "Max Area Mismatch";
+      type uint32;
+    }
+    leaf badidlen {
+      description
+        "System ID Length Mismatch";
+      type uint32;
+    }
+    leaf seqskip {
+      description
+        "LSP Sequence Number Skipped";
+      type uint32;
+    }
+    leaf seqerr {
+      description
+        "LSP Max Sequence Number Exceeded";
+      type uint32;
+    }
+    leaf l1dbol {
+      description
+        "Level-1 Database Overload";
+      type uint32;
+    }
+    leaf l2dbol {
+      description
+        "Level-2 Database Overload";
+      type uint32;
+    }
+    leaf ownpurge {
+      description
+        "Our LSP Purged";
+      type uint32;
+    }
+    leaf csnp-l1authfail {
+      description
+        "L1 CSNP PDU auth failures";
+      type uint32;
+    }
+    leaf csnp-l2authfail {
+      description
+        "L2 CSNP PDU auth failures";
+      type uint32;
+    }
+    leaf psnp-l1authfail {
+      description
+        "L1 PSNP PDU auth failures";
+      type uint32;
+    }
+    leaf psnp-l2authfail {
+      description
+        "L2 PSNP PDU auth failures";
+      type uint32;
+    }
+    leaf circ-l1authfail {
+      description
+        "Total L1 Hello PDU auth failures";
+      type uint32;
+    }
+    leaf circ-l2authfail {
+      description
+        "Total L2 Hello PDU auth failures";
+      type uint32;
+    }
+    list bad-lsp-log {
+      description
+        "LSP Name";
+      key "type-index";
+      leaf type-index {
+        description
+          "Type Index";
+        type uint8;
+      }
+      leaf time-stamp {
+        description
+          "Time Stamp";
+        type uint32;
+      }
+      leaf l1-count {
+        description
+          "L1 count";
+        type uint32;
+      }
+      leaf l2-count {
+        description
+          "L2 count";
+        type uint32;
+      }
+    }
+  }
+  container isis-state {
+    description
+      "ISIS Operational Information";
+    config false;
+    container global-isis-info {
+      description
+        "ISIS Global";
+      leaf isis-protocol {
+        description
+          "IS-IS Routing Protocol Configuration State";
+        type boolean;
+      }
+      leaf isis-state {
+        description
+          "IS-IS Routing Protocol Operation State";
+        type boolean;
+      }
+      leaf is-type {
+        description
+          "IS-Type";
+        type uint32;
+      }
+      leaf system-id {
+        description
+          "System ID";
+        type string;
+      }
+      leaf area-addresses {
+        description
+          "ISIS Area addresses";
+        type string;
+      }
+      leaf database-state-level-1 {
+        description
+          "Database State for Level-1";
+        type string;
+      }
+      leaf database-state-level-2 {
+        description
+          "Database State for Level-1";
+        type string;
+      }
+      leaf database-state-level-1-2 {
+        description
+          "Database State for Level-1_2";
+        type string;
+      }
+      leaf overload-reason {
+        description
+          "ISIS Overload Reason";
+        type string;
+      }
+      leaf check-alarm {
+        description
+          "Database State";
+        type boolean;
+      }
+      leaf overload-state-since {
+        description
+          "Overload state since";
+        type string;
+      }
+      leaf overload-state-rem-time {
+        description
+          "Overload state remaining time";
+        type string;
+      }
+      leaf admin-distance {
+        description
+          "Admin Distance";
+        type uint32;
+      }
+      leaf v6-admin-distance {
+        description
+          "Ipv6 Admin Distance";
+        type uint32;
+      }
+      leaf max-paths {
+        description
+          "Maximum ipv4 Paths";
+        type uint32;
+      }
+      leaf v6-max-paths {
+        description
+          "Maximum ipv6 Paths";
+        type uint32;
+      }
+      leaf default-redis-metric {
+        description
+          "Admin Distance";
+        type uint32;
+      }
+      leaf v6-default-redis-metric {
+        description
+          "Admin ipv6 Distance";
+        type uint32;
+      }
+      leaf default-link-metric-l1-conf {
+        description
+          "Default Link Metric L1";
+        type uint32;
+      }
+      leaf default-link-metric-l1-adv {
+        description
+          "Default Link Metric L1";
+        type uint32;
+      }
+      leaf default-link-metric-l2-conf {
+        description
+          "Default Link Metric L2";
+        type uint32;
+      }
+      leaf default-link-metric-l2-adv {
+        description
+          "Default Link Metric L2";
+        type uint32;
+      }
+      leaf v6-default-link-metric-l1-conf {
+        description
+          "Default ipv6 Link Metric L1";
+        type uint32;
+      }
+      leaf v6-default-link-metric-l1-adv {
+        description
+          "Default ipv6 Link Metric L1";
+        type uint32;
+      }
+      leaf v6-default-link-metric-l2-conf {
+        description
+          "Default ipv6 Link Metric L2";
+        type uint32;
+      }
+      leaf v6-default-link-metric-l2-adv {
+        description
+          "Default ipv6 Link Metric L2";
+        type uint32;
+      }
+      leaf redis-protocol {
+        description
+          "Redistributed Protocols";
+        type string;
+      }
+      leaf no-routes-redis {
+        description
+          "Number of redistributed routes";
+        type uint32;
+      }
+      leaf v6-redis-protocol {
+        description
+          "Ipv6 Redistributed Protocols";
+        type string;
+      }
+      leaf v6-no-routes-redis {
+        description
+          "Number of ipv6 redistributed routes";
+        type uint32;
+      }
+      leaf auth-mode-l1 {
+        description
+          "AuthMode for Level1";
+        type string;
+      }
+      leaf auth-mode-l2 {
+        description
+          "AuthMode for Level2";
+        type string;
+      }
+      leaf auth-key-l1 {
+        description
+          "Authkey for Level1";
+        type string;
+      }
+      leaf auth-key-l2 {
+        description
+          "Authkey for Level2";
+        type string;
+      }
+      leaf l1-auth-no-check {
+        description
+          "If authentication enabled on incoming Level1 IS-IS PDUs";
+        type isis-status;
+      }
+      leaf l2-auth-no-check {
+        description
+          "If authentication enabled on incoming Level2 IS-IS PDUs";
+        type isis-status;
+      }
+      leaf metric-style-l1 {
+        description
+          "Metric Style Level1";
+        type string;
+      }
+      leaf metric-style-l2 {
+        description
+          "Metric Style Level1";
+        type string;
+      }
+      leaf graceful-restart-helper {
+        description
+          "Grafeful Restart Helper";
+        type boolean;
+      }
+      leaf pspf-optimization {
+        description
+          "PSPF Optimization";
+        type boolean;
+      }
+      leaf spf-max-wait-l1 {
+        description
+          "SPF Max Wait Level1";
+        type uint32;
+      }
+      leaf spf-max-wait-l2 {
+        description
+          "SPF Max Wait Level2";
+        type uint32;
+      }
+      leaf spf-init-wait-l1 {
+        description
+          "SPF Init Wait Level1";
+        type uint32;
+      }
+      leaf spf-init-wait-l2 {
+        description
+          "SPF Init Wait Level2";
+        type uint32;
+      }
+      leaf spf-second-wait-l1 {
+        description
+          "SPF Second Wait Level1";
+        type uint32;
+      }
+      leaf spf-second-wait-l2 {
+        description
+          "SPF Second Wait Level2";
+        type uint32;
+      }
+      leaf spf-scheduled-l1 {
+        description
+          "SPF Secheduled Level1";
+        type string;
+      }
+      leaf spf-scheduled-l2 {
+        description
+          "SPF Secheduled Level2";
+        type string;
+      }
+      leaf pspf-max-wait {
+        description
+          "PSPF Max Wait";
+        type uint32;
+      }
+      leaf pspf-init-wait {
+        description
+          "PSPF Init Wait";
+        type uint32;
+      }
+      leaf pspf-second-wait {
+        description
+          "PSPF Second Wait";
+        type uint32;
+      }
+      leaf pspf-scheduled {
+        description
+          "PSPF Secheduled";
+        type string;
+      }
+      leaf spf6-max-wait-l1 {
+        description
+          "SPF Max Wait Level1";
+        type uint32;
+      }
+      leaf spf6-max-wait-l2 {
+        description
+          "SPF Max Wait Level2";
+        type uint32;
+      }
+      leaf spf6-init-wait-l1 {
+        description
+          "SPF Init Wait Level1";
+        type uint32;
+      }
+      leaf spf6-init-wait-l2 {
+        description
+          "SPF Init Wait Level2";
+        type uint32;
+      }
+      leaf spf6-second-wait-l1 {
+        description
+          "SPF Second Wait Level1";
+        type uint32;
+      }
+      leaf spf6-second-wait-l2 {
+        description
+          "SPF Second Wait Level2";
+        type uint32;
+      }
+      leaf spf6-scheduled-l1 {
+        description
+          "SPF6 Secheduled Level1";
+        type string;
+      }
+      leaf spf6-scheduled-l2 {
+        description
+          "SPF6 Secheduled Level2";
+        type string;
+      }
+      leaf pspf6-max-wait {
+        description
+          "PSPF Max Wait";
+        type uint32;
+      }
+      leaf pspf6-init-wait {
+        description
+          "PSPF Init Wait";
+        type uint32;
+      }
+      leaf pspf6-second-wait {
+        description
+          "PSPF Second Wait";
+        type uint32;
+      }
+      leaf pspf6-scheduled {
+        description
+          "PSPF Secheduled";
+        type string;
+      }
+      leaf lsp-max-lifetime {
+        description
+          "LSP MAX Lifetime";
+        type uint32;
+      }
+      leaf lsp-refresh-interval {
+        description
+          "LSP Refresh Interval";
+        type uint32;
+      }
+      leaf lsp-gen-interval {
+        description
+          "LSP Gen Interval";
+        type uint32;
+      }
+      leaf lsp-retrans-interval {
+        description
+          "LSP Retrans Interval";
+        type uint32;
+      }
+      leaf lsp-interval {
+        description
+          "LSP Interval";
+        type uint32;
+      }
+      leaf snp-csnp-interval {
+        description
+          "CSNP Interval";
+        type uint32;
+      }
+      leaf snp-psnp-interval {
+        description
+          "PSNP Interval";
+        type uint32;
+      }
+      leaf hello-padding {
+        description
+          "Hello Padding";
+        type boolean;
+      }
+      leaf hello-padding-ptp {
+        description
+          "Hello Padding for Point-to-Point";
+        type uint32;
+      }
+      leaf ptp-handshake {
+        description
+          "Point to Point Handshake";
+        type boolean;
+      }
+      leaf bgp-ipv4-converged {
+        description
+          "IPV4 BGP Converged";
+        type boolean;
+      }
+      leaf bgp-ipv6-converged {
+        description
+          "IPV6 BGP Converged";
+        type boolean;
+      }
+      leaf isis-te {
+        description
+          "ISIS Traffic Engineering";
+        type boolean;
+      }
+      leaf isis-shortcuts {
+        description
+          "ISIS Shortcuts";
+        type string;
+      }
+      leaf isis-reverse-metric {
+        description
+          "ISIS Reverse Metric";
+        type uint32;
+      }
+      leaf isis-reverse-metric-wbit {
+        description
+          "ISIS Reverse Metric W Flag";
+        type uint32;
+      }
+      leaf isis-reverse-metric-sbit {
+        description
+          "ISIS Reverse Metric S Flag";
+        type uint32;
+      }
+      leaf bfd-enabled {
+        description
+          "BFD Enabled";
+        type boolean;
+      }
+      leaf bfd-hold-interval {
+        description
+          "BGP Hold Interval";
+        type uint32;
+      }
+      leaf nsr-enabled {
+        description
+          "NSR Enabled";
+        type boolean;
+      }
+      leaf nsr-state {
+        description
+          "NSR State";
+        type string;
+      }
+      leaf nsr-sync-state {
+        description
+          "NSR Sync State";
+        type boolean;
+      }
+      leaf isis-is-mp {
+        description
+          "ISIS Active";
+        type boolean;
+      }
+      leaf ldp-sync {
+        description
+          "LDP Sync";
+        type boolean;
+      }
+      leaf ldp-sync-holddown-time {
+        description
+          "LDP Sync Holddown Time";
+        type uint32;
+      }
+    }
+    container router-isis-config {
+      description
+        "ISIS Global configuration summary";
+      leaf nsr-state {
+        description
+          "If Non-stop routing enabled";
+        type isis-status;
+      }
+      leaf lsp-flood-count {
+        description
+          "Number of LSPS can be transmitted in 100msec";
+        type uint16;
+      }
+      leaf lsp-fast-flood-count {
+        description
+          "Number of LSPs to be flooded before SPF run";
+        type uint16;
+      }
+      leaf fast-flood-wait-count {
+        description
+          "Number of 100msec iteration ISIS to wait without running SPF to succeed fast flood";
+        type uint16;
+      }
+      leaf hello-padding {
+        description
+          "If padding of IS-IS hello PDUs to full MTU enabled";
+        type isis-status;
+      }
+      leaf hello-padding-ptp {
+        description
+          "If padding of IS-IS hello PDUs enabled on P2P interfaces";
+        type isis-status;
+      }
+      leaf csnp-interval {
+        description
+          "Rate of transmission of CSNPs";
+        type uint16;
+      }
+      leaf lsp-gen-interval {
+        description
+          "Minimum interval between regenerating same LSP";
+        type uint16;
+      }
+      leaf lsp-interval {
+        description
+          "Rate of transmission of LSPs";
+        type uint32;
+      }
+      leaf lsp-refresh-interval {
+        description
+          "LSP refresh interval";
+        type uint16;
+      }
+      leaf lsp-lifetime {
+        description
+          "Maximum LSP lifetime";
+        type uint16;
+      }
+      leaf retransmit-interval {
+        description
+          "Time between retransmission of LSP";
+        type uint16;
+      }
+      leaf pspf-enabled {
+        description
+          "If Partial SPF Optimizations enabled";
+        type isis-status;
+      }
+      leaf ispf-enabled {
+        description
+          "If Incremental SPF Optimizations enabled";
+        type isis-status;
+      }
+      leaf istct-spf-enabled {
+        description
+          "If incremental shortcut LSP SPF optimization enabled";
+        type isis-status;
+      }
+      leaf overload-state {
+        description
+          "If Overload-bit is set - indicates others that this IS could not be used";
+        type isis-status;
+      }
+      leaf overload-startup-time {
+        description
+          "Time in seconds to stay temporarity in overloaded state on reboot";
+        type uint32;
+      }
+      leaf overload-wait-on-bgp {
+        description
+          "If IS to wait in overload-state temporarity till BGP converges on reboot";
+        type isis-status;
+      }
+      leaf overload-bgp-wait-time {
+        description
+          "Maximum time in seconds to wait for BGP convergence";
+        type uint32;
+      }
+      leaf enable-code-assertions {
+        description
+          "Enable code-assertions";
+        type isis-status;
+      }
+      leaf graceful-restart-helper {
+        description
+          "Enable graceful restart helper support";
+        type isis-status;
+      }
+      leaf isis-hostname-enabled {
+        description
+          "If IS-IS Hostname enabled";
+        type isis-status;
+      }
+      leaf bfd {
+        description
+          "bfd enabled";
+        type boolean;
+      }
+      leaf bfd-holdover-interval {
+        description
+          "bfd holdover interval";
+        type uint8;
+      }
+      container isis-system-info {
+        description
+          "information specific to a single instance of IS-IS protocol running on a router";
+        leaf protocol-enabled {
+          description
+            "If IS-IS protocol enabled";
+          type isis-status;
+        }
+        leaf operation-mode {
+          description
+            "IS-IS working level - Area(L1) or Domain(L2) or both(L12)";
+          type isis-level;
+        }
+        leaf system-id {
+          description
+            "System ID of the Intermediate System";
+          type string;
+        }
+        list nsap {
+          description
+            "IS-IS NSAP address";
+          key "net-addr";
+          leaf length {
+            description
+              "Length of address";
+            type uint8;
+          }
+          leaf net-addr {
+            description
+              "NET address";
+            type string;
+          }
+        }
+      }
+      container l1-auth-profile {
+        description
+          "IS-IS Authentication profile for incoming Level-1 PDUs for LSPs, CSNPs and PSNPs";
+        uses group-authentication-profile;
+      }
+      container l2-auth-profile {
+        description
+          "IS-IS Authentication profile for incoming Level-2 PDUs for LSPs, CSNPs and PSNPs";
+        uses group-authentication-profile;
+      }
+      container log-handler {
+        description
+          "IS-IS logging handler";
+        leaf log-adj-state-change {
+          description
+            "If Logging IS-IS adjacency state changes enabled";
+          type isis-status;
+        }
+        leaf log-bad-lsp {
+          description
+            "If Logging invalid IS-IS LSPs enabled";
+          type isis-status;
+        }
+      }
+      container l1-spf-timer {
+        description
+          "Timer for IS-IS Level-1 SPF calculation for IPv4";
+        uses group-spf-timer;
+      }
+      container l2-spf-timer {
+        description
+          "Timer for IS-IS Level-2 SPF calculation for IPv4";
+        uses group-spf-timer;
+      }
+      container l1-spf6-timer {
+        description
+          "Timer for IS-IS Level-1 SPF calculation for IPv6";
+        uses group-spf-timer;
+      }
+      container l2-spf6-timer {
+        description
+          "Timer for IS-IS Level-2 SPF calculation for IPv6";
+        uses group-spf-timer;
+      }
+      container pspf-timer {
+        description
+          "Timer for IS-IS Partial SPF calculation for IPv4";
+        uses group-spf-timer;
+      }
+      container pspf6-timer {
+        description
+          "Timer for IS-IS Partial SPF calculation for IPv6";
+        uses group-spf-timer;
+      }
+      container is-address-family-v4 {
+        description
+          "ISIS ipv4 address family";
+        uses group-isis-address-family;
+        leaf l1-wide-metric-enabled {
+          description
+            "Level-1 ISIS use wide-metric";
+          type boolean;
+        }
+        leaf l2-wide-metric-enabled {
+          description
+            "Level-2 ISIS use wide-metric";
+          type boolean;
+        }
+        leaf ldp-sync-enabled {
+          description
+            "If LDP sync enabled on IS-IS interfaces";
+          type isis-status;
+        }
+        leaf ldp-sync-hold-down {
+          description
+            "LDP-Sync hold-down duration; 0 is infinite";
+          type uint16;
+        }
+        list summary-address-v4 {
+          description
+            "IS-IS IPv4 address summary";
+          key "address";
+          leaf address {
+            description
+              "IPv4 summary address";
+            type inet:ipv4-address;
+          }
+          leaf ipv4-mask {
+            description
+              "IPv4 address mask";
+            type inet:ipv4-address;
+          }
+          leaf level {
+            description
+              "IS-IS level";
+            type isis-level;
+          }
+        }
+      }
+      container is-address-family-v6 {
+        description
+          "ISIS ipv6 address family";
+        uses group-isis-address-family;
+        leaf adjacency-check {
+          description
+            "If IS-IS adjacency check enabled";
+          type isis-status;
+        }
+        leaf multi-topology {
+          description
+            "If Multi-Topology enabled";
+          type isis-status;
+        }
+        leaf mt-transition-state {
+          description
+            "If the IS is in MT transition mode";
+          type boolean;
+        }
+        list summary-prefix-v6 {
+          description
+            "IS-IS IPv6 address summary";
+          key "address";
+          leaf address {
+            description
+              "IPv6 summary address";
+            type string;
+          }
+          leaf level {
+            description
+              "IS-IS level";
+            type isis-level;
+          }
+        }
+      }
+      container reverse-metric {
+        description
+          "IS-IS system level reverse-metric configuration";
+        leaf reverse-metric-value {
+          description
+            "IS-IS reverse metric value";
+          type uint32;
+        }
+        leaf rev-metric-whole-lan {
+          description
+            "If IS-IS metric to be changed across whole LAN";
+          type isis-status;
+        }
+        leaf rev-metric-te-def-metric {
+          description
+            "If TE default-metric subtlv has to be updated";
+          type isis-status;
+        }
+        leaf rev-metric-tlv-type {
+          description
+            "IS-IS reverse metric TLV type";
+          type uint32;
+        }
+      }
+      container debug-handler {
+        description
+          "IS-IS debug handler";
+        leaf debug-nsr {
+          description
+            "If IS-IS non-stop routing is debug enabled";
+          type isis-status;
+        }
+      }
+    }
+    container host-table {
+      description
+        "The set of IS-IS Host names and Router ID";
+      leaf hostname-enabled {
+        description
+          "If IS-IS Dynamic Host Name Mapping enabled";
+        type boolean;
+      }
+      list isis-router-entry {
+        description
+          "Each entry tracks information about one Intermediate System at one level";
+        key "system-id";
+        leaf system-id {
+          description
+            "The System ID of the Intermediate System";
+          type string;
+        }
+        leaf host-name {
+          description
+            "The Hostname listed in the LSP";
+          type string;
+        }
+        leaf is-local {
+          description
+            "1";
+          type boolean;
+        }
+      }
+    }
+    container ipv4-routes {
+      description
+        "ISIS IPv4 Route Table";
+      leaf total-routes-count {
+        description
+          "Total number of IPv4 ISIS routes";
+        type uint32;
+      }
+      list ipv4-route-entry {
+        description
+          "ISIS IPv4 Route Entry";
+        uses group-rt-info;
+        key "ipv4-dest-addr ipv4-subnet-mask ipv4-prefix-len";
+        leaf ipv4-dest-addr {
+          description
+            "Destination IPv4 Address ";
+          type inet:ipv4-address;
+        }
+        leaf ipv4-subnet-mask {
+          description
+            "Destination IPv4 Subnet Mask ";
+          type inet:ipv4-address;
+        }
+        leaf ipv4-prefix-len {
+          description
+            "Destination IPv4 Prefix Length ";
+          type int8;
+        }
+        list nh-info {
+          description
+            "is-is route nexthop information";
+          key "outgoing-intf-type outgoing-intf-number";
+          leaf ipv4-nh-addr {
+            description
+              "IPv4 nexthop address ";
+            type inet:ipv4-address;
+          }
+          leaf outgoing-intf-type {
+            description
+              "Outgoing interface name";
+            type isis-interface-type;
+          }
+          leaf outgoing-intf-number {
+            description
+              "Interface Number";
+            type string;
+          }
+        }
+      }
+    }
+    container ipv6-routes {
+      description
+        "ISIS IPv6 Route Table";
+      leaf level1-route-count {
+        description
+          "Number of Level-1 Routes ";
+        type uint32;
+      }
+      leaf level2-route-count {
+        description
+          "Number of Level-1 Routes ";
+        type uint32;
+      }
+      leaf ecmp-route-count {
+        description
+          "Equal-cost multi-path Routes ";
+        type uint32;
+      }
+      leaf total-routes-count {
+        description
+          "Total number of IPv6 ISIS routes";
+        type uint32;
+      }
+      list ipv6-route-entry {
+        description
+          "ISIS IPv6 Route Entry";
+        uses group-rt-info;
+        key "ipv6-dest-addr ipv6-prefix-len";
+        leaf ipv6-dest-addr {
+          description
+            "Destination IPv6 Address ";
+          type string;
+        }
+        leaf ipv6-prefix-len {
+          description
+            "Destination IPv6 Address ";
+          type uint8;
+        }
+        list nh-info {
+          description
+            "is-is route nexthop information";
+          key "outgoing-intf-type outgoing-intf-number";
+          leaf ipv6-nh-addr {
+            description
+              "IPv6 nexthop address ";
+            type string;
+          }
+          leaf outgoing-intf-type {
+            description
+              "Outgoing interface name";
+            type isis-interface-type;
+          }
+          leaf outgoing-intf-number {
+            description
+              "Interface Number";
+            type string;
+          }
+        }
+      }
+    }
+    container interface-brief {
+      description
+        "ISIS interface info brief";
+      list isis-intf-brief {
+        description
+          "ISIS light weight interface info object";
+        key "intf-type intf-number";
+        leaf intf-type {
+          description
+            "ISIS interface type";
+          type isis-interface-type;
+        }
+        leaf intf-number {
+          description
+            "ISIS interface ID";
+          type string;
+        }
+        leaf circuit-type {
+          description
+            "Type of ISIS Circuit";
+          type isis-circ-type;
+        }
+        leaf is-circuit-passive {
+          description
+            "If Circuit is in Passive state";
+          type isis-status;
+        }
+        leaf circuit-mode {
+          description
+            "ISIS operation mode";
+          type isis-level;
+        }
+        leaf circ-state {
+          description
+            "If ISIS circuit is UP";
+          type boolean;
+        }
+        leaf mtu-size {
+          description
+            "MTU";
+          type uint16;
+        }
+        leaf circ-adj-up {
+          description
+            "Number of circuit UP adjacencies";
+          type uint16;
+        }
+        leaf circ-changes {
+          description
+            "Number of circuit state changes";
+          type uint32;
+        }
+        leaf adj-changes {
+          description
+            "Number of adjacency changes";
+          type uint32;
+        }
+        leaf is-l1-dis {
+          description
+            "If this is the Designated IS of the L1 circuit";
+          type boolean;
+        }
+        leaf is-l2-dis {
+          description
+            "If this is the Designated IS of the L2 circuit";
+          type boolean;
+        }
+      }
+    }
+    container interface-detail {
+      description
+        "ISIS Interface info detail";
+      list isis-intf {
+        description
+          "ISIS Interface configuration";
+        key "intf-type intf-number";
+        leaf intf-type {
+          description
+            "ISIS interface type";
+          type isis-interface-type;
+        }
+        leaf intf-number {
+          description
+            "ISIS interface ID";
+          type string;
+        }
+        leaf v4circuit-enabled {
+          description
+            "If port is ISIS enabled";
+          type isis-status;
+        }
+        leaf v6circuit-enabled {
+          description
+            "If port is ISISv6 enabled";
+          type isis-status;
+        }
+        leaf circuit-id {
+          description
+            "ISIS Circuit ID";
+          type uint16;
+        }
+        leaf circuit-ifid {
+          description
+            "Hardware interface ID";
+          type uint16;
+        }
+        leaf circuit-state {
+          description
+            "Circuit State";
+          type boolean;
+        }
+        leaf circuit-ip-state {
+          description
+            "ISIS IPv4 Enabled";
+          type boolean;
+        }
+        leaf circuit-ipv6-state {
+          description
+            "ISIS IPv6 Enabled";
+          type boolean;
+        }
+        leaf circuit-mode {
+          description
+            "ISIS operation mode";
+          type isis-level;
+        }
+        leaf circuit-type {
+          description
+            "Type of ISIS Circuit";
+          type isis-circ-type;
+        }
+        leaf circuit-encap {
+          description
+            "Circuit Encapsulation";
+          type isis-circ-encap;
+        }
+        leaf is-circuit-passive {
+          description
+            "If Circuit is in Passive state";
+          type isis-status;
+        }
+        leaf mtu-size {
+          description
+            "MTU";
+          type uint16;
+        }
+        leaf padding-enabled {
+          description
+            "If Hello padding enabled";
+          type isis-status;
+        }
+        leaf bfd-enabled {
+          description
+            "If BFD enabled";
+          type isis-status;
+        }
+        container circ-chstats {
+          description
+            "ISIS circuit change statistics";
+          leaf circ-changes {
+            description
+              "Number of circuit state changes";
+            type uint32;
+          }
+          leaf adj-changes {
+            description
+              "Number of adjacency changes";
+            type uint32;
+          }
+          leaf adj-rej {
+            description
+              "Number of rejected adjacencies";
+            type uint32;
+          }
+          leaf l1authfail {
+            description
+              "Number of L1 authentication failures";
+            type uint32;
+          }
+          leaf l2authfail {
+            description
+              "Number of L2 authentication failures";
+            type uint32;
+          }
+          leaf bad-lsps {
+            description
+              "Number of Bad LSPs received by the circuit";
+            type uint32;
+          }
+          leaf ctrl-out {
+            description
+              "Control messages sent";
+            type uint32;
+          }
+          leaf ctrl-in {
+            description
+              "Control messages received";
+            type uint32;
+          }
+        }
+        container mpls-info {
+          description
+            "MPLS TE info";
+          leaf te-enabled {
+            description
+              "If TE enabled at this circuit";
+            type isis-status;
+          }
+          leaf admin-group {
+            description
+              "Admin group";
+            type uint32;
+          }
+          leaf te-metric {
+            description
+              "TE Metric";
+            type uint32;
+          }
+          leaf max-link-bw {
+            description
+              "Max link bandwidth";
+            type uint32;
+          }
+          leaf max-reserv-bw {
+            description
+              "Max reservable bandwidth";
+            type uint32;
+          }
+          leaf-list unreserv-bw {
+            description
+              "Unreserved bandwidth";
+            type uint32;
+          }
+        }
+        container reverse-metric-info {
+          description
+            "ISIS interface reverse-metric configuration";
+          leaf is-global-config {
+            description
+              "Is global reverse-metric config";
+            type boolean;
+          }
+          leaf reverse-metric-value {
+            description
+              "IS-IS reverse metric value";
+            type uint32;
+          }
+          leaf rev-metric-whole-lan {
+            description
+              "If IS-IS metric to be changed across whole LAN";
+            type isis-status;
+          }
+          leaf rev-metric-te-def-metric {
+            description
+              "If TE default-metric subtlv has to be updated";
+            type isis-status;
+          }
+        }
+        container ldp-sync-info {
+          description
+            "ISIS LDP sync info";
+          leaf ldp-sync-enabled {
+            description
+              "If LDP sync enabled";
+            type isis-status;
+          }
+          leaf ldp-sync-hold-down {
+            description
+              "LDP sync Hold down time";
+            type uint16;
+          }
+          leaf ldp-in-sync {
+            description
+              "If LDP is in sync";
+            type boolean;
+          }
+          leaf remain-hd-time {
+            description
+              "Remaining hold down time";
+            type uint32;
+          }
+          leaf ldp-sync-hd-expired {
+            description
+              "If LDP sync is expired";
+            type boolean;
+          }
+        }
+        list circ-metrics {
+          description
+            "ISIS circuit attributes";
+          key "level";
+          leaf level {
+            description
+              "ISIS operation mode";
+            type isis-level;
+          }
+          leaf auth-check {
+            description
+              "If authentication enabled on incoming IS-IS PDUs";
+            type isis-status;
+          }
+          leaf auth-mode {
+            description
+              "IS-IS authentication mode";
+            type auth-mode;
+          }
+          leaf auth-key {
+            description
+              "IS-IS authentication key";
+            type string;
+          }
+          leaf circ-metric {
+            description
+              "ISIS circuit Metric";
+            type uint32;
+          }
+          leaf ip6-circ-metric {
+            description
+              "ISISv6 circuit Metric";
+            type uint32;
+          }
+          leaf circ-priority {
+            description
+              "Circuit Priority";
+            type uint8;
+          }
+          leaf hello-int {
+            description
+              "Hello interval";
+            type uint32;
+          }
+          leaf hello-mult {
+            description
+              "Hello multiplier";
+            type uint32;
+          }
+          leaf dis {
+            description
+              "Designated IS";
+            type string;
+          }
+          leaf dis-ch {
+            description
+              "DIS changes";
+            type uint32;
+          }
+          leaf next-hello {
+            description
+              "Time remaining until next hello";
+            type uint32;
+          }
+          leaf active-adj {
+            description
+              "Number of active adjacencies";
+            type uint32;
+          }
+        }
+        list ip-info {
+          description
+            "ISIS circuit IPv4 info";
+          key "ip-add";
+          leaf ip-add {
+            description
+              "IP address";
+            type inet:ipv4-address;
+          }
+          leaf ip-prefix {
+            description
+              "IPv4 Prefix Length";
+            type uint8;
+          }
+        }
+        list ip6-info {
+          description
+            "ISIS circuit IPv6 info";
+          key "ip6-add";
+          leaf ip6-add {
+            description
+              "IPv6 address";
+            type inet:ipv6-address;
+          }
+          leaf ip6-prefix {
+            description
+              "IPv6 Prefix Length";
+            type uint8;
+          }
+          leaf is-link-local {
+            description
+              "If the IPv6 address is a link-local address";
+            type boolean;
+          }
+        }
+      }
+    }
+    list database {
+      description
+        "ISIS LSP database";
+      key "level";
+      leaf isis-operation {
+        description
+          "IS-IS Operational State";
+        type boolean;
+      }
+      leaf level {
+        description
+          "IS-Level";
+        type uint32;
+      }
+      leaf lsp-level1-count {
+        description
+          "LSP Level1 Count";
+        type uint32;
+      }
+      leaf lsp-level2-count {
+        description
+          "LSP Level2 Count";
+        type uint32;
+      }
+      leaf lsp-level1-loading {
+        description
+          "LSP Level Loading Count";
+        type uint32;
+      }
+      leaf lsp-level2-loading {
+        description
+          "LSP Level2 Loading Count";
+        type uint32;
+      }
+      leaf lsp-level1-fragments {
+        description
+          "LSP Level1 Fragments Count";
+        type uint32;
+      }
+      leaf lsp-level2-fragments {
+        description
+          "LSP Level2 Fragments Count";
+        type uint32;
+      }
+      leaf lsp-level1-pseudo {
+        description
+          "LSP Level1 Pseudo Count";
+        type uint32;
+      }
+      leaf lsp-level2-pseudo {
+        description
+          "LSP Level2 Pseudo Count";
+        type uint32;
+      }
+      leaf lsp-level1-pseudo-fragments {
+        description
+          "LSP Level1 Pseudo Framgents Count";
+        type uint32;
+      }
+      leaf lsp-level2-pseudo-fragments {
+        description
+          "LSP Level2 Pseudo Framgents Count";
+        type uint32;
+      }
+      leaf lsp-level1-my-count {
+        description
+          "LSP Level1 My Count";
+        type uint32;
+      }
+      leaf lsp-level2-my-count {
+        description
+          "LSP Level2 My Count";
+        type uint32;
+      }
+      leaf lsp-level1-my-lsp-fragments {
+        description
+          "LSP Level1 My Fragments Count";
+        type uint32;
+      }
+      leaf lsp-level2-my-lsp-fragments {
+        description
+          "LSP Level2 My Framgents Count";
+        type uint32;
+      }
+      leaf lsp-level1-my-pseudo {
+        description
+          "LSP Level1 My Pseudo Count";
+        type uint32;
+      }
+      leaf lsp-level2-my-pseudo {
+        description
+          "LSP Level2 My Pseudo Count";
+        type uint32;
+      }
+      leaf lsp-level1-my-pseudo-fragments {
+        description
+          "LSP Level1 My Pseudo Framtents Count";
+        type uint32;
+      }
+      leaf lsp-level2-my-pseudo-fragments {
+        description
+          "LSP Level2 My Pseudo Framtents Count";
+        type uint32;
+      }
+      leaf lsp-level1-checksum {
+        description
+          "LSP Level1 Sum of Checksum";
+        type uint32;
+      }
+      leaf lsp-level2-checksum {
+        description
+          "LSP Level2 Sum of Checksum";
+        type uint32;
+      }
+      list lsp-entry {
+        description
+          "ISIS LSP MO";
+        key "lsp-level lsp-id";
+        leaf lsp-level {
+          description
+            "IS-Level";
+          type uint32;
+        }
+        leaf lsp-id {
+          description
+            "LSP ID";
+          type string;
+        }
+        leaf lsp-seq-no {
+          description
+            "Seq No";
+          type uint32;
+        }
+        leaf lsp-checksum {
+          description
+            "Checksum";
+          type uint16;
+        }
+        leaf lsp-holdtime {
+          description
+            "HoldTime";
+          type uint32;
+        }
+        leaf lsp-att {
+          description
+            "ATT";
+          type uint32;
+        }
+        leaf lsp-p {
+          description
+            "LSP Flag P";
+          type uint32;
+        }
+        leaf lsp-ol {
+          description
+            "LSP OL";
+          type uint32;
+        }
+        list lsp-tlv-entry {
+          description
+            "ISIS LSP TLV";
+          key "type";
+          leaf type {
+            description
+              "LSP TLV Type";
+            type uint32;
+          }
+          leaf length {
+            description
+              "LSP TLV Length";
+            type uint32;
+          }
+          leaf-list value {
+            description
+              "LSP TLV Value";
+            type binary;
+          }
+        }
+      }
+    }
+  }
+  container traffic-state {
+    description
+      "IS-IS packet counts";
+    config false;
+    leaf l1-hello-rx {
+      description
+        "L1 Hello Rx Count";
+      type uint32;
+    }
+    leaf l1-hello-tx {
+      description
+        "L1 Hello Tx Count";
+      type uint32;
+    }
+    leaf l2-hello-rx {
+      description
+        "L2 Hello Rx Count";
+      type uint32;
+    }
+    leaf l2-hello-tx {
+      description
+        "L2 Hello Tx Count";
+      type uint32;
+    }
+    leaf pp-hello-rx {
+      description
+        "PP Rx Count";
+      type uint32;
+    }
+    leaf pp-hello-tx {
+      description
+        "PP Tx Count";
+      type uint32;
+    }
+    leaf l1-lsp-rx {
+      description
+        "L1 LSP Rx Count";
+      type uint32;
+    }
+    leaf l1-lsp-tx {
+      description
+        "L1 LSP Tx Count";
+      type uint32;
+    }
+    leaf l2-lsp-rx {
+      description
+        "L2 LSP Rx Count";
+      type uint32;
+    }
+    leaf l2-lsp-tx {
+      description
+        "L2 LSP Tx Count";
+      type uint32;
+    }
+    leaf l1-csnp-rx {
+      description
+        "L1 CSNP Rx Count";
+      type uint32;
+    }
+    leaf l1-csnp-tx {
+      description
+        "L1 CSNP Tx Count";
+      type uint32;
+    }
+    leaf l2-csnp-rx {
+      description
+        "L2 CSNP Rx Count";
+      type uint32;
+    }
+    leaf l2-csnp-tx {
+      description
+        "L2 CSNP Tx Count";
+      type uint32;
+    }
+    leaf l1-psnp-rx {
+      description
+        "L1 PSNP Rx Count";
+      type uint32;
+    }
+    leaf l1-psnp-tx {
+      description
+        "L1 PSNP Tx Count";
+      type uint32;
+    }
+    leaf l2-psnp-rx {
+      description
+        "L2 PSNP Rx Count";
+      type uint32;
+    }
+    leaf l2-psnp-tx {
+      description
+        "L2 PSNP Tx Count";
+      type uint32;
+    }
+  }
+  list spf-log-state {
+    description
+      "ISIS IPv4 or IPv6 SPF LOG information";
+    config false;
+    key "spf-log-version";
+    leaf spf-log-version {
+      description
+        "Ipv4 or Ipv6 version";
+      type isis-safi;
+    }
+    list spf-log-levels {
+      description
+        "ISIS SPF LOG Level (Level-1 and level-2";
+      key "level";
+      leaf level {
+        description
+          "SPF LOG level type ";
+        type isis-level;
+      }
+      leaf log-counts {
+        description
+          "Number of logs";
+        type uint16;
+      }
+      leaf spf-trigger-count {
+        description
+          "Number of SPF triggers and run currenlty";
+        type uint16;
+      }
+      leaf node-count {
+        description
+          "Number of nodes SPF traversed in a given SPF run";
+        type uint16;
+      }
+      list spf-log-events {
+        description
+          "SPF Log event";
+        key "spf-log-index";
+        leaf spf-log-index {
+          description
+            "SPF LOG event Index";
+          type uint16;
+        }
+        leaf isis-spf-log-reason {
+          description
+            "ISIS SPF reason code for event";
+          type isis-spf-log-reason-code;
+        }
+        leaf isis-lsp-name {
+          description
+            "ISIS SPF LSP Name";
+          type string;
+        }
+        leaf brief-reason {
+          description
+            "ISIS SPF reason";
+          type string;
+        }
+        leaf event-count {
+          description
+            "";
+          type uint16;
+        }
+        leaf node-count {
+          description
+            "";
+          type uint16;
+        }
+        leaf time-stamp-ms {
+          description
+            "Time stamp in hundred millisecond";
+          type uint32;
+        }
+        leaf duration-ms {
+          description
+            "SPF run time";
+          type uint32;
+        }
+        leaf ipv4-routes {
+          description
+            "";
+          type uint32;
+        }
+        leaf ipv6-routes {
+          description
+            "";
+          type uint32;
+        }
+        leaf first-trigger-change {
+          description
+            "Add, delete or modify event";
+          type string;
+        }
+        leaf first-trigger-time-stamp-ms {
+          description
+            "Time stamp in hundred millisecond";
+          type uint32;
+        }
+        leaf first-trigger-detail-reason {
+          description
+            "Decoded reason for the event";
+          type string;
+        }
+        leaf last-trigger-change {
+          description
+            "Add, delete or modify event";
+          type string;
+        }
+        leaf last-trigger-time-stamp-ms {
+          description
+            "Time stamp in hundred millisecond";
+          type uint32;
+        }
+        leaf last-trigger-detail-reason {
+          description
+            "Decoded reason for the event";
+          type string;
+        }
+      }
+    }
+  }
+
+  grouping group-authentication-profile {
+    description
+      "IS-IS authentication profile";
+    leaf auth-check {
+      description
+        "If authentication enabled on incoming IS-IS PDUs";
+      type isis-status;
+    }
+    leaf auth-mode {
+      description
+        "IS-IS authentication mode";
+      type auth-mode;
+    }
+    leaf auth-key {
+      description
+        "IS-IS authentication key";
+      type string;
+    }
+  }
+
+  grouping group-redistribution {
+    description
+      "Redistribution config for IS-IS";
+    leaf redist-enabled {
+      description
+        "If IS-IS redistribution enabled";
+      type isis-status;
+    }
+    leaf redist-level {
+      description
+        "Redistribute routes in the route-table at this level";
+      type isis-level;
+    }
+    leaf redist-metric {
+      description
+        "Metric for redistributed routes";
+      type uint32;
+    }
+    leaf redist-metric-type {
+      description
+        "IS-IS metric type for redistributed routes";
+      type is-redist-metric-type;
+    }
+    leaf redist-routemap-name {
+      description
+        "Route map reference to redistribute routes";
+      type string;
+    }
+  }
+
+  grouping group-rt-info {
+    description
+      "ISIS IPv4 Routes";
+    leaf level {
+      description
+        "IS-IS Level";
+      type uint8;
+    }
+    leaf cost {
+      description
+        "IS-IS Interface Cost";
+      type uint32;
+    }
+    leaf tag {
+      description
+        "IS-IS Route Tag";
+      type uint32;
+    }
+    leaf flags {
+      description
+        "Route Flags";
+      type uint16;
+    }
+    leaf is-l1-summarized {
+      description
+        "L1 Summarized";
+      type boolean;
+    }
+    leaf is-l2-summarized {
+      description
+        "L2 Summarized";
+      type boolean;
+    }
+    leaf is-summary {
+      description
+        "Summary";
+      type boolean;
+    }
+  }
+
+  grouping group-spf-timer {
+    description
+      "Generic IS-IS SPF calculation timer";
+    leaf init-delay-time {
+      description
+        "Initial Delay time";
+      type uint32;
+    }
+    leaf hold-down-time {
+      description
+        "Hold down time";
+      type uint32;
+    }
+    leaf max-time {
+      description
+        "Maximum hold time";
+      type uint32;
+    }
+  }
+
+  grouping group-isis-address-family {
+    description
+      "ISIS address family";
+    leaf afi {
+      description
+        "AFI";
+      type isis-afi;
+    }
+    leaf safi {
+      description
+        "SAFI";
+      type isis-safi;
+    }
+    leaf originate-default-route {
+      description
+        "Advertise a default route to neighboring ISs";
+      type isis-status;
+    }
+    leaf originate-default-routemap-name {
+      description
+        "Route map to originate the default route";
+      type string;
+    }
+    leaf default-metric {
+      description
+        "Default redistribution metric";
+      type uint16;
+    }
+    leaf l1-default-link-metric {
+      description
+        "Default IS-IS Level-1 Link metric";
+      type uint32;
+    }
+    leaf l2-default-link-metric {
+      description
+        "Default IS-IS Level-2 Link metric";
+      type uint32;
+    }
+    leaf administrative-distance {
+      description
+        "Administrative Distance";
+      type uint32;
+    }
+    leaf maximum-equal-cost-paths {
+      description
+        "Maximum paths";
+      type uint32;
+    }
+    container redist-static {
+      description
+        "IS-IS redistribution config for static route";
+      uses group-redistribution;
+    }
+    container redist-connected {
+      description
+        "IS-IS redistribution config for directly connected routes";
+      uses group-redistribution;
+    }
+    container redist-bgp {
+      description
+        "IS-IS redistribution config for BGP routes";
+      uses group-redistribution;
+    }
+    container redist-isis {
+      description
+        "Redistribution config for IS-IS routes into IS-IS between levels";
+      leaf redist-is-l2-to-l1 {
+        description
+          "If IS-IS route redistribution from level-2 into level-1 is enabled";
+        type isis-status;
+      }
+      leaf redist-is-l2-to-l1-prefix {
+        description
+          "Prefix list name for level-2 to level-1 route distribution";
+        type string;
+      }
+      leaf redist-is-l1-to-l2 {
+        description
+          "If IS-IS route redistribution from level-1 into level-2 is enabled";
+        type isis-status;
+      }
+      leaf redist-is-l1-to-l2-prefix {
+        description
+          "Prefix list name for level-1 to level-2 route distribution";
+        type string;
+      }
+    }
+    container redist-ospf {
+      description
+        "Redistribution config for OSPF routes into IS-IS";
+      uses group-redistribution;
+      leaf ospf-internal-enabled {
+        description
+          "If redistribution of internal OSPF route enabled";
+        type isis-status;
+      }
+      leaf ospf-external1-enabled {
+        description
+          "If redistribution of OSPF type-1 external routes enabled";
+        type isis-status;
+      }
+      leaf ospf-external2-enabled {
+        description
+          "If redistribution of OSPF type-2 external routes enabled";
+        type isis-status;
+      }
+    }
+  }
+}

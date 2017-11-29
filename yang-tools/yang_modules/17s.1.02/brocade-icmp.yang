@@ -1,0 +1,78 @@
+/*********************************************************************
+ * Copyright (c) 2014 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-igmp : Brocade ICMP data model
+ *
+ *
+ ********************************************************************/
+module brocade-icmp {
+  namespace "urn:brocade.com:mgmt:brocade-icmp";
+  prefix icmp;
+
+  import brocade-common-def {
+    prefix common-def;
+  }
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-ip-config {
+    prefix ip-config;
+  }
+  import brocade-ipv6-config {
+    prefix ipv6-config;
+  }
+
+  organization "Brocade Communications Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+     San Jose, CA 95134             
+     U.S.A
+     Tel: +1-408-333-6061
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This module provides interface to provision icmp configuration on interfaces";
+
+  revision 2013-09-15 {
+    description
+      "Initial version of this management module.";
+  }
+
+  grouping icmp-config {
+    leaf rate-limiting {
+      type uint32 {
+        range "0..4294967295";
+      }
+      default "1000";
+    }
+  }
+
+  grouping icmp-config-extended {
+    uses icmp-config;
+    leaf redirect {
+      type empty;
+    }
+  }
+
+  augment "/common-def:routing-system/interface:interface/interface:ve/ip-config:ip" {
+    container icmp {
+      uses icmp-config-extended;
+    }
+  }
+  augment "/common-def:routing-system/interface:interface/interface:ve/ipv6-config:ipv6" {
+    container icmpv6 {
+      uses icmp-config-extended;
+    }
+  }
+  augment "/interface:interface/interface:ethernet/interface:ip" {
+    container icmp {
+      uses icmp-config-extended;
+    }
+  }
+  augment "/interface:interface/interface:ethernet/interface:ipv6" {
+    container icmpv6 {
+      uses icmp-config-extended;
+    }
+  }
+}

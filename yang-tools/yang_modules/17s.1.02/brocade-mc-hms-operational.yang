@@ -1,0 +1,674 @@
+/*************************************************************************
+ *   Copyright (C) 2017-2022 Brocade Communications Systems, Inc.          *
+ *   All rights reserved.                                                  *
+ *   Author : swrel                                                        *
+ ************************************************************************/
+module brocade-mc-hms-operational {
+  namespace "urn:brocade.com:mgmt:brocade-mc-hms-operational";
+  prefix mc-hms-operational;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal:\t130 Holger Way
+        San Jose, CA 95134 U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage mc-hms";
+
+  revision 2017-09-26 {
+    description
+      "First implementation of mc-hms module";
+  }
+
+  container igmp-snooping-state {
+    description
+      "IGMP Snooping Root MO";
+    config false;
+    container multicast-ssm-mapping {
+      description
+        "Source Specific Multicast Operational Information";
+      list ssm-maps {
+        description
+          "Source Specific Multicast Operational Information";
+        key "prefix-list-name";
+        leaf prefix-list-name {
+          description
+            "ssm map prefix list name";
+          type string;
+        }
+        leaf src-ip-addr {
+          description
+            "ipv4 source address ";
+          type inet:ipv4-address;
+        }
+      }
+    }
+    container igmp-statistics {
+      description
+        "Igmp snooping statistics";
+      list igmp-statistics {
+        key "interface-name";
+        uses group-igmp-interface-statistics;
+      }
+    }
+    container debug-igmp {
+      description
+        "Debug info for IGMP Snooping";
+      leaf enable-any {
+        description
+          "Any debug enable";
+        type uint8;
+      }
+      leaf error {
+        description
+          "error debug enable";
+        type uint8;
+      }
+      leaf events {
+        description
+          "events debug enable";
+        type uint8;
+      }
+      leaf group {
+        description
+          "group debug enable";
+        type uint8;
+      }
+      leaf packets {
+        description
+          "packets debug enable";
+        type uint8;
+      }
+      leaf grp-addr {
+        description
+          "ipv4 multicast group address ";
+        type inet:ipv4-address;
+      }
+      leaf protocol {
+        description
+          "protocol debug enable";
+        type uint8;
+      }
+      leaf query {
+        description
+          "query debug enable";
+        type uint8;
+      }
+      leaf v1-report {
+        description
+          "v1_report debug enable";
+        type uint8;
+      }
+      leaf direction {
+        description
+          "packet flow direction";
+        type string;
+      }
+      leaf phy-port-name {
+        description
+          "Interface name";
+        type string;
+      }
+      leaf io-port-name {
+        description
+          "Interface name";
+        type string;
+      }
+    }
+    list igmp-snooping-vlans {
+      description
+        "Igmp snooping enabled interface List";
+      key "vlan-id";
+      leaf vlan-id {
+        description
+          "vlan id";
+        type uint32;
+      }
+      list igmp-snooping-vlans {
+        description
+          "Igmp snooping enabled interface";
+        key "vlan-id";
+        leaf vlan-id {
+          description
+            "vlan id";
+          type uint32;
+        }
+        leaf multicast-router-ports {
+          description
+            "Multicast Router ports";
+          type string;
+        }
+        leaf is-querier {
+          description
+            "Is interface Querier enabled";
+          type uint8;
+        }
+        leaf igmp-operation-mode {
+          description
+            "IGMP Operation mode";
+          type uint32;
+        }
+        leaf fast-leave {
+          description
+            "Fast Leave";
+          type uint8;
+        }
+        leaf qmrt {
+          description
+            "Igmp query response time";
+          type uint32;
+        }
+        leaf lmqi {
+          description
+            "Last Member Query Interval";
+          type uint32;
+        }
+        leaf qi {
+          description
+            "Query Interval";
+          type uint32;
+        }
+        leaf version {
+          description
+            "Igmp Version";
+          type uint8;
+        }
+        leaf lmqc {
+          description
+            "Last Member Query Count";
+          type uint8;
+        }
+        leaf sqi {
+          description
+            "Start up Query Interval";
+          type uint16;
+        }
+        leaf sqc {
+          description
+            "Start up Query Count";
+          type uint16;
+        }
+        leaf rv {
+          description
+            "Robustness Variable";
+          type uint8;
+        }
+        leaf rum {
+          description
+            "Restricted Unknown Multicast";
+          type uint8;
+        }
+        leaf num-of-mcast-grps {
+          description
+            "Number of Multicast Groups";
+          type uint32;
+        }
+        list vlan-groups {
+          description
+            "Group information on an interface";
+          key "grp-ip-addr";
+          leaf grp-ip-addr {
+            description
+              "group address";
+            type uint32;
+          }
+          leaf member-ports {
+            description
+              "group member ports";
+            type string;
+          }
+        }
+      }
+    }
+    list igmp-snooping-mrouters {
+      description
+        "Igmp snoopig mrouter list";
+      key "vlan-id";
+      leaf vlan-id {
+        description
+          "vlan id";
+        type uint32;
+      }
+      list igmp-snooping-mrouters {
+        description
+          "Igmp snoopig mrouter info";
+        key "vlan-id";
+        leaf vlan-id {
+          description
+            "vlan id";
+          type uint32;
+        }
+        leaf interface-name {
+          description
+            "interface_name";
+          type string;
+        }
+        leaf expiry-time {
+          description
+            "expiry time: For static mrouter port expiry timer will be -1.";
+          type int32;
+        }
+      }
+    }
+    list igmp-l3-interfaces {
+      description
+        "Igmp L3 interface List";
+      key "interface-name";
+      leaf interface-name {
+        description
+          "Igmp L3 interface name";
+        type string;
+      }
+      list igmp-l3-interfaces {
+        description
+          "Igmp L3 interface Information";
+        key "interface-name";
+        leaf interface-name {
+          description
+            "Igmp L3 interface name";
+          type string;
+        }
+        leaf is-igmp-enabled {
+          description
+            "IS IGMP Enabled on an Interface";
+          type uint8;
+        }
+        leaf query-interval {
+          description
+            "Igmp query interval";
+          type uint32;
+        }
+        leaf other-querier-interval {
+          description
+            "Igmp other querier interval";
+          type uint32;
+        }
+        leaf query-reponse-time {
+          description
+            "Igmp query response time";
+          type uint32;
+        }
+        leaf last-member-query-interval {
+          description
+            "Igmp last_member_query_interval";
+          type uint32;
+        }
+        leaf immediate-leave {
+          description
+            "Igmp Immediate Leave";
+          type uint8;
+        }
+        leaf igmp-querier {
+          description
+            "Igmp querier ip address";
+          type uint32;
+        }
+        leaf is-igmp-querier-local {
+          description
+            "Is igmp querier local";
+          type uint8;
+        }
+      }
+    }
+    list igmp-groups {
+      description
+        "Igmp Snooping Group Information";
+      key "group-addr interface-name";
+      leaf group-addr {
+        description
+          "Multicast Group Address";
+        type inet:ipv4-address;
+      }
+      leaf interface-name {
+        description
+          "Igmp interface name";
+        type string;
+      }
+      list igmp-groups {
+        key "group-addr interface-name";
+        uses group-igmp-group;
+      }
+    }
+    list pim-snp-groups {
+      description
+        "Pim Snooping Group Information";
+      key "vlan-id";
+      leaf vlan-id {
+        description
+          "vlan id";
+        type uint32;
+      }
+      list pim-snp-groups {
+        description
+          "Pim Snooping Group Information";
+        key "group-addr vlan-id";
+        leaf group-addr {
+          description
+            "group ip address";
+          type uint32;
+        }
+        leaf vlan-id {
+          description
+            "vlan id";
+          type uint32;
+        }
+        leaf uptime {
+          description
+            "group up time";
+          type string;
+        }
+        leaf expiry-time {
+          description
+            "group expiry time";
+          type string;
+        }
+        leaf last-reporter {
+          description
+            "last reporter";
+          type uint32;
+        }
+        list pim-snp-sources {
+          description
+            "pim snooping source instance";
+          key "src-addr";
+          leaf src-addr {
+            description
+              "source ip address";
+            type uint32;
+          }
+          leaf src-flags {
+            description
+              "pim snooping source flags";
+            type uint8;
+          }
+          leaf src-uptime {
+            description
+              "src_uptime";
+            type string;
+          }
+          list pim-snp-sg-member-ports {
+            key "interface-name";
+            uses group-pim-snp-member-port;
+          }
+        }
+        list pim-snp-wg-member-ports {
+          key "interface-name";
+          uses group-pim-snp-member-port;
+        }
+      }
+    }
+    list igmp-multicast-snooping-vlans {
+      description
+        "Multicast snooping vlan";
+      key "vlan-id";
+      leaf vlan-id {
+        description
+          "vlan id";
+        type uint32;
+      }
+      list igmp-multicast-snooping-vlans {
+        description
+          "Multicast snooping vlan";
+        key "vlan-id";
+        leaf vlan-id {
+          description
+            "vlan id";
+          type uint32;
+        }
+        leaf pim-sn-status {
+          description
+            "Is pim snooping enabled";
+          type uint8;
+        }
+        leaf igmp-sn-status {
+          description
+            "Is igmp snooping enabled";
+          type uint8;
+        }
+        leaf igmp-version {
+          description
+            "IGMP version enabled on a vlan";
+          type uint8;
+        }
+      }
+    }
+    container igmp-interface-statistics {
+      uses group-igmp-interface-statistics;
+    }
+  }
+  list igmp-static-groups-state {
+    description
+      "Igmp Snooping Static Group Information";
+    config false;
+    key "group-addr interface-name";
+    leaf group-addr {
+      description
+        "Multicast Group Address";
+      type inet:ipv4-address;
+    }
+    leaf interface-name {
+      description
+        "Igmp interface name";
+      type string;
+    }
+    list igmp-static-groups {
+      key "group-addr interface-name";
+      uses group-igmp-group;
+    }
+  }
+
+  grouping group-igmp-group {
+    description
+      "Igmp Snooping Group Information";
+    leaf group-addr {
+      description
+        "group ip address";
+      type uint32;
+    }
+    leaf interface-name {
+      description
+        "Igmp interface name hosting a group";
+      type string;
+    }
+    leaf uptime {
+      description
+        "group up time";
+      type string;
+    }
+    leaf expiry-time {
+      description
+        "group expiry time";
+      type string;
+    }
+    leaf last-reporter {
+      description
+        "last reporter";
+      type uint32;
+    }
+    leaf filter-mode {
+      description
+        "filter mode";
+      type uint8;
+    }
+    leaf member-ship {
+      description
+        "Group interface member ship";
+      type string;
+    }
+    list igmpv3-sources {
+      description
+        "Igmp Snooping version 3 include/exclude source list";
+      key "interface-name";
+      leaf interface-name {
+        description
+          "member ship interface for a igmp group";
+        type string;
+      }
+      list incl-src-ip {
+        key "ipv4-addr";
+        uses group-ipv4-addr;
+      }
+      list excl-src-ip {
+        key "ipv4-addr";
+        uses group-ipv4-addr;
+      }
+    }
+  }
+
+  grouping group-igmp-interface-statistics {
+    description
+      "Igmp snooping statistics for an interface";
+    leaf interface-name {
+      description
+        "interface_name";
+      type string;
+    }
+    leaf query-edge-recvd {
+      description
+        "query_edge_recvd";
+      type uint32;
+    }
+    leaf query-edge-sent {
+      description
+        "query_edge_sent";
+      type uint32;
+    }
+    leaf query-edge-rx-errors {
+      description
+        "query_edge_rx_errors";
+      type uint32;
+    }
+    leaf v1-report-edge-recvd {
+      description
+        "v1_report_edge_recvd";
+      type uint32;
+    }
+    leaf v1-report-edge-sent {
+      description
+        "v1_report_edge_sent";
+      type uint32;
+    }
+    leaf v1-report-edge-rx-errors {
+      description
+        "v1_report_edge_rx_errors";
+      type uint32;
+    }
+    leaf v2-report-edge-recvd {
+      description
+        "v2_report_edge_recvd";
+      type uint32;
+    }
+    leaf v2-report-edge-sent {
+      description
+        "v2_report_edge_sent";
+      type uint32;
+    }
+    leaf v2-report-edge-rx-errors {
+      description
+        "v2_report_edge_rx_errors";
+      type uint32;
+    }
+    leaf v3-report-edge-recvd {
+      description
+        "v3_report_edge_recvd";
+      type uint32;
+    }
+    leaf v3-report-edge-sent {
+      description
+        "v3_report_edge_sent";
+      type uint32;
+    }
+    leaf v3-report-edge-rx-errors {
+      description
+        "v3_report_edge_rx_errors";
+      type uint32;
+    }
+    leaf grp-leave-edge-recvd {
+      description
+        "grp_leave_edge_recvd";
+      type uint32;
+    }
+    leaf grp-leave-edge-sent {
+      description
+        "grp_leave_edge_sent";
+      type uint32;
+    }
+    leaf grp-leave-edge-rx-errors {
+      description
+        "grp_leave_edge_rx_errors";
+      type uint32;
+    }
+    leaf pim-hello-edge-recvd {
+      description
+        "pim_hello_edge_recvd";
+      type uint32;
+    }
+    leaf pim-hello-edge-sent {
+      description
+        "pim_hello_edge_sent";
+      type uint32;
+    }
+    leaf pim-hello-edge-rx-errors {
+      description
+        "pim_hello_edge_rx_errors";
+      type uint32;
+    }
+    leaf error-unknown-types {
+      description
+        "error_unknown_types";
+      type uint32;
+    }
+    leaf error-bad-length {
+      description
+        "error_bad_length";
+      type uint32;
+    }
+    leaf error-bad-checksum {
+      description
+        "error_bad_checksum";
+      type uint32;
+    }
+  }
+
+  grouping group-ipv4-addr {
+    description
+      "A Simple UI32 MO for storing ip address in integer format";
+    leaf ipv4-addr {
+      description
+        "A Simple UI32 MO for string ip address in integer format";
+      type uint32;
+    }
+  }
+
+  grouping group-pim-snp-member-port {
+    description
+      "pim snooping member port";
+    leaf interface-name {
+      description
+        "pim snooping member port name";
+      type string;
+    }
+    leaf mbr-flags {
+      description
+        "pim snooping flags";
+      type uint8;
+    }
+    leaf flag-string {
+      description
+        "group member port flags";
+      type string;
+    }
+    leaf mbr-uptime {
+      description
+        "membership uptime and expire time";
+      type string;
+    }
+  }
+}

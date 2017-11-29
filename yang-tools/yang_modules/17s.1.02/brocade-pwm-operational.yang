@@ -1,0 +1,295 @@
+/*************************************************************************
+ *   Copyright (C) 2017-2022 Brocade Communications Systems, Inc.          *
+ *   All rights reserved.                                                  *
+ *   Author : swrel                                                        *
+ ************************************************************************/
+module brocade-pwm-operational {
+  namespace "urn:brocade.com:mgmt:brocade-pwm-operational";
+  prefix pwm-operational;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal:\t130 Holger Way
+        San Jose, CA 95134 U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage pwm";
+
+  revision 2017-09-26 {
+    description
+      "First implementation of pwm module";
+  }
+
+  container vc-peer-state {
+    description
+      " VC peer information";
+    config false;
+    list vc-peer-data {
+      description
+        " VC peer";
+      key "vc-id";
+      leaf vc-id {
+        description
+          "peer vc id";
+        type uint32;
+      }
+      leaf vc-peer-address {
+        description
+          "peer address name";
+        type inet:ipv4-address;
+      }
+      leaf vc-peer-state {
+        description
+          "peer state";
+        type string;
+      }
+      leaf vc-peer-uptime {
+        description
+          "peer uptime";
+        type string;
+      }
+      leaf vc-peer-load-balance {
+        description
+          "peer load balance";
+        type boolean;
+      }
+      leaf vc-peer-cos-enabled {
+        description
+          "peer cos enabled";
+        type boolean;
+      }
+      leaf vc-peer-cos-value {
+        description
+          "peer cos value";
+        type uint8;
+      }
+      leaf vc-ldp-tnnl-in-use {
+        description
+          "peer tunnel in use";
+        type string;
+      }
+      leaf vc-local-label {
+        description
+          "vc_local_label";
+        type uint32;
+      }
+      leaf vc-remote-label {
+        description
+          "vc_remote_label";
+        type uint32;
+      }
+      leaf vc-local-mtu {
+        description
+          "vc_local_mtu";
+        type uint32;
+      }
+      leaf vc-remote-mtu {
+        description
+          "vc_remote_mtu";
+        type uint32;
+      }
+      leaf vc-local-type {
+        description
+          "vc_local_type";
+        type uint32;
+      }
+      leaf vc-remote-type {
+        description
+          "vc_remote_type";
+        type uint32;
+      }
+      list vc-proto-tnnl {
+        description
+          "VC proto tnnl";
+        key "vc-proto-name";
+        leaf vc-proto-name {
+          description
+            "protocol name";
+          type string;
+        }
+        leaf vc-ldp-tunnel-id {
+          description
+            "protocol ldp tunnel id";
+          type uint32;
+        }
+        leaf vc-ldp-name {
+          description
+            "ldp name";
+          type string;
+        }
+        leaf vc-lsp-name {
+          description
+            "lsp name";
+          type string;
+        }
+        leaf vc-peer-lsp-cos-enabled {
+          description
+            "peer cos enabled";
+          type boolean;
+        }
+        leaf vc-peer-lsp-cos-value {
+          description
+            "peer cos value";
+          type uint8;
+        }
+      }
+      list vc-assigned-lsp {
+        description
+          " VC assigned lsp";
+        key "vc-lsp-name";
+        leaf vc-lsp-name {
+          description
+            "lsp name";
+          type string;
+        }
+      }
+    }
+  }
+  list bd-vc-peer-state {
+    description
+      " VC peer information";
+    config false;
+    key "vc-id";
+    leaf vc-id {
+      description
+        "peer vc id";
+      type uint32;
+    }
+    container bd-vc-peer-counter {
+      description
+        " VC peer counters";
+      leaf no-of-peer-configured {
+        description
+          "no_of_peer_configured";
+        type uint32;
+      }
+      leaf no-of-peer-operational {
+        description
+          "no_of_peer_operational";
+        type uint32;
+      }
+    }
+    list bd-vc-peer-data {
+      description
+        " VC peer";
+      key "vc-peer-address";
+      leaf vc-peer-address {
+        description
+          "peer address name";
+        type inet:ipv4-address;
+      }
+      leaf vc-peer-state {
+        description
+          "peer state";
+        type string;
+      }
+      leaf vc-peer-uptime {
+        description
+          "peer uptime";
+        type string;
+      }
+      leaf vc-peer-load-balance {
+        description
+          "peer load balance";
+        type boolean;
+      }
+      leaf vc-peer-cos-enabled {
+        description
+          "peer cos enabled";
+        type boolean;
+      }
+      leaf vc-peer-cos-value {
+        description
+          "peer cos value";
+        type uint8;
+      }
+      leaf vc-ldp-tnnl-in-use {
+        description
+          "peer tunnel in use";
+        type string;
+      }
+      leaf vc-local-label {
+        description
+          "vc_local_label";
+        type uint32;
+      }
+      leaf vc-remote-label {
+        description
+          "vc_remote_label";
+        type uint32;
+      }
+      leaf vc-local-mtu {
+        description
+          "vc_local_mtu";
+        type uint32;
+      }
+      leaf vc-remote-mtu {
+        description
+          "vc_remote_mtu";
+        type uint32;
+      }
+      leaf vc-local-type {
+        description
+          "vc_local_type";
+        type uint32;
+      }
+      leaf vc-remote-type {
+        description
+          "vc_remote_type";
+        type uint32;
+      }
+      list vc-proto-tnnl {
+        description
+          "VC proto tnnl";
+        key "vc-proto-name";
+        leaf vc-proto-name {
+          description
+            "protocol name";
+          type string;
+        }
+        leaf vc-ldp-tunnel-id {
+          description
+            "protocol ldp tunnel id";
+          type uint32;
+        }
+        leaf vc-ldp-name {
+          description
+            "ldp name";
+          type string;
+        }
+        leaf vc-lsp-name {
+          description
+            "lsp name";
+          type string;
+        }
+        leaf vc-peer-lsp-cos-enabled {
+          description
+            "peer cos enabled";
+          type boolean;
+        }
+        leaf vc-peer-lsp-cos-value {
+          description
+            "peer cos value";
+          type uint8;
+        }
+      }
+      list vc-assigned-lsp {
+        description
+          " VC assigned lsp";
+        key "vc-lsp-name";
+        leaf vc-lsp-name {
+          description
+            "lsp name";
+          type string;
+        }
+      }
+    }
+  }
+}

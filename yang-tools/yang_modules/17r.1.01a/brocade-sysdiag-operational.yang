@@ -1,0 +1,862 @@
+/*************************************************************************
+ *   Copyright (C) 2017-2022 Brocade Communications Systems, Inc.          *
+ *   All rights reserved.                                                  *
+ ************************************************************************/
+module brocade-sysdiag-operational {
+  namespace "urn:brocade.com:mgmt:brocade-sysdiag-operational";
+  prefix sysdiag-operational;
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal:\t130 Holger Way
+        San Jose, CA 95134 U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage sysdiag";
+
+  revision 2017-10-12 {
+    description
+      "First implementation of sysdiag module";
+  }
+
+  container tm-state {
+    description
+      "TM statistics";
+    config false;
+    container cngn-mon-dev {
+      description
+        "TM discard pkt config";
+      leaf discard-pkt-threshold {
+        description
+          "Discard packet threshold";
+        type uint32;
+      }
+      leaf discard-log-interval {
+        description
+          "Discard packet log interval";
+        type uint16;
+      }
+    }
+    container cngn-mon-voq {
+      description
+        "TM discard voq pkt config";
+      leaf discard-voq-pkt-threshold {
+        description
+          "Discard VOQ packet threshold";
+        type uint32;
+      }
+      leaf discard-voq-log-interval {
+        description
+          "Discard VOQ packet log interval ";
+        type uint16;
+      }
+    }
+    container cngn-mon-del-pkt {
+      description
+        "TM delete pkt config";
+      leaf delete-pkt-threshold {
+        description
+          "Delete VOQ packet threshold";
+        type uint32;
+      }
+      leaf delete-log-interval {
+        description
+          "Delete VOQ packet log interval ";
+        type uint16;
+      }
+    }
+    list tmdevicestataggr {
+      description
+        "Get TM device stats from all towers and all slots";
+      key "slot tower";
+      leaf slot {
+        description
+          "slot id to get tm devices stats";
+        type uint16;
+      }
+      leaf tower {
+        description
+          "tower id to get tm device stats";
+        type uint16;
+      }
+      leaf ingress-total-pkt-cnt-aggr {
+        description
+          "ingress_total_pkt_cnt";
+        type uint64;
+      }
+      leaf cpu-pkt-cnt-aggr {
+        description
+          "CPU generated packet count";
+        type uint64;
+      }
+      leaf nif-pkt-cnt-aggr {
+        description
+          "Packets received by ingress NIF";
+        type uint64;
+      }
+      leaf oamp-pkt-cnt-aggr {
+        description
+          "OAMP packet count";
+        type uint64;
+      }
+      leaf olp-pkt-cnt-aggr {
+        description
+          "OLP packet count";
+        type uint64;
+      }
+      leaf rcy-pkt-cnt-aggr {
+        description
+          "RCY packet count";
+        type uint64;
+      }
+      leaf mmu-pkt-cnt-aggr {
+        description
+          "MMU generated packet count";
+        type uint64;
+      }
+      leaf enque-pkt-cnt-aggr {
+        description
+          "Enqueue packet count";
+        type uint64;
+      }
+      leaf deque-pkt-cnt-aggr {
+        description
+          "Dequeue packet count";
+        type uint64;
+      }
+      leaf total-discard-pkt-cnt-aggr {
+        description
+          "Total discard packet count";
+        type uint64;
+      }
+      leaf deleted-pkt-cnt-aggr {
+        description
+          "Delete packet count";
+        type uint64;
+      }
+      leaf invalid-queue-pkt-aggr {
+        description
+          "Resovled to be dropped count";
+        type uint64;
+      }
+      leaf ipt-fdt-pkt-cnt-aggr {
+        description
+          "IPT FDT packet count";
+        type uint64;
+      }
+      leaf ipt-crc-err-pkt-cnt-aggr {
+        description
+          "IPT CRC Err packet count";
+        type uint64;
+      }
+      leaf uni-pkt-cnt-aggr {
+        description
+          "uni_pkt_cnt";
+        type uint64;
+      }
+      leaf fqp-pkt-cnt-aggr {
+        description
+          "fqp_pkt_cnt";
+        type uint64;
+      }
+      leaf uni-discard-pkt-cnt-aggr {
+        description
+          "PQP UC discards";
+        type uint64;
+      }
+      leaf mcast-discard-pkt-cnt-aggr {
+        description
+          "PQP MC discards";
+        type uint64;
+      }
+      leaf mcast-pkt-cnt-aggr {
+        description
+          "mcast_pkt_cnt";
+        type uint64;
+      }
+      leaf ehp-discard-cnt-aggr {
+        description
+          "ehp_discard_cnt";
+        type uint64;
+      }
+      leaf prp-uc-discard-cnt-aggr {
+        description
+          "PRP UC dicards";
+        type uint64;
+      }
+      leaf prp-mc-discard-cnt-aggr {
+        description
+          "PRP MC discards";
+        type uint64;
+      }
+      leaf prp-sop-uc-discard-cnt-aggr {
+        description
+          "PRP SOP UC discards";
+        type uint64;
+      }
+      leaf prp-sop-mc-discard-cnt-aggr {
+        description
+          "PRP UC dicards";
+        type uint64;
+      }
+      leaf ehp-mc-high-discard-cnt-aggr {
+        description
+          "MC Pruning High Prio";
+        type uint64;
+      }
+      leaf ehp-mc-low-discard-cnt-aggr {
+        description
+          "MC Pruning Low Prio";
+        type uint64;
+      }
+      leaf erpp-lag-pruning-discard-cnt-aggr {
+        description
+          "Lag Pruning Discards";
+        type uint64;
+      }
+      leaf erpp-pmf-discard-cnt-aggr {
+        description
+          "PMF Discards";
+        type uint64;
+      }
+      leaf erpp-vlan-membership-discard-cnt-aggr {
+        description
+          "Vlan membership Discards";
+        type uint64;
+      }
+      leaf epe-discard-cnt-aggr {
+        description
+          "EPE dicards packet count";
+        type uint64;
+      }
+      leaf epe-cnt-aggr {
+        description
+          "epe packet count";
+        type uint64;
+      }
+      leaf tot-egr-pkt-cnt-aggr {
+        description
+          "Total egress packet count";
+        type uint64;
+      }
+    }
+    list non-empty-voq {
+      description
+        "non empty voq's in the system";
+      key "slot tower";
+      leaf slot {
+        description
+          "slot id";
+        type uint16;
+      }
+      leaf tower {
+        description
+          "tower id";
+        type uint16;
+      }
+      leaf-list voq-id {
+        description
+          "voq id";
+        type uint32;
+      }
+      leaf-list voq-size {
+        description
+          "queue size";
+        type uint32;
+      }
+    }
+    list buf-pool-stats {
+      description
+        "TM buf pool stats per slot";
+      key "slot tower";
+      leaf slot {
+        description
+          "slot id to get buf pool stats";
+        type uint16;
+      }
+      leaf tower {
+        description
+          "tower id to get buf pool stats";
+        type uint16;
+      }
+      leaf dram-size {
+        description
+          "dram size in GB";
+        type uint16;
+      }
+      leaf bd-occ-core0 {
+        description
+          "Occ BD count for Core 0";
+        type uint64;
+      }
+      leaf buf-occ-bytes-core0 {
+        description
+          "Occ Bytes count for core 0";
+        type uint64;
+      }
+      leaf bd-occ-core1 {
+        description
+          "Occ BD count for core 1";
+        type uint64;
+      }
+      leaf buf-occ-bytes-core1 {
+        description
+          "Occ Bytes count for Core 1";
+        type uint64;
+      }
+    }
+    list tmcpustatsslot {
+      description
+        "TM voq stats for CPU port per slot";
+      key "slot-id cpugroup-id priority";
+      leaf slot-id {
+        description
+          "slot_id";
+        type uint16;
+      }
+      leaf cpugroup-id {
+        description
+          "cpugroup_id";
+        type uint16;
+      }
+      leaf priority {
+        description
+          "Traffic class priority for TM VOQ statistics";
+        type uint16;
+      }
+      leaf enquepkt {
+        description
+          "enque_pkts";
+        type uint64;
+      }
+      leaf enqueubytes {
+        description
+          "enque_bytes";
+        type uint64;
+      }
+      leaf discardpkt {
+        description
+          "discard_pkts";
+        type uint64;
+      }
+      leaf discardbytes {
+        description
+          "discard_bytes";
+        type uint64;
+      }
+      leaf currdepth {
+        description
+          "current_queue_depth";
+        type uint64;
+      }
+      leaf maxdepth {
+        description
+          "max_queue_depth";
+        type uint64;
+      }
+    }
+    list tmcpustatsslotallgrp {
+      description
+        "TM voq stats for CPU port per slot for all CPU group";
+      key "slot-id priority";
+      leaf slot-id {
+        description
+          "slot_id";
+        type uint16;
+      }
+      leaf priority {
+        description
+          "Traffic class priority for TM VOQ statistics";
+        type uint16;
+      }
+      leaf enquepkt {
+        description
+          "enque_pkts";
+        type uint64;
+      }
+      leaf enqueubytes {
+        description
+          "enque_bytes";
+        type uint64;
+      }
+      leaf discardpkt {
+        description
+          "discard_pkts";
+        type uint64;
+      }
+      leaf discardbytes {
+        description
+          "discard_bytes";
+        type uint64;
+      }
+      leaf currdepth {
+        description
+          "current_queue_depth";
+        type uint64;
+      }
+      leaf maxdepth {
+        description
+          "max_queue_depth";
+        type uint64;
+      }
+    }
+    list tm-top-discard-pkt-data {
+      description
+        "TM voq stats to get list of top discarded destination ports";
+      key "slot tower id";
+      leaf slot {
+        description
+          "slot id to get top discarded destination ports";
+        type uint16;
+      }
+      leaf tower {
+        description
+          "tower id to get top discarded destination ports";
+        type uint16;
+      }
+      leaf id {
+        description
+          "unique id to get top discarded destination ports";
+        type uint16;
+      }
+      leaf dest-port {
+        description
+          "destination port having one of the highest discarded packets";
+        type string;
+      }
+      leaf priority {
+        description
+          "priority of the highest discarded packets";
+        type uint16;
+      }
+      leaf queue {
+        description
+          "Queue id that is having discarded packets";
+        type uint32;
+      }
+      leaf discardpkt {
+        description
+          "count of the number of packets that are discarded";
+        type uint64;
+      }
+    }
+    list tm-top-max-queue-depth-data {
+      description
+        "TM voq stats to get list of top max queue depth";
+      key "slot tower id";
+      leaf slot {
+        description
+          "slot id to get top max queue depth";
+        type uint16;
+      }
+      leaf tower {
+        description
+          "tower id to get top max queue depth";
+        type uint16;
+      }
+      leaf id {
+        description
+          "unique id to get top max queue depth";
+        type uint16;
+      }
+      leaf dest-port {
+        description
+          "destination port having one of the highest max queue depth";
+        type string;
+      }
+      leaf priority {
+        description
+          "priority of the highest max queue depth";
+        type uint16;
+      }
+      leaf queue {
+        description
+          "Queue id that is having max queue depth";
+        type uint32;
+      }
+      leaf max-queue-depth {
+        description
+          "value of max queue depth";
+        type uint32;
+      }
+      leaf min-threshold {
+        description
+          "minimum threshold value for filtering";
+        type uint32;
+      }
+      leaf max-utilization {
+        description
+          "maximum buffer utilization of current destination port";
+        type uint32;
+      }
+    }
+    list tm-max-buff-util-data {
+      description
+        "Snapshot of max TM buffer utilzation";
+      key "slot tower";
+      leaf slot {
+        description
+          "slot id to get top discarded destination ports";
+        type uint16;
+      }
+      leaf tower {
+        description
+          "tower id to get top discarded destination ports";
+        type uint16;
+      }
+      leaf max-buff-size {
+        description
+          "Max size of the available buffer";
+        type uint64;
+      }
+      leaf max-buff-util {
+        description
+          "Buffer utilization of maximum buffere available";
+        type uint16;
+      }
+    }
+    list tmvoqstatistics {
+      description
+        "Get TM VOQ statistics";
+      key "ing-slot ing-tower egr-voqid";
+      leaf ing-slot {
+        description
+          "ingress slot to get tm voq statistics";
+        type uint16;
+      }
+      leaf ing-tower {
+        description
+          "ingress tpwer to get tm voq statistics";
+        type uint16;
+      }
+      leaf egr-voqid {
+        description
+          "egress voq-id to get tm voq statistics";
+        type uint16;
+      }
+      leaf priority {
+        description
+          "Traffic class priority for TM VOQ statistics";
+        type uint16;
+      }
+      leaf enquepkt {
+        description
+          "Count of packets enqueued in TM VOQ";
+        type uint64;
+      }
+      leaf enqueubytes {
+        description
+          "Count of bytes enqueued in TM VOQ";
+        type uint64;
+      }
+      leaf discardpkt {
+        description
+          "Count of packets discarded for respective TM VOQ";
+        type uint64;
+      }
+      leaf discardbytes {
+        description
+          "Count of bytes discarded for respective TM VOQ";
+        type uint64;
+      }
+      leaf currdepth {
+        description
+          "Current queue depth size of respective TM VOQ";
+        type uint64;
+      }
+      leaf maxdepth {
+        description
+          "Maxixum depth reached for respective TM VOQ";
+        type uint64;
+      }
+    }
+  }
+  list cpu-interface-state {
+    description
+      "CPU ethernet interface stats";
+    config false;
+    key "ifname";
+    leaf ifname {
+      description
+        "Interface name";
+      type string;
+    }
+    container stats {
+      description
+        "CPU ethernet interface stats detail";
+      leaf gos-link-status {
+        description
+          "Link status";
+        type string;
+      }
+      leaf gos-tx-pkts-cnt {
+        description
+          "Tx packets counter";
+        type uint64;
+      }
+      leaf gos-tx-bytes-cnt {
+        description
+          "Tx bytes counter";
+        type uint64;
+      }
+      leaf gos-tx-errors-cnt {
+        description
+          "Tx error counter";
+        type uint64;
+      }
+      leaf gos-tx-drop-cnt {
+        description
+          "Tx drop counter";
+        type uint64;
+      }
+      leaf gos-tx-overrun-error-cnt {
+        description
+          "Tx overrun error counter";
+        type uint64;
+      }
+      leaf gos-tx-carrier-error-cnt {
+        description
+          "Tx carrier error counter";
+        type uint64;
+      }
+      leaf gos-rx-pkts-cnt {
+        description
+          "Rx packets counter";
+        type uint64;
+      }
+      leaf gos-rx-bytes-cnt {
+        description
+          "Rx bytes counter";
+        type uint64;
+      }
+      leaf gos-rx-errors-cnt {
+        description
+          "Rx errors counter";
+        type uint64;
+      }
+      leaf gos-rx-drop-cnt {
+        description
+          "Rx drop counter";
+        type uint64;
+      }
+      leaf gos-rx-overrun-error-cnt {
+        description
+          "Rx overrun error counter";
+        type uint64;
+      }
+      leaf gos-rx-frame-error-cnt {
+        description
+          "Rx frame error counter";
+        type uint64;
+      }
+      leaf host-link-status {
+        description
+          "Link status";
+        type string;
+      }
+      leaf host-tx-pkts-cnt {
+        description
+          "Tx packets counter";
+        type uint64;
+      }
+      leaf host-tx-bytes-cnt {
+        description
+          "Tx bytes counter";
+        type uint64;
+      }
+      leaf host-tx-errors-cnt {
+        description
+          "Tx error counter";
+        type uint64;
+      }
+      leaf host-tx-drop-cnt {
+        description
+          "Tx drop counter";
+        type uint64;
+      }
+      leaf host-tx-overrun-error-cnt {
+        description
+          "Tx overrun error counter";
+        type uint64;
+      }
+      leaf host-tx-carrier-error-cnt {
+        description
+          "Tx carrier error counter";
+        type uint64;
+      }
+      leaf host-rx-pkts-cnt {
+        description
+          "Rx packets counter";
+        type uint64;
+      }
+      leaf host-rx-bytes-cnt {
+        description
+          "Rx bytes counter";
+        type uint64;
+      }
+      leaf host-rx-errors-cnt {
+        description
+          "Rx errors counter";
+        type uint64;
+      }
+      leaf host-rx-drop-cnt {
+        description
+          "Rx drop counter";
+        type uint64;
+      }
+      leaf host-rx-overrun-error-cnt {
+        description
+          "Rx overrun error counter";
+        type uint64;
+      }
+      leaf host-rx-frame-error-cnt {
+        description
+          "Rx frame error counter";
+        type uint64;
+      }
+      leaf host-tx-aborted-error-cnt {
+        description
+          "Tx aborted error counter";
+        type uint64;
+      }
+      leaf host-tx-fifo-error-cnt {
+        description
+          "Tx fifo error counter";
+        type uint64;
+      }
+      leaf host-tx-timeout-cnt {
+        description
+          "Tx timeout counter";
+        type uint64;
+      }
+      leaf host-tx-flow-control-xon-cnt {
+        description
+          "Tx flow control xon counter";
+        type uint64;
+      }
+      leaf host-tx-flow-control-xoff-cnt {
+        description
+          "Tx flow control xoff counter";
+        type uint64;
+      }
+      leaf host-tx-pkts-64bytes-cnt {
+        description
+          "Tx packets 64 bytes counter";
+        type uint64;
+      }
+      leaf host-tx-pkts-64-127bytes-cnt {
+        description
+          "Tx packets 64 to 127 bytes counter";
+        type uint64;
+      }
+      leaf host-tx-pkts-128-255bytes-cnt {
+        description
+          "Tx packets 128 to 255 bytes counter";
+        type uint64;
+      }
+      leaf host-tx-pkts-256-511bytes-cnt {
+        description
+          "Tx packets 256 to 511 bytes counter";
+        type uint64;
+      }
+      leaf host-tx-pkts-512-1023bytes-cnt {
+        description
+          "Tx packets 512 to 1023 bytes counter";
+        type uint64;
+      }
+      leaf host-tx-pkts-1024bytes-max-cnt {
+        description
+          "Tx packets 1024 to Max bytes counter";
+        type uint64;
+      }
+      leaf host-tx-bcast-pkts-cnt {
+        description
+          "Tx drop counter";
+        type uint64;
+      }
+      leaf host-tx-mcast-pkts-cnt {
+        description
+          "Tx drop counter";
+        type uint64;
+      }
+      leaf host-rx-crc-error-cnt {
+        description
+          "Rx crc error counter";
+        type uint64;
+      }
+      leaf host-rx-fifo-error-cnt {
+        description
+          "Rx fifo error counter";
+        type uint64;
+      }
+      leaf host-rx-missed-errors-cnt {
+        description
+          "Rx missed errors counter";
+        type uint64;
+      }
+      leaf host-rx-no-dma-resource-cnt {
+        description
+          "Rx no dma resource";
+        type uint64;
+      }
+      leaf host-rx-flow-control-xon-cnt {
+        description
+          "Rx flow control xon counter";
+        type uint64;
+      }
+      leaf host-rx-flow-control-xoff-cnt {
+        description
+          "Rx flow control xoff counter";
+        type uint64;
+      }
+      leaf host-rx-pkts-64bytes-cnt {
+        description
+          "Rx packets 64 bytes counter";
+        type uint64;
+      }
+      leaf host-rx-pkts-64-127bytes-cnt {
+        description
+          "Rx packets 64 to 127 bytes counter";
+        type uint64;
+      }
+      leaf host-rx-pkts-128-255bytes-cnt {
+        description
+          "Rx packets 128 to 255 bytes counter";
+        type uint64;
+      }
+      leaf host-rx-pkts-256-511bytes-cnt {
+        description
+          "Rx packets 256 to 511 bytes counter";
+        type uint64;
+      }
+      leaf host-rx-pkts-512-1023bytes-cnt {
+        description
+          "Rx packets 512 to 1023 bytes counter";
+        type uint64;
+      }
+      leaf host-rx-pkts-1024bytes-max-cnt {
+        description
+          "Rx packets 1024 to Max bytes counter";
+        type uint64;
+      }
+      leaf host-rx-good-pkts-cnt {
+        description
+          "Rx good pkts counter";
+        type uint64;
+      }
+      leaf host-rx-bcast-pkts-cnt {
+        description
+          "Rx broadcast pkts counter";
+        type uint64;
+      }
+      leaf host-rx-mcast-pkts-cnt {
+        description
+          "Rx multicast counter";
+        type uint64;
+      }
+    }
+  }
+}

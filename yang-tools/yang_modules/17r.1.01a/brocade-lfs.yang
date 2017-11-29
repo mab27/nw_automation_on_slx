@@ -1,0 +1,102 @@
+/*********************************************************************
+ * Copyright (c) 2016 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-lfs.yang: Brocade link fault signaling  module data model
+ *
+ * Feb 2016, Manoj Valan
+ *
+ *
+ ********************************************************************/
+module brocade-lfs {
+  namespace "urn:brocade.com:mgmt:brocade-lfs";
+  prefix lfs;
+
+  import brocade-interface {
+    prefix interface;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+             San Jose, CA 95134
+             U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This module manages link fault signal (LFS)";
+
+  revision 2010-04-28 {
+    description
+      "Initial version of this management module.";
+  }
+
+  container link-fault-signaling {
+    leaf rx {
+      type enumeration {
+        enum "on" {
+          value 1;
+          description
+            "on";
+        }
+        enum "off" {
+          description
+            "off";
+          value 2;
+        }
+      }
+    }
+    leaf tx {
+      type enumeration {
+        enum "on" {
+          value 1;
+          description
+            "on";
+        }
+        enum "off" {
+          value 2;
+          description
+            "off";
+        }
+      }
+    }
+  }
+
+  grouping common-lfs-cmds {
+    container link-fault-signaling {
+      leaf rx {
+        type enumeration {
+          enum "on" {
+            value 1;
+            description
+              "on";
+          }
+          enum "off" {
+            value 2;
+            description
+              "off";
+          }
+        }
+      }
+      leaf tx {
+        type enumeration {
+          enum "on" {
+            value 1;
+            description
+              "on";
+          }
+          enum "off" {
+            value 2;
+            description
+              "off";
+          }
+        }
+      }
+    }
+  }
+
+  augment "/interface:interface/interface:ethernet" {
+    uses common-lfs-cmds;
+  }
+}

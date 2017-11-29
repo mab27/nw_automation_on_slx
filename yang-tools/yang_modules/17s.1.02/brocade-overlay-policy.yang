@@ -1,0 +1,191 @@
+/*********************************************************************
+ * Copyright (c) 2015 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-overlay-policy.yang: Brocade overlay policy module for VxLan/GRE overlays
+ *
+ *  May 2016, Prasanna Mallappa 
+ *
+ *
+ ********************************************************************/
+module brocade-overlay-policy {
+  namespace "urn:brocade.com:mgmt:brocade-overlay-policy";
+  prefix overlay-policy;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications";
+  contact
+    "DCMd and SSM-QoS Team";
+  description
+    "This module describes the data model for overlay-policy based on Modular QoS.";
+
+  revision 2016-05-15 {
+    description
+      "Initial Version";
+  }
+
+  typedef map-name-type {
+    type string {
+      pattern "[a-zA-Z]{1}([-a-zA-Z0-9_]{0,62})";
+    }
+    description
+      "The definition for the map name.";
+  }
+
+  typedef mac-ip-acl-name {
+    type string {
+      pattern "[a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,62})";
+    }
+    description
+      "The definition for the MAC/IP access-list name.";
+  }
+
+  typedef ipv4-address {
+    type inet:ipv4-address;
+  }
+
+  typedef seq-num {
+    type uint64 {
+      range "0 .. 4294967290";
+    }
+  }
+
+  typedef vni {
+    type uint32 {
+      range "1 .. 16777215";
+    }
+  }
+
+  list overlay-class-map {
+    description
+      "Define overlay-class-map[Packet Classification criteria 
+       for overlay packets (outer packets).";
+    key "cmap-name";
+    leaf cmap-name {
+      type map-name-type;
+    }
+    list cmap-seq {
+      key "cmap-seq-num";
+      leaf cmap-seq-num {
+        type seq-num;
+      }
+      container match {
+        choice overlay-match-ip {
+          case case-overlay-ip-any {
+            leaf any {
+              type empty;
+            }
+          }
+          case case-overlay-ip-src-dest {
+            container contn-src-dst {
+              leaf source {
+                type ipv4-address;
+              }
+              leaf destination {
+                type ipv4-address;
+              }
+            }
+          }
+          case case-overlay-ip-endpoint {
+            leaf endpoint {
+              type ipv4-address;
+            }
+          }
+          case case-overlay-ip-src {
+            leaf source {
+              type ipv4-address;
+            }
+          }
+          case case-overlay-ip-dest {
+            leaf destination {
+              type ipv4-address;
+            }
+          }
+        }
+        leaf encap-type {
+          type enumeration {
+            enum "vxlan" {
+              value 1;
+            }
+          }
+        }
+        leaf vni {
+          type vni;
+        }
+      }
+    }
+  }
+  list overlay-policy-map {
+    description
+      "Define a policy-map[Actions on the classified packet].";
+    key "pmap-name";
+    leaf pmap-name {
+      type map-name-type;
+    }
+    list pmap-seq {
+      key "pmap-seq-num overlay-class";
+      leaf pmap-seq-num {
+        type seq-num;
+      }
+      leaf overlay-class {
+        type map-name-type;
+      }
+      container ip-acl {
+        container ip {
+          container access-group {
+            leaf ip-access-list {
+              type mac-ip-acl-name;
+            }
+          }
+        }
+      }
+      container ipv6-acl {
+        container ipv6 {
+          container access-group {
+            leaf ipv6-access-list {
+              type mac-ip-acl-name;
+            }
+          }
+        }
+      }
+      container mac-acl {
+        container mac {
+          container access-group {
+            leaf mac-access-list {
+              type mac-ip-acl-name;
+            }
+          }
+        }
+      }
+      container service-policy {
+        leaf sp-name {
+          type map-name-type;
+        }
+      }
+    }
+  }
+  list overlay-transit {
+    max-elements "1";
+    key "transit-name";
+    leaf transit-name {
+      type string {
+        pattern "[a-zA-Z]{1}([-a-zA-Z0-9_]{0,62})";
+      }
+    }
+    list overlay-service-policy {
+      key "overlay-sp-direction overlay-sp-pmap-name";
+      leaf overlay-sp-direction {
+        type enumeration {
+          enum "in" {
+            value 1;
+          }
+        }
+      }
+      leaf overlay-sp-pmap-name {
+        type map-name-type;
+      }
+    }
+  }
+}

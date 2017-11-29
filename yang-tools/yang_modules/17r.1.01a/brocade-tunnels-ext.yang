@@ -1,0 +1,405 @@
+/*********************************************************************
+ * Copyright (c) 2015 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-tunnels-ext.yang
+ *      Brocade IP tunnel management module
+ *
+ * Oct 2015, Sachin Holla
+ *
+ *
+ ********************************************************************/
+module brocade-tunnels-ext {
+  namespace "urn:brocade.com:mgmt:brocade-tunnels-ext";
+  prefix tunnels-ext;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import brocade-tunnels {
+    prefix tnl;
+  }
+  import brocade-common-def {
+    prefix comn;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+             San Jose, CA 95134
+             U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     Web: www.brocade.com";
+  description
+    "This management module is an instrumentation to manage the IP
+     tunnels. It is a extension of brocade-tunnels module.
+     
+     Glossary of the terms used:
+     ---------------------------
+     VXLAN       Virtual eXtensible Local Area Network (RFC 7348)
+     VXLAN Gateway
+                Software module in Brocade VCS switch which forwards
+                traffic between VXLAN and non-VXLAN environments.
+     NSX         NSX is a network virtualization platform solution
+                by Vmware. Refer - www.vmware.com/in/products/nsx
+     NSX Controller
+                NSX Controller is the cluster of x86 systems which
+                manage the virtual networks.
+     TCP         Transmission Control Protocol (RFC 793)
+     SSL         Secure Sockets Layer Protocol (RFC 6101)
+     BFD         Bidirectional Forwarding Detection (RFC 5880)
+     BGP-EVPN    Border Gateway Protocol, Ethernet VPN (RFC 7432)
+     
+    ";
+
+  revision 2015-10-15 {
+    description
+      "Initial version. Includes custom RPC definitions to get
+       tunnel summary and tunnel statistics.";
+  }
+
+  typedef config-src-type {
+    type enumeration {
+      enum "vtep-controller" {
+        value 1;
+        description
+          "Matches the tunnels discovered by connecting to
+           VTEP controller (NSX, Openstack etc). These
+           controllers use OVSDB hardware_vtep schema for
+           configuring tunnels on the switch.";
+      }
+      enum "site-config" {
+        value 2;
+        description
+          "Matches tunnels created through layer2 extension
+           site configuration.";
+      }
+      enum "bgp-evpn" {
+        value 3;
+        description
+          "Matches tunnels created by VTEP discovery function
+           of BGP-EVPN.";
+      }
+    }
+  }
+
+  typedef proto-state-type {
+    type enumeration {
+      enum "up" {
+        value 1;
+      }
+      enum "down" {
+        value 2;
+      }
+    }
+  }
+
+  rpc get-tunnel-info {
+    description
+      "Retrieves summary of one or more tunnles from the switch.
+       Output contains tunnel records sorted in the ascending order
+       of tunnel id.
+       
+       Input filters can be used to select specific set of
+       tunnels matching a criteria. See rpc input section for
+       details of input filters. Only one filter can be specified.
+       RPC returns data about all tunnels if no filters are
+       specified.
+       
+       Data is aggregated from all nodes of cluster. Client can
+       use 'node-id' filter to retrieve data from specific node.
+       
+       When output contains large number of records, they are sent
+       in multiple pages. Page size is implementation specific.
+       Output contains an opaque data 'next-page-cursor' when more
+       pages exist. Client is expected to invoke the RPC again
+       with same filters and pass this opaque data as 'page-cursor'
+       paramater. This cycle should be repeated until the output
+       does not include 'next-page-cursor' value, indicating there
+       are no more data. Client should not pass 'page-cursor'
+       paramater to retrieve first page.
+       
+       This RPC is equivalent of 'show tunnel brief' CLI.";
+    input {
+      leaf page-cursor {
+        type string;
+        description
+          "Opaque data identifying the next page, returned by
+           previous RPC call. RPC returns first page data if
+           this value is not present or empty.";
+      }
+      leaf-list node-id {
+        type uint32;
+        description
+          "Node from which the tunnel information to be
+           retrieved. If not specified, data is retrieved from
+           all nodes.";
+      }
+      choice filter-type {
+        mandatory false;
+        description
+          "Input filter.";
+        case filter-by-id {
+          leaf id {
+            type tnl:tunnel-id-type;
+            description
+              "Filter by tunnel id. Output can have at
+               most only one tunnel information. The
+               last-rcvd-record-id parameter is ignored.";
+          }
+        }
+        case filter-by-mode {
+          leaf mode {
+            type tnl:tunnel-mode-type;
+            description
+              "Filter by tunnel mode.";
+          }
+        }
+        case filter-by-gateway {
+          leaf gw-name {
+            type tnl:overlay-gw-name-type;
+            description
+              "Filter by overlay gateway name.";
+          }
+        }
+        case filter-by-sip {
+          leaf src-ip {
+            type inet:ipv4-address;
+            description
+              "Filter by tunnel source IP. Only v4 address
+               are supported in this release.";
+          }
+        }
+        case filter-by-dip {
+          leaf dest-ip {
+            type inet:ipv4-address;
+            description
+              "Filter by tunnel destination IP. Only v4
+               address are supported in this release.";
+          }
+        }
+        case filter-by-cfg-src {
+          leaf config-src {
+            type config-src-type;
+            description
+              "Filter by configuration source.";
+          }
+        }
+        case filter-by-site {
+          leaf site-name {
+            type tnl:site-id-type;
+            description
+              "Filter by overlay site name.";
+          }
+        }
+        case filter-by-adm-state {
+          leaf admin-state {
+            type proto-state-type;
+            description
+              "Filter by tunnel admin state.";
+          }
+        }
+        case filter-by-opr-state {
+          leaf oper-state {
+            type proto-state-type;
+            description
+              "Filter by tunnel oper state.";
+          }
+        }
+        case filter-by-bfd-state {
+          leaf bfd-state {
+            type proto-state-type;
+            description
+              "Filter by tunnel bfd state.";
+          }
+        }
+      }
+    }
+    output {
+      list tunnel {
+        leaf id {
+          type tnl:tunnel-id-type;
+          description
+            "Tunnel id.";
+        }
+        leaf mode {
+          type tnl:tunnel-mode-type;
+          description
+            "Tunnel encapsulation type.";
+        }
+        leaf src-ip {
+          type inet:ip-address;
+          description
+            "Tunnel source IP address.";
+        }
+        leaf dest-ip {
+          type inet:ip-address;
+          description
+            "Tunnel destination IP address.";
+        }
+        leaf vrf {
+          type comn:vrf-name;
+          description
+            "Tunnel vrf; encapsulated frames are routed to
+             destination IP address in this vrf.";
+        }
+        leaf config-src {
+          type config-src-type;
+          description
+            "Tunnel configuration source; indicates how
+             tunnel was created.";
+        }
+        leaf admin-state {
+          type proto-state-type;
+          description
+            "Tunnel admin state.";
+        }
+        leaf oper-state {
+          type proto-state-type;
+          description
+            "Tunnel oper state.";
+        }
+        leaf bfd-state {
+          type proto-state-type;
+          description
+            "Tunnel bfd state. No value will be returned if
+             bfd is not enabled on this tunnel.";
+        }
+        container nodes {
+          description
+            "Indicates the nodes from which this tunnel
+             data are retrieved.";
+          leaf-list node-id {
+            type uint32;
+            description
+              "Node id";
+          }
+        }
+        leaf has-conflicts {
+          type empty;
+          description
+            "Indicates this tunnel has conflicting data
+             across nodes. Client can repeat the rpc with
+             node-id filter to inspect data from specific
+             node.";
+        }
+      }
+      leaf next-page-cursor {
+        type string;
+        description
+          "Opaque data identifying the next page. Client must
+           pass this value as 'page-cursor' parameter in
+           following RPC to retrieve next page tunnel data.
+           Value will not be present if no more tunnel records
+           exist (current page is the last page).";
+      }
+    }
+  }
+  rpc get-tunnel-statistics {
+    description
+      "Retrieves tunnel statistics - count of bytes & frames
+       transmitted and received. Output records are sorted in
+       ascending order of tunnel id.
+       
+       Data is aggregated from all nodes of cluster. Clients can
+       use 'node-id' filter to retrieve statistics from specific
+       node.
+       
+       When output contains large number of records, they are sent
+       in multiple pages. Page size is implementation specific.
+       Output contains an opaque data 'next-page-cursor' when more
+       pages exist. Client is expected to invoke the RPC again
+       with same filters and pass this opaque data as 'page-cursor'
+       paramater. This cycle should be repeated until the output
+       does not include 'next-page-cursor' value, indicating there
+       are no more data. Client should not pass 'page-cursor'
+       paramater to retrieve first page.
+       
+       This RPC is equivalent of 'show tunnel statistics' CLI.";
+    input {
+      leaf page-cursor {
+        type string;
+        description
+          "Opaque data identifying the next page, returned by
+           previous RPC call. RPC returns first page data if
+           this value is not present or empty.";
+      }
+      leaf-list node-id {
+        type uint32;
+        description
+          "Node from which the tunnel statistics to be
+           retrieved. If not specified, data is retrieved from
+           all nodes.";
+      }
+      choice filter-type {
+        mandatory false;
+        description
+          "Input filter.";
+        case filter-by-id {
+          leaf id {
+            type tnl:tunnel-id-type;
+            description
+              "Filter by tunnel id. Output can have at
+               most only one tunnel information. The
+               last-rcvd-record-id parameter is ignored.";
+          }
+        }
+        case filter-by-mode {
+          leaf mode {
+            type tnl:tunnel-mode-type;
+            description
+              "Filter by tunnel mode.";
+          }
+        }
+        case filter-by-gateway {
+          leaf gw-name {
+            type tnl:overlay-gw-name-type;
+            description
+              "Filter by overlay gateway name.";
+          }
+        }
+      }
+    }
+    output {
+      list tunnel-stat {
+        leaf id {
+          type tnl:tunnel-id-type;
+          description
+            "Tunnel id.";
+        }
+        leaf tx-frames {
+          type uint64;
+          description
+            "Number of frames transmitted.";
+        }
+        leaf tx-bytes {
+          type uint64;
+          description
+            "Number of bytes transmitted.";
+        }
+        leaf rx-frames {
+          type uint64;
+          description
+            "Number of frames received.";
+        }
+        leaf rx-bytes {
+          type uint64;
+          description
+            "Number of bytes received. Value will not be
+             present if the hardware does not support rx byte
+             counter.";
+        }
+      }
+      leaf next-page-cursor {
+        type string;
+        description
+          "Opaque data identifying the next page. Client must
+           pass this value as 'page-cursor' parameter in
+           following RPC to retrieve next page tunnel data.
+           Value will not be present if no more tunnel records
+           exist (current page is the last page).";
+      }
+    }
+  }
+}

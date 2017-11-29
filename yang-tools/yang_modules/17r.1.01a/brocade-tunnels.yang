@@ -1,0 +1,280 @@
+/*********************************************************************
+ * Copyright (c) 2013 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-tunnels.yang
+ *      Brocade IP tunnel management module
+ *
+ * May 2013, Sachin Holla
+ *
+ *
+ ********************************************************************/
+module brocade-tunnels {
+  namespace "urn:brocade.com:mgmt:brocade-tunnels";
+  prefix tunnels;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import brocade-common-def {
+    prefix comn;
+  }
+  import brocade-intf-loopback {
+    prefix lo;
+  }
+  import brocade-mac-access-list {
+    prefix mac-access-list;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+             San Jose, CA 95134
+             U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     Web: www.brocade.com";
+  description
+    "This management module is an instrumentation to manage the IP
+     tunnels.
+     
+     Glossary of the terms used:
+     ---------------------------
+     VXLAN       Virtual eXtensible Local Area Network. See internet
+                draft draft-mahalingam-dutt-dcops-vxlan-03.
+     VXLAN Gateway
+                Software module in Brocade VCS switch which forwards
+                traffic between VXLAN and non-VXLAN environments.
+     NSX         NSX is a network virtualization platform solution
+                by Vmware. Refer - www.vmware.com/in/products/nsx
+     NSX Controller
+                NSX Controller is the cluster of x86 systems which
+                manage the virtual networks.
+     TCP         Transmission Control Protocol (RFC 793)
+     SSL         Secure Sockets Layer Protocol (RFC 6101)
+     BFD         Bidirectional Forwarding Detection (RFC 5880)
+     
+    ";
+
+  revision 2015-06-01 {
+    description
+      "Option to configure BGP-EVPN based MAC learning for layer2
+       extension site.";
+  }
+  revision 2014-03-25 {
+    description
+      "Following enhancements are done to overlay-gateway:
+       1. Support for loopback interface as gateway IP address
+       2. Layer2 extension gateways
+      ";
+  }
+  revision 2013-05-03 {
+    description
+      "Initial version. Includes management of Overlay gateway
+       instances and NSX controller connection parameters.";
+  }
+
+  typedef name32-type {
+    description
+      "Defines common type for names. Name can contain maximum of
+       32 characters. Alphabets, digits, hyphen and underscore
+       charcters are allowed.";
+    type string {
+      pattern "[-_a-zA-Z0-9]{1,32}";
+    }
+  }
+
+  typedef overlay-gw-name-type {
+    type name32-type;
+  }
+
+  typedef tunnel-id-type {
+    type uint32 {
+      range "1..100000";
+    }
+  }
+
+  typedef site-id-type {
+    description
+      "Unique site identifier. Can be max 63 characters string
+       containing alphabets, digits, hyphen or underscore.";
+    type string {
+      pattern "[-_a-zA-Z0-9]{1,63}";
+    }
+  }
+
+  typedef overlay-gw-type {
+    type enumeration {
+      enum "layer2-extension" {
+        value 2;
+      }
+    }
+  }
+
+  typedef tunnel-mode-type {
+    type enumeration {
+      enum "vxlan" {
+        value 1;
+      }
+      enum "gre" {
+        value 2;
+      }
+    }
+  }
+
+  typedef vlan-range-type {
+    type string {
+      pattern "[0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+)?)*";
+      length "1..255";
+    }
+  }
+
+  typedef vlan-type {
+    type uint32 {
+      range "1..4090";
+    }
+  }
+
+  typedef bridge-domain-id-type {
+    type uint32 {
+      range "1..4096";
+    }
+  }
+
+  typedef bridge-domain-id-range-type {
+    type comn:ui32-range;
+  }
+
+  typedef vni-type {
+    type uint32 {
+      range "1..16777215";
+    }
+  }
+
+  typedef vni-num-type {
+    type uint32 {
+      range "1..16777215";
+    }
+  }
+
+  list overlay-gateway {
+    description
+      "";
+    key "name";
+    max-elements "1";
+    leaf name {
+      type overlay-gw-name-type;
+      description
+        "Name of Overlay Gateway";
+    }
+    leaf gw-type {
+      type overlay-gw-type;
+      description
+        "Defines type of function provided by this gateway.";
+    }
+    container ip {
+      container interface {
+        container loopback {
+          leaf loopback-id {
+            type lo:intf-loopback-port-type;
+          }
+        }
+      }
+    }
+    container map {
+      list vlan-vni-mapping {
+        key "vid";
+        leaf vid {
+          type vlan-type;
+        }
+        leaf vni {
+          type vni-type;
+        }
+      }
+      list bd-vni-mapping {
+        key "bdid";
+        leaf bdid {
+          type bridge-domain-id-type;
+        }
+        leaf vni {
+          type vni-type;
+        }
+      }
+      container vlan-and-bd {
+        container vni {
+          leaf auto {
+            type empty;
+          }
+        }
+      }
+    }
+    list site {
+      key "name";
+      description
+        "Site represents a remote VCS to which tunnel need to be
+         setup. Site is identified by a name.";
+      leaf name {
+        type site-id-type;
+      }
+      list tunnel-dst {
+        max-elements "1";
+        key "address";
+        description
+          "Site IP address configuration represents
+           destination IP of tunnel to the site. Tunnel will
+           not be setup without the IP address configuration.";
+        leaf address {
+          type inet:ip-address;
+        }
+      }
+      list static {
+        key "mac-address vni-num";
+        description
+          "Site Static MAC address configuration";
+        leaf mac-address {
+          type mac-access-list:mac-address-type;
+        }
+        leaf vni-num {
+          type vni-num-type;
+        }
+      }
+      container extend {
+        description
+          "This configuration represents the layer2 domains to
+           be extended towards this site. In other words, it
+           represents switchport VLANs on the tunnels to the
+           site. VNI classification will be derived from 'map
+           vlan' configuration on this overlay gateway.";
+        container vlan {
+          leaf add {
+            type vlan-range-type;
+          }
+          leaf remove {
+            type vlan-range-type;
+          }
+        }
+        container bridge-domain {
+          leaf bd-add {
+            type bridge-domain-id-range-type;
+          }
+          leaf bd-remove {
+            type bridge-domain-id-range-type;
+          }
+        }
+      }
+      leaf shutdown {
+        type empty;
+        description
+          "Admin shutdown tunnels to this site. By default
+           tunnels are admin enabled.";
+      }
+    }
+    leaf activate {
+      type empty;
+      description
+        "Activates the Overlay gateway instance. Gateway is
+         inactive by default. When gateway is inactive all
+         associated tunnels will also be inactive (oper down).";
+    }
+  }
+}

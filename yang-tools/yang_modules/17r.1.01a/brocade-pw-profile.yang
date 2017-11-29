@@ -1,0 +1,79 @@
+/*********************************************************************
+ * Copyright (c) 2014 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-pw-profile.yang: Brocade Psuedo Wire Profile data model
+ *
+ *
+ *
+ ********************************************************************/
+module brocade-pw-profile {
+  namespace "urn:brocade.com:mgmt:brocade-pw-profile";
+  prefix pw-profile;
+
+  import brocade-common-def {
+    prefix common-def;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way,
+             San Jose, CA 95134
+              U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage PW-Profile .";
+
+  revision 2014-04-14 {
+    description
+      "Initial version of this management module
+       brocade-PWProfile.";
+  }
+
+  list pw-profile {
+    max-elements "64";
+    key "pw-profile-name";
+    leaf pw-profile-name {
+      type common-def:name-string64;
+    }
+    container mtu {
+      description
+        "MTU for a Psuedo Wire";
+      leaf mtu-value {
+        type uint32 {
+          range "64..15966";
+        }
+        default "1500";
+        description
+          "MTU value is used during Psuedo Wire setup signalling.";
+      }
+    }
+    leaf mtu-enforce {
+      description
+        "Whether to enforce mtu check during PW signalling";
+      type boolean;
+    }
+    container vc-mode {
+      description
+        "Psuedo Wire type";
+      leaf vc-mode {
+        type enumeration {
+          enum "tag" {
+            value 1;
+          }
+          enum "raw" {
+            value 2;
+          }
+          enum "raw-passthrough" {
+            value 3;
+          }
+        }
+        default "raw";
+        description
+          "The mode will be used during Psuedo Wire setup signalling process";
+      }
+    }
+  }
+}

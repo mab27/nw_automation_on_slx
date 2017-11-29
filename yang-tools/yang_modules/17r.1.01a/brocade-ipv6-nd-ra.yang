@@ -1,0 +1,338 @@
+/*********************************************************************
+ * Copyright (c) 2013 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-ipv6-nd-ra.yang: Brocade IPv6 Neighbour Discovery and  Router Advertisement data model.
+ *
+ * Aug 2013, Ruchi Prashar
+ *
+ *
+ ********************************************************************/
+module brocade-ipv6-nd-ra {
+  namespace "urn:brocade.com:mgmt:brocade-ipv6-nd-ra";
+  prefix ipv6-nd-ra;
+
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-ipv6-config {
+    prefix ipv6-config;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import brocade-common-def {
+    prefix common-def;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+            San Jose, CA 95134
+            U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     Web: www.brocade.com";
+  description
+    "This management sub-module contains the configuration
+     for Neighbor Discovery and Router Advertisement.";
+
+  revision 2013-07-26 {
+    description
+      "Initial version of this management module.";
+  }
+
+  typedef macAddr {
+    type string {
+      pattern "[0-9a-fA-F]{4}(.[0-9a-fA-F]{4}){2}";
+    }
+  }
+
+  typedef neighbor-ipv6-address {
+    type inet:ipv6-address;
+  }
+
+  typedef nd-suppress-ipv6-address {
+    type inet:ipv6-address;
+  }
+
+  grouping intf-ipv6-nd-ra {
+    container ipv6-intf-cmds {
+      leaf vrrp-suppress-interface-ra {
+        type empty;
+      }
+      container nd {
+        leaf managed-config-flag {
+          type empty;
+        }
+        leaf other-config-flag {
+          type empty;
+        }
+        leaf broadcast-mac-trap {
+          type empty;
+        }
+        leaf ra-lifetime {
+          default "1800";
+          type common-def:time-interval-sec {
+            range "0..9000";
+          }
+        }
+        leaf reachable-time {
+          default "0";
+          type common-def:time-interval-msec {
+            range "0..3600000";
+          }
+        }
+        leaf mtu {
+          default "1500";
+          type uint32 {
+            range "1280..65535";
+          }
+        }
+        leaf retrans-timer {
+          default "0";
+          type common-def:time-interval-msec {
+            range "0..4294967295";
+          }
+        }
+        leaf hoplimit {
+          default "64";
+          type uint32 {
+            range "0..255";
+          }
+        }
+        leaf ns-interval {
+          default "1";
+          type common-def:time-interval-sec {
+            range "1..5";
+          }
+        }
+        container suppress-ra {
+          leaf suppress-ra-flag {
+            type empty;
+          }
+          leaf suppress-ra-mtu {
+            type empty;
+          }
+          leaf suppress-ra-all {
+            type empty;
+          }
+        }
+        container ra-interval {
+          leaf max-interval {
+            default "600";
+            type common-def:time-interval-sec {
+              range "4..1800";
+            }
+          }
+          leaf min {
+            default "200";
+            type common-def:time-interval-sec {
+              range "4..1800";
+            }
+          }
+        }
+        leaf send-ra {
+          type empty;
+        }
+        container router-preference {
+          leaf router-pref-high {
+            type empty;
+          }
+          leaf router-pref-low {
+            type empty;
+          }
+          leaf router-pref-medium {
+            type empty;
+          }
+        }
+        list ra-dns-server {
+          key "dns-server-prefix";
+          leaf dns-server-prefix {
+            type inet:ipv6-address;
+          }
+          leaf dns-server-lifetime-multiplier {
+            default "100";
+            type uint32 {
+              range "100..200";
+            }
+          }
+        }
+        list ra-domain-name {
+          key "domain-name-string";
+          leaf domain-name-string {
+            type string;
+          }
+          leaf domain-name-lifetime-multiplier {
+            default "100";
+            type uint32 {
+              range "100..200";
+            }
+          }
+        }
+        container address {
+          list suppressing-address {
+            key "suppress-ipv6-address";
+            leaf suppress-ipv6-address {
+              type nd-suppress-ipv6-address;
+            }
+            leaf suppress-per-address {
+              type empty;
+            }
+          }
+          leaf address-suppress-all {
+            type empty;
+          }
+        }
+        container dad {
+          leaf attempts {
+            default "2";
+            type uint32 {
+              range "0..10";
+            }
+          }
+          leaf time {
+            default "1";
+            type common-def:time-interval-sec {
+              range "1..5";
+            }
+          }
+        }
+        container cache {
+          leaf expire {
+            default "14400";
+            type common-def:time-interval-sec {
+              range "30..14400";
+            }
+          }
+        }
+        list prefix {
+          key "prefix-ipv6-address";
+          leaf prefix-ipv6-address {
+            type inet:ipv6-prefix;
+          }
+          uses prefix-cmds;
+        }
+      }
+      list neighbor {
+        key "ipv6-address";
+        leaf ipv6-address {
+          type neighbor-ipv6-address;
+        }
+        leaf hardware-address {
+          type macAddr;
+        }
+      }
+    }
+  }
+
+  grouping prefix-cmds {
+    container lifetime {
+      choice ch-valid-type {
+        case ca-no-advertise {
+          leaf no-advertise {
+            type empty;
+          }
+        }
+        case ca-valid-lifetime {
+          leaf valid-lifetime {
+            default "0";
+            type common-def:time-interval-sec {
+              range "0..4294967295";
+            }
+          }
+        }
+        case ca-valid-infinite {
+          leaf valid-infinite {
+            type empty;
+          }
+        }
+      }
+      container preferred {
+        choice ch-preferred-type {
+          case ca-preferred-lifetime {
+            leaf preferred-lifetime {
+              default "0";
+              type common-def:time-interval-sec {
+                range "0..4294967295";
+              }
+            }
+          }
+          case ca-preferred-infinite {
+            leaf preferred-infinite {
+              type empty;
+            }
+          }
+        }
+        container prefix-flags {
+          leaf no-autoconfig {
+            type empty;
+          }
+          leaf no-onlink {
+            type empty;
+          }
+          leaf off-link {
+            type empty;
+          }
+        }
+      }
+    }
+  }
+
+  grouping ipv6-globalNdRa {
+    container ipv6-global-cmds {
+      container nd-global {
+        leaf global-suppress-ra {
+          type empty;
+        }
+        list dns-server-global {
+          key "dns-server-prefix-global";
+          leaf dns-server-prefix-global {
+            type inet:ipv6-address;
+          }
+          leaf dns-server-lifetime-global {
+            default "100";
+            type uint32 {
+              range "100..200";
+            }
+          }
+        }
+        list domain-name-global {
+          key "domain-name-string-global";
+          leaf domain-name-string-global {
+            type string;
+          }
+          leaf domain-name-lifetime-global {
+            default "100";
+            type uint32 {
+              range "100..200";
+            }
+          }
+        }
+      }
+    }
+  }
+
+  augment "/common-def:ipv6" {
+    uses ipv6-globalNdRa;
+  }
+
+  grouping intf-phy-ipv6-nd-ra {
+    container ipv6-nd-ra {
+      uses intf-ipv6-nd-ra;
+    }
+  }
+
+  grouping intf-vlan-ipv6-nd-ra {
+    container ipv6-nd-ra {
+      uses intf-ipv6-nd-ra;
+    }
+  }
+
+  augment "/interface:interface/interface:ethernet/interface:ipv6" {
+    uses intf-phy-ipv6-nd-ra;
+  }
+  augment "/common-def:routing-system/interface:interface/interface:ve/ipv6-config:ipv6" {
+    uses intf-vlan-ipv6-nd-ra;
+  }
+}

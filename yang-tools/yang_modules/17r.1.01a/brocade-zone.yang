@@ -1,0 +1,83 @@
+/*********************************************************************
+ * Copyright (c) 2011 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * zone.yang-: Brocade Zone Data Model
+ *
+ * April 2011, Daniel Chung  
+ *
+ *
+ ********************************************************************/
+module brocade-zone {
+  namespace "urn:brocade.com:mgmt:brocade-zone";
+  prefix brocade-zone;
+
+  revision 2010-12-01 {
+    description
+      "Initial release.
+       
+       Contains Zone display & configuration implementations";
+  }
+
+  rpc show-zoning-enabled-configuration {
+    description
+      "This will display the Zoning Enabled-Configuration
+       database.";
+    input {
+      choice request-type {
+        case get-request {
+          leaf zone-name-pattern {
+            mandatory false;
+            type string;
+            description
+              "This specifies the enabled-zone for which
+               this function is invoked. This is 
+               optional input, when not specified means
+               to get the entire enabled-zone database.";
+          }
+        }
+        case get-next-request {
+          leaf last-rcvd-zone-name {
+            mandatory false;
+            type string;
+            description
+              "This specifies the last enabled-zone
+               received in the preceeding request.
+               Is an optional field for the first
+               request. For subsequent requests
+               this must be filled with the last 
+               enabled-zone received in the
+               preceeding request.";
+          }
+        }
+      }
+    }
+    output {
+      container enabled-configuration {
+        leaf cfg-name {
+          type string;
+        }
+        list enabled-zone {
+          key "zone-name";
+          leaf zone-name {
+            type string;
+          }
+          list member-entry {
+            key "entry-name";
+            leaf entry-name {
+              type string;
+            }
+          }
+        }
+        leaf has-more {
+          type boolean;
+          description
+            "Informs whether backend has more
+             zoning output that is not part of 
+             the current response. Based on this
+             flag remaining enabled-zones can be 
+             fetched with another request";
+        }
+      }
+    }
+  }
+}

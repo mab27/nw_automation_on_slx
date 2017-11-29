@@ -1,0 +1,295 @@
+/*********************************************************************
+ * Copyright (c) 2013 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-license.yang: Brocade Licence Management data model
+ *
+ * July 2011, Vignesh Kumar, Murali Lachireddy, Dave Bhuyan
+ *
+ *
+ ********************************************************************/
+module brocade-license {
+  namespace "urn:brocade.com:mgmt:brocade-license";
+  prefix brocade-license;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-common-def {
+    prefix common-def;
+  }
+
+  organization "Brocade Communications Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 1745 Technology Drive,
+     San Jose, CA 95110
+     U.S.A
+     Tel: +1-408-392-6061
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This management sub-module is an instrumentation to manage
+     the licenses in the VCS fabric.
+     
+     Glossary of the terms used:
+     ---------------------------
+     DPOD        -   Dynamic ports on demand
+     licStr      -   License string (i.e., license key)
+     POD         -   Ports on demand
+     
+    ";
+
+  revision 2011-08-22 {
+    description
+      "Providing Netconf Support to the existing version.";
+  }
+
+  typedef license-dpod-operation-type {
+    type enumeration {
+      enum "release" {
+        value 1;
+        description
+          "DPOD operation to release a license.";
+      }
+      enum "reserve" {
+        value 2;
+        description
+          "DPOD operation to reserve a license.";
+      }
+    }
+  }
+
+  augment "/common-def:show" {
+    container license {
+      tailf:action "id" {
+        input;
+        output {
+          list licenseid-list {
+            leaf license-id {
+              type string;
+              description
+                "Indicates license Id.";
+            }
+          }
+        }
+      }
+    }
+    container enh-show-license-keys {
+      tailf:action "license" {
+        input {
+          choice single-or-all {
+            case eula {
+              leaf eula {
+                type empty;
+                description
+                  "End User License Agreement(EULA)";
+              }
+            }
+          }
+        }
+        output {
+          list license-list {
+            list license-details {
+              leaf license-data {
+                type string;
+                description
+                  "Indicates license data.";
+              }
+              leaf license-expiry-date {
+                type string;
+                description
+                  "Indicates license expiry date
+                   information.";
+              }
+              leaf license-feature-name {
+                type string;
+                description
+                  "Indicates license feature name.";
+              }
+              leaf license-capacity {
+                type string;
+                description
+                  "Indicates license capacity.";
+              }
+              leaf license-consumed {
+                type string;
+                description
+                  "Indicates license consumed.";
+              }
+              leaf license-valid-state {
+                type string;
+                description
+                  "Indicates license validity state.";
+              }
+              leaf license-vendor-info {
+                type string;
+                description
+                  "Indicates Trust Based license control information.";
+              }
+              leaf license-eula-date {
+                type string;
+                description
+                  "Indicates the date EULA was accepted.";
+              }
+            }
+          }
+        }
+      }
+      tailf:action "dpod" {
+        input;
+        output {
+          list showdpod-list {
+            list dpod-details {
+              leaf dpod-ports {
+                type uint32;
+                description
+                  "Indicates number of DPOD ports
+                   available in this switch.";
+              }
+              leaf dpod-licenses-installed {
+                type uint32;
+                description
+                  "Indicates number of POD licenses
+                   installed.";
+              }
+              leaf num-ports-provisioned {
+                type uint32;
+                description
+                  "Indicates port assignments
+                   provisioned for use in this
+                   switch.";
+              }
+              leaf num-ports-reserved {
+                type uint32;
+                description
+                  "Indicates ports assigned to
+                   installed licenses.";
+              }
+              leaf num-ports-license-available {
+                type uint32;
+                description
+                  "Indicates license reservations
+                   are still available for use by
+                   unassigned ports.";
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  typedef eula_features {
+    type enumeration {
+      enum "ADVANCED_FEATURES" {
+        value 49;
+      }
+    }
+  }
+
+  container license {
+    description
+      "The function for installing or uninstalling the license
+       keys.";
+    tailf:action "add" {
+      input {
+        choice str-file {
+          case licStr {
+            leaf licStr {
+              type string {
+                length "1..256";
+              }
+              mandatory true;
+              description
+                "License string";
+            }
+          }
+          case FTP-URL {
+            leaf FTP-URL {
+              type string {
+                length "1..256";
+              }
+              mandatory true;
+              description
+                "FTP path for License file";
+            }
+          }
+          case SCP-URL {
+            leaf SCP-URL {
+              type string {
+                length "1..256";
+              }
+              mandatory true;
+              description
+                "SCP path for License file";
+            }
+          }
+        }
+        leaf slot {
+          type uint32 {
+            range "0 .. 8";
+          }
+          description
+            "slot of switch to add
+             license key to";
+        }
+      }
+    }
+    tailf:action "remove" {
+      input {
+        leaf licStr {
+          type common-def:feature-type;
+          mandatory true;
+          description
+            "Specifies the feature name or license string.";
+        }
+        leaf slot {
+          type uint32 {
+            range "0 .. 8";
+          }
+          description
+            "slot of switch to add
+             license key to";
+        }
+      }
+    }
+    tailf:action "eula" {
+      input {
+        choice accept-or-decline {
+          leaf accept {
+            type eula_features;
+            description
+              "Accept EULA for the specified feature.";
+          }
+          leaf decline {
+            type eula_features;
+            description
+              "Decline EULA for the specified feature.";
+          }
+        }
+      }
+    }
+  }
+  container dpod {
+    list port-id {
+      ordered-by user;
+      key "port-id";
+      leaf port-id {
+        type interface:interface-type;
+        mandatory true;
+        description
+          "Port details for identification
+           [slot/port].";
+      }
+      leaf operation {
+        type license-dpod-operation-type;
+        description
+          "Operation to release or reserve a DPOD
+           license for this port.";
+      }
+    }
+  }
+}

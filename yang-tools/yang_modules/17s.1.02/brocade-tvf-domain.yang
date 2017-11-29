@@ -1,0 +1,51 @@
+/*********************************************************************
+ * Copyright (c) 2017 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ *brocade-tvf-domain.yang: Brocade Transparent Vlan Flooding 
+ *
+ * Mar 2017, Namita Iyer
+ *
+ *
+ ********************************************************************/
+module brocade-tvf-domain {
+  namespace "urn:brocade.com:mgmt:brocade-tvf-domain";
+  prefix brocade-tvf-domain;
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+             San Jose, CA 95134
+             U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This submodule manages TVF Domain related CLIs.";
+
+  revision 2009-07-03 {
+    description
+      "Initial Version of this management module.";
+  }
+
+  typedef tvf-domain-type {
+    type uint32 {
+      range "1..4096";
+    }
+    description
+      "The definition for specifying a TVF Domain identifier.";
+  }
+
+  list tvf-domain {
+    key "name";
+    description
+      "The list of TVF Domains in the managed device. Each row 
+       represents a TVF Domain. User can create/delete an entry in 
+       to this list.";
+    leaf name {
+      type tvf-domain-type;
+      description
+        "The TVF Domain identifier.";
+    }
+  }
+}

@@ -1,0 +1,419 @@
+module brocade-telemetry {
+  namespace "urn:brocade.com:mgmt:brocade-telemetry";
+  prefix brocade-telemetry;
+
+  import brocade-common-def {
+    prefix common-def;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+             San Jose, CA 95134
+              U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage
+     telemetry configuration.";
+
+  revision 2016-06-29 {
+    description
+      "Initial Version of brocade-telemetry.yang";
+  }
+
+  typedef service-transport-type {
+    type enumeration {
+      enum "tcp" {
+        value 1;
+        description
+          "TCP encryption";
+      }
+      enum "ssl" {
+        value 2;
+        description
+          "SSL encryption";
+      }
+    }
+    description
+      "The definition for specifying telemetry service transport type";
+  }
+
+  typedef service-port-type {
+    type uint32 {
+      range "49152..65535";
+    }
+    description
+      "The definition for specifying telemetry service port.";
+    reference
+      "Unused ports in Dynamic and/or Private ports.
+       Internet Assigned Numbers Authority (IANA) Procedures for the
+       Management of the Service Name and Transport Protocol Port Number
+       Registry";
+  }
+
+  typedef system-profile-name-type {
+    type string {
+      pattern "default_system_utilization_statistics";
+      length "3..64";
+    }
+    description
+      "The definition for specifying telemetry system profile name";
+  }
+
+  typedef system-profile-interval-type {
+    type uint32 {
+      range "60..14400";
+    }
+    description
+      "The definition for specifying telemetry system profile interval.";
+  }
+
+  typedef system-profile-object-type {
+    type enumeration {
+      enum "total-system-memory" {
+        value 101;
+        description
+          "Total System Memory";
+      }
+      enum "total-used-memory" {
+        value 102;
+        description
+          "Total Used Memory";
+      }
+      enum "total-free-memory" {
+        value 103;
+        description
+          "Total Free Memory";
+      }
+      enum "cached-memory" {
+        value 104;
+        description
+          "Cached Memory";
+      }
+      enum "buffers" {
+        value 105;
+        description
+          "buffers";
+      }
+      enum "user-free-memory" {
+        value 106;
+        description
+          "User Free Memory";
+      }
+      enum "kernel-free-memory" {
+        value 107;
+        description
+          "Kernel Free Memory";
+      }
+      enum "total-swap-memory" {
+        value 108;
+        description
+          "Total Swap Memory";
+      }
+      enum "total-free-swap-memory" {
+        value 109;
+        description
+          "Total Free Swap Memory";
+      }
+      enum "total-used-swap-memory" {
+        value 110;
+        description
+          "Total Used Swap Memory";
+      }
+      enum "user-process" {
+        value 111;
+        description
+          "User Process";
+      }
+      enum "system-process" {
+        value 112;
+        description
+          "System Process";
+      }
+      enum "niced-process" {
+        value 113;
+        description
+          "Niced Process";
+      }
+      enum "iowait" {
+        value 114;
+        description
+          "iowait";
+      }
+      enum "hw-interrupt" {
+        value 115;
+        description
+          "Hardware Interrupt";
+      }
+      enum "sw-interrupt" {
+        value 116;
+        description
+          "Software Interrupt";
+      }
+      enum "idle-state" {
+        value 117;
+        description
+          "Idle State";
+      }
+      enum "steal-time" {
+        value 118;
+        description
+          "Steal Time";
+      }
+      enum "uptime" {
+        value 119;
+        description
+          "Uptime";
+      }
+    }
+    description
+      "The definition for specifying the system profile object";
+  }
+
+  typedef interface-profile-name-type {
+    type string {
+      pattern "default_interface_statistics";
+      length "3..64";
+    }
+    description
+      "The definition for specifying telemetry interface profile name";
+  }
+
+  typedef interface-profile-interval-type {
+    type uint32 {
+      range "10..3600";
+    }
+    description
+      "The definition for specifying telemetry interface profile interval.";
+  }
+
+  typedef interface-profile-object-type {
+    type enumeration {
+      enum "out-pkts" {
+        value 201;
+        description
+          "Tx/Out Packets";
+      }
+      enum "in-pkts" {
+        value 202;
+        description
+          "Rx/In Packets";
+      }
+      enum "out-unicast-pkts" {
+        value 203;
+        description
+          "Tx/Out Unicast Packets";
+      }
+      enum "in-unicast-pkts" {
+        value 204;
+        description
+          "Rx/In Unicast Packets";
+      }
+      enum "out-broadcast-pkts" {
+        value 205;
+        description
+          "Tx/Out Broadcast Packets";
+      }
+      enum "in-broadcast-pkts" {
+        value 206;
+        description
+          "Rx/In Broadcast Packets";
+      }
+      enum "out-multicast-pkts" {
+        value 207;
+        description
+          "Tx/Out Multicast Packets";
+      }
+      enum "in-multicast-pkts" {
+        value 208;
+        description
+          "Rx/In Multicast Packets";
+      }
+      enum "out-pkts-per-second" {
+        value 209;
+        description
+          "Tx/Out Packets per second";
+      }
+      enum "in-pkts-per-second" {
+        value 210;
+        description
+          "Rx/In Packets per second";
+      }
+      enum "out-bandwidth" {
+        value 211;
+        description
+          "Tx/Out bandwidth";
+      }
+      enum "in-bandwidth" {
+        value 212;
+        description
+          "Rx/In bandwidth";
+      }
+      enum "out-octets" {
+        value 213;
+        description
+          "Tx/Out bytes";
+      }
+      enum "in-octets" {
+        value 214;
+        description
+          "Rx/In bytes";
+      }
+      enum "out-errors" {
+        value 215;
+        description
+          "Tx/Out errors";
+      }
+      enum "in-errors" {
+        value 216;
+        description
+          "Rx/In errors";
+      }
+      enum "out-crc-errors" {
+        value 217;
+        description
+          "Tx/Out CRC errors";
+      }
+      enum "in-crc-errors" {
+        value 218;
+        description
+          "Rx/In CRC errors";
+      }
+      enum "out-discards" {
+        value 219;
+        description
+          "Tx/Out Packet drops";
+      }
+      enum "in-discards" {
+        value 220;
+        description
+          "Rx/In Packet drops";
+      }
+    }
+    description
+      "The definition for specifying the interface profile object";
+  }
+
+  typedef telemetry-profile-type {
+    type enumeration {
+      enum "system-profile" {
+        value 1;
+        description
+          "System Telemetry Profile";
+      }
+      enum "interface-profile" {
+        value 2;
+        description
+          "Interface Telemetry Profile";
+      }
+    }
+  }
+
+  typedef collector-profile-name-type {
+    type string {
+      pattern "default_system_utilization_statistics|default_interface_statistics";
+      length "3..64";
+    }
+    description
+      "Definition for specifying Collector-profile-name";
+  }
+
+  typedef phy-interface-range-cli-pattern {
+    type string {
+      pattern "(((([0-9]|1[0-6])/([1-9]|[1-9][0-9]|[1-9][0-9][0-9])(-([1-9]|[1-9][0-9]|[1-9][0-9][0-9]))?)|(([0-9]|1[0-6])/([1-9]|[1-9][0-9]|[1-9][0-9][0-9]):[1-4](-[1-4])?))((,([0-9]|1[0-6])/([1-9]|[1-9][0-9]|[1-9][0-9][0-9])(-([1-9]|[1-9][0-9]|[1-9][0-9][0-9]))?)(,([0-9]|1[0-6])/([1-9]|[1-9][0-9]|[1-9][0-9][0-9]):[1-4](-[1-4])?)?)*((,([0-9]|1[0-6])/([1-9]|[1-9][0-9]|[1-9][0-9][0-9]):[1-4](-[1-4])?)(,([0-9]|1[0-6])/([1-9]|[1-9][0-9]|[1-9][0-9][0-9])(-([1-9]|[1-9][0-9]|[1-9][0-9][0-9]))?)?)*)";
+      length "1..1000";
+    }
+    description
+      "The definition for specifying the Physical Interface range.";
+  }
+
+  container telemetry {
+    list collector {
+      max-elements "8";
+      key "collector-name";
+      leaf collector-name {
+        type common-def:name-string32;
+      }
+      container collector-ip {
+        leaf collector-ip-address {
+          type inet:ipv4-address;
+        }
+        leaf collector-port {
+          type inet:port-number;
+        }
+      }
+      list collector-profile {
+        key "collector-profiletype collector-profilename";
+        leaf collector-profiletype {
+          type telemetry-profile-type;
+        }
+        leaf collector-profilename {
+          type collector-profile-name-type;
+        }
+      }
+      leaf collector-activate {
+        type empty;
+      }
+    }
+    list server {
+      key "use-vrf";
+      max-elements "1";
+      leaf use-vrf {
+        type common-def:vrf-name;
+      }
+      leaf transport {
+        type service-transport-type;
+      }
+      leaf port {
+        type service-port-type;
+      }
+      leaf activate {
+        type empty;
+      }
+    }
+    container profile {
+      list system-utilization {
+        key "name";
+        leaf name {
+          type system-profile-name-type;
+        }
+        leaf interval {
+          type system-profile-interval-type;
+        }
+        list add {
+          key "object";
+          leaf object {
+            type system-profile-object-type;
+          }
+        }
+      }
+      list interface {
+        key "name";
+        leaf name {
+          type interface-profile-name-type;
+        }
+        leaf interval {
+          type interface-profile-interval-type;
+        }
+        list interface {
+          key "interface-range";
+          leaf interface-range {
+            type phy-interface-range-cli-pattern;
+          }
+        }
+        list add {
+          key "object";
+          leaf object {
+            type interface-profile-object-type;
+          }
+        }
+      }
+    }
+  }
+}

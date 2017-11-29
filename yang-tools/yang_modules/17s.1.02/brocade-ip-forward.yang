@@ -1,0 +1,43 @@
+/*********************************************************************
+ * Copyright (c) 2010 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-ip-forward.yang: Brocade IP Forwarding data model.
+ *
+ * Jul 2011, Sanjeev C Joshi
+ *
+ *
+ ********************************************************************/
+module brocade-ip-forward {
+  namespace "urn:brocade.com:mgmt:brocade-ip-forward";
+  prefix ip-forward;
+
+  import brocade-common-def {
+    prefix common-def;
+  }
+  import brocade-vcs {
+    prefix vcs;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 1745 Technology Drive,
+     San Jose, CA 95110
+     U.S.A
+     Tel: +1-408-392-6061
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentationfor the management
+     of CIDR multipath IP Routes. Multipath IP routes have the
+     same network  number but differing network masks.";
+
+  revision 2011-07-18 {
+    description
+      "Initial version of this management module.";
+  }
+
+  augment "/common-def:ipv6" {
+    when "/vcs:vcsmode/vcs:vcs-mode = \"false\"";
+  }
+}

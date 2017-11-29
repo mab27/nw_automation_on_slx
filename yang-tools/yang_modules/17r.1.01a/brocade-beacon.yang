@@ -1,0 +1,107 @@
+/*********************************************************************
+ * Copyright (c) 2011, 2012 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-beacon.yang: Brocade Beacon Management Module.
+ *
+ * July 2011,  Hung Nguyen
+ *
+ *
+ ********************************************************************/
+module brocade-beacon {
+  namespace "urn:brocade.com:mgmt:brocade-beacon";
+  prefix beacon;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import ietf-yang-types {
+    prefix ietfyang;
+  }
+
+  revision 2011-10-31 {
+    description
+      "Initial version of this management module.";
+  }
+
+  grouping beacon-option-info {
+    leaf start {
+      type ietfyang:date-and-time;
+    }
+    leaf length {
+      type uint32 {
+        range "1 .. 1440";
+      }
+    }
+  }
+
+  container beacon {
+    container enable {
+      container interface {
+        tailf:action "ethernet" {
+          input {
+            container eth_option {
+              leaf ethernet {
+                type string {
+                  length "3..16";
+                }
+                mandatory true;
+              }
+              uses beacon-option-info;
+            }
+          }
+          output;
+        }
+        tailf:action "port-channel" {
+          input {
+            container lag_option {
+              leaf port-channel {
+                type uint32 {
+                  range "1 .. 250";
+                }
+                mandatory true;
+              }
+              uses beacon-option-info;
+            }
+          }
+          output;
+        }
+      }
+      tailf:action "chassis" {
+        input {
+          uses beacon-option-info;
+        }
+        output;
+      }
+    }
+    container disable {
+      container interface {
+        tailf:action "ethernet" {
+          input {
+            leaf ethernet {
+              type string {
+                length "3..16";
+              }
+              mandatory true;
+            }
+          }
+          output;
+        }
+        tailf:action "port-channel" {
+          input {
+            leaf port-channel {
+              type uint32 {
+                range "1 .. 250";
+              }
+              mandatory true;
+            }
+          }
+          output;
+        }
+      }
+      tailf:action "chassis" {
+        input;
+        output;
+      }
+    }
+  }
+}

@@ -1,0 +1,171 @@
+/*********************************************************************
+ * Copyright (c) 2013 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-mld-snooping.yang : Brocade MLD Snooping data model
+ * August 2013, Ankit Jindal
+ ********************************************************************/
+module brocade-mld-snooping {
+  namespace "urn:brocade.com:mgmt:brocade-mld-snooping";
+  prefix mld-snooping;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import brocade-interface {
+    prefix interface;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 1745 Technology Drive,
+             San Jose, CA 95110 
+             U.S.A
+     Tel: +1-408-392-6061
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage the 
+     'Multicast Listener Discovery (MLD) Snooping'.";
+
+  revision 2013-07-29 {
+    description
+      "Initial version of this module.";
+  }
+
+  typedef lmqt-type {
+    type uint32 {
+      range "100..25500";
+    }
+  }
+
+  typedef qi-type {
+    type uint32 {
+      range "1..18000";
+    }
+  }
+
+  typedef qmrt-type {
+    type uint32 {
+      range "1..25";
+    }
+  }
+
+  typedef lmqc-type {
+    type uint32 {
+      range "2..10";
+    }
+  }
+
+  typedef rob-type {
+    type uint32 {
+      range "2..10";
+    }
+  }
+
+  typedef sqc-type {
+    type uint32 {
+      range "1..10";
+    }
+  }
+
+  typedef sqi-type {
+    type uint32 {
+      range "1..450";
+    }
+  }
+
+  typedef string-type {
+    type string {
+      length "1..10";
+    }
+  }
+
+  augment "/interface:interface-vlan/interface:vlan/interface:ipv6" {
+    description
+      "Internet Protocol v6 (IPv6)";
+    container mldVlan {
+      container snooping {
+        leaf last-member-query-interval {
+          type lmqt-type;
+          units "milliSeconds";
+        }
+        leaf last-member-query-count {
+          type lmqc-type;
+        }
+        leaf startup-query-interval {
+          type sqi-type;
+          units "Seconds";
+        }
+        leaf startup-query-count {
+          type sqc-type;
+          units "Seconds";
+        }
+        leaf query-max-response-time {
+          type qmrt-type;
+          units "Seconds";
+        }
+        leaf query-interval {
+          type qi-type;
+          units "Seconds";
+        }
+        leaf enable {
+          type empty;
+        }
+        leaf fast-leave {
+          type empty;
+        }
+        leaf robustness-variable {
+          type rob-type;
+        }
+        container querier {
+          leaf qenable {
+            type empty;
+          }
+        }
+        container mrouter {
+          list interface {
+            key "if-type value";
+            leaf if-type {
+              type enumeration {
+                enum "Ethernet" {
+                  value 8;
+                }
+                enum "Port-channel" {
+                  value 3;
+                }
+              }
+            }
+            leaf value {
+              type string-type;
+            }
+          }
+        }
+        list static-group {
+          key "mcast-address interface if-type value";
+          leaf mcast-address {
+            type inet:ipv6-address;
+          }
+          leaf interface {
+            type enumeration {
+              enum "interface";
+            }
+          }
+          leaf if-type {
+            type enumeration {
+              enum "Port-channel" {
+                value 3;
+              }
+              enum "Ethernet" {
+                value 8;
+              }
+            }
+          }
+          leaf value {
+            type string-type;
+          }
+        }
+      }
+    }
+  }
+}

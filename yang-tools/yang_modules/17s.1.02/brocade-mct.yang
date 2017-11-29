@@ -1,0 +1,165 @@
+/*********************************************************************
+ * Copyright (c) 2011 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-mct.yang: Brocade Mct data model
+ *
+ *
+ *
+ ********************************************************************/
+module brocade-mct {
+  namespace "urn:brocade.com:mgmt:brocade-mct";
+  prefix mct;
+
+  import brocade-common-def {
+    prefix common-def;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way,
+             San Jose, CA 95134
+              U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage Mct .";
+
+  revision 2011-06-21 {
+    description
+      "Initial version of this management module
+       brocade-mct.";
+  }
+
+  typedef string-type {
+    type string {
+      length "1..10";
+    }
+  }
+
+  typedef cluster-client-esi {
+    type string {
+      pattern "([0-9a-fA-F]{1,2}(:[0-9a-fA-F]{1,2}){2,8})(;[0-9a-fA-F]{1,2}(:[0-9a-fA-F]{1,2}){2,8})*" {
+        description
+          "";
+      }
+    }
+    description
+      "Cluster client ESI";
+  }
+
+  list cluster {
+    max-elements "1";
+    key "cluster-name cluster-id";
+    leaf cluster-name {
+      type common-def:name-string64;
+      description
+        "Name for the Cluster (MAX: 64 Characters)";
+    }
+    leaf cluster-id {
+      type uint32 {
+        range "1..65535";
+      }
+    }
+    leaf cluster-control-vlan {
+      type uint16 {
+        range "1..4090";
+      }
+    }
+    container peer-interface {
+      leaf peer-if-type {
+        type enumeration {
+          enum "Ethernet" {
+            value 8;
+          }
+          enum "Port-channel" {
+            value 3;
+          }
+        }
+      }
+      leaf peer-if-name {
+        type string-type;
+      }
+    }
+    list peer {
+      max-elements "1";
+      key "peer-ip";
+      leaf peer-ip {
+        type inet:ipv4-address;
+      }
+    }
+    leaf client-interfaces-shutdown {
+      type empty;
+    }
+    leaf client-isolation-strict {
+      type empty;
+    }
+    leaf df-load-balance {
+      type empty;
+    }
+    leaf designated-forwarder-hold-time {
+      type uint16 {
+        range "1..60";
+      }
+    }
+    leaf deploy {
+      type empty;
+    }
+    list client {
+      max-elements "512";
+      key "client-name client-id";
+      leaf client-name {
+        type string {
+          length "1..64";
+        }
+      }
+      leaf client-id {
+        type uint32 {
+          range "1..512";
+        }
+      }
+      container client-interface {
+        leaf if-type {
+          type enumeration {
+            enum "Ethernet" {
+              value 8;
+            }
+            enum "Port-channel" {
+              value 3;
+            }
+          }
+        }
+        leaf if-value {
+          type string-type;
+        }
+      }
+      container esi {
+        description
+          "Ethernet Segment Id";
+        choice esi {
+          case esi-ch-val {
+            leaf esi-value {
+              type cluster-client-esi;
+            }
+          }
+          case esi-ch-auto {
+            leaf esi-auto {
+              type enumeration {
+                enum "lacp" {
+                  value 1;
+                }
+              }
+            }
+          }
+        }
+      }
+      leaf client-deploy {
+        type empty;
+      }
+    }
+  }
+}

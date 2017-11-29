@@ -1,0 +1,97 @@
+/*********************************************************************
+ * Copyright (c) 2016 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-dot3ah.yang: Brocade Link OAM Module
+ *
+ *
+ *
+ ********************************************************************/
+module brocade-dot3ah {
+  namespace "urn:brocade.com:mgmt:brocade-dot3ah";
+  prefix dot3ah;
+
+  import brocade-interface {
+    prefix interface;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way,
+             San Jose, CA 95134
+              U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage
+     Link OAM Protocol.";
+
+  revision 2016-01-03 {
+    description
+      "Initial version of this management module.";
+  }
+
+  typedef action-type {
+    type enumeration {
+      enum "block-interface" {
+        value 1;
+      }
+    }
+  }
+
+  augment "/interface:protocol" {
+    container link-oam {
+      presence "true";
+      leaf shutdown {
+        type empty;
+      }
+      leaf pdu-rate {
+        type uint32 {
+          range "1..10";
+        }
+        default "1";
+      }
+      leaf time-out {
+        type uint32 {
+          range "1..10";
+        }
+        default "5";
+      }
+    }
+  }
+  augment "/interface:interface/interface:ethernet" {
+    container link-oam-interface {
+      leaf enable {
+        type enumeration {
+          enum "active" {
+            value 1;
+          }
+          enum "passive" {
+            value 2;
+          }
+        }
+      }
+      leaf allow-loopback {
+        type empty;
+      }
+      container remote-failure {
+        container dying-gasp {
+          leaf dying-gasp-action {
+            type action-type;
+          }
+        }
+        container link-fault {
+          leaf link-fault-action {
+            type action-type;
+          }
+        }
+        container critical-event {
+          leaf critical-event-action {
+            type action-type;
+          }
+        }
+      }
+    }
+  }
+}

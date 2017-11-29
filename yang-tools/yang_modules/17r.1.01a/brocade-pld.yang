@@ -1,0 +1,58 @@
+/*********************************************************************
+ * Copyright (c) 2011 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-span.yang: Brocade SPAN  module data model
+ *
+ * March 2011, Ojasvita Parate
+ *
+ *
+ ********************************************************************/
+module brocade-pld {
+  namespace "urn:brocade.com:mgmt:brocade-pld";
+  prefix pld;
+
+  import brocade-interface {
+    prefix interface;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+             San Jose, CA 95134
+             U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This module manages port link dampening (PLD)";
+
+  revision 2010-04-28 {
+    description
+      "Initial version of this management module.";
+  }
+
+  grouping common-pld-cmds {
+    container link-error-disable {
+      leaf link-error-disable-entry {
+        type uint32 {
+          range "1..50";
+        }
+      }
+      leaf sampling-time-in-sec {
+        type uint32 {
+          range "1..65565";
+        }
+      }
+      leaf wait-time-in-sec {
+        type uint32 {
+          range "0..65565";
+        }
+      }
+    }
+  }
+
+  augment "/interface:interface/interface:ethernet" {
+    uses common-pld-cmds;
+  }
+}

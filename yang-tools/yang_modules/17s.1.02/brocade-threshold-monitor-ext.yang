@@ -1,0 +1,114 @@
+/*********************************************************************
+ * Copyright (c) 2011 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-system-monitor-ext.yang: data model for show system-monitor
+ *
+ * May 2011, Newton Oku
+ *
+ *
+ ********************************************************************/
+module brocade-threshold-monitor-ext {
+  namespace "urn:brocade.com:mgmt:brocade-threshold-monitor-ext";
+  prefix threshold-monitor-extensions;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import brocade-common-def {
+    prefix common-def;
+  }
+
+  organization "Brocade Communications Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+             San Jose, CA 95134
+             U.S.A
+     Tel: +1-408-333-6061
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This sub module defines show threshold-monitor data model
+     Copyright (c) 2011 by Brocade Communications Systems, Inc.
+     All rights reserved.";
+
+  revision 2011-05-05 {
+    description
+      "Initial version of this module.";
+  }
+
+  typedef sfp-type {
+    type enumeration {
+      enum "1GSR" {
+        value 0;
+      }
+      enum "1GLR" {
+        value 1;
+      }
+      enum "1GCOP" {
+        value 2;
+      }
+      enum "10GUSR" {
+        value 3;
+      }
+      enum "10GSR" {
+        value 4;
+      }
+      enum "10GLR" {
+        value 5;
+      }
+      enum "10GER" {
+        value 6;
+      }
+      enum "40GSR" {
+        value 7;
+      }
+      enum "40GSRINT" {
+        value 8;
+      }
+      enum "40GESR" {
+        value 9;
+      }
+      enum "40GLR" {
+        value 10;
+      }
+      enum "100GSR" {
+        value 11;
+      }
+      enum "100GLR" {
+        value 12;
+      }
+      enum "100GPSM" {
+        value 13;
+      }
+      enum "100GCWDM" {
+        value 14;
+      }
+      enum "100GCLR" {
+        value 15;
+      }
+      enum "100GLRLT" {
+        value 16;
+      }
+      enum "10GZR" {
+        value 17;
+      }
+      enum "25GSR" {
+        value 18;
+      }
+    }
+  }
+
+  augment "/common-def:show/common-def:defaults" {
+    container threshold {
+      tailf:action "sfp" {
+        input {
+          leaf type {
+            mandatory true;
+            type sfp-type;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1970 @@
+/*********************************************************************
+ * Copyright (c) 2013 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-mpls.yang: Brocade MPLS data model
+ *
+ *
+ *
+ ********************************************************************/
+module brocade-mpls {
+  namespace "urn:brocade.com:mgmt:brocade-mpls";
+  prefix mpls;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way,
+             San Jose, CA 95134
+              U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage
+     mpls protocol.";
+
+  revision 2013-11-18 {
+    description
+      "Initial version of this management module.";
+  }
+
+  typedef enable-disable {
+    type enumeration {
+      enum "disable" {
+        value 0;
+      }
+      enum "enable" {
+        value 1;
+      }
+    }
+  }
+
+  typedef strict-loose-hop {
+    type enumeration {
+      enum "strict" {
+        value 1;
+        description
+          "strict hop";
+      }
+      enum "loose" {
+        value 2;
+        description
+          "looset hop";
+      }
+    }
+  }
+
+  typedef mpls-interface-type {
+    type enumeration {
+      enum "ethernet" {
+        value 2;
+        description
+          "Ethernet interface";
+      }
+      enum "ve" {
+        value 6;
+        description
+          "VE interface";
+      }
+    }
+  }
+
+  typedef interface-type {
+    type string {
+      pattern "((([0-9]|[1][0-6])/([1-9]|[1-9][0-9]|[1-9][0-9][0-9])(:[1-4])?)|([0-9]([0-9])?([0-9])?([0-9])?))";
+      length "1..16";
+    }
+  }
+
+  grouping interface-name-info {
+    leaf interface-type {
+      type enumeration {
+        enum "ethernet" {
+          value 2;
+        }
+        enum "ve" {
+          value 6;
+        }
+      }
+    }
+    leaf interface-name {
+      type interface-type;
+    }
+  }
+
+  grouping bypass-exclude-interface-name-info {
+    leaf bypass-exclude-interface-type {
+      type mpls-interface-type;
+    }
+    leaf bypass-exclude-interface-name {
+      type interface-type;
+    }
+  }
+
+  typedef autobw-mode {
+    type enumeration {
+      enum "monitor-and-signal" {
+        value 0;
+        description
+          "Enable signaling with auto-bandwidth computed rate";
+      }
+      enum "monitor-only" {
+        value 1;
+        description
+          "Disable signaling with auto-bandwidth computed rate";
+      }
+    }
+  }
+
+  typedef cspf-computation-mode {
+    type enumeration {
+      enum "use-igp-metric" {
+        value 1;
+        description
+          "use IGP metric of the link for CSPF computation";
+      }
+      enum "use-te-metric" {
+        value 2;
+        description
+          "use TE metric of the link for CSPF computation";
+      }
+    }
+  }
+
+  typedef tie-breaking {
+    type enumeration {
+      enum "random" {
+        value 0;
+        description
+          "use random selection for cspf path tie breaking";
+      }
+      enum "least-fill" {
+        value 1;
+        description
+          "use least fill method for cspf path tie breaking";
+      }
+      enum "most-fill" {
+        value 2;
+        description
+          "use most fill method for cspf path tie breaking";
+      }
+    }
+  }
+
+  typedef mpls-ipv4-prefix {
+    type inet:ipv4-prefix;
+  }
+
+  typedef mpls-ipv4-address {
+    type inet:ipv4-address;
+  }
+
+  typedef mpls-ipv4-subnet-mask {
+    type inet:ipv4-address;
+  }
+
+  grouping mpls-ldp-ecmp {
+    leaf ldp-ecmp {
+      type uint32 {
+        range "1..16";
+      }
+      default "1";
+    }
+  }
+
+  grouping mpls-ldp-lsr-id {
+    leaf ldp-lsr-id {
+      type inet:ipv4-address;
+    }
+  }
+
+  grouping mpls-ldp-fec-128-for-auto-discovered {
+    leaf ldp-fec-128-for-auto-discovered {
+      type empty;
+    }
+  }
+
+  grouping mpls-ldp-hello-timeout-target {
+    leaf ldp-hello-timeout-target {
+      type uint32 {
+        range "2..65535";
+      }
+      default "45";
+    }
+  }
+
+  grouping mpls-ldp-hello-timeout-basic {
+    leaf ldp-hello-timeout-basic {
+      type uint32 {
+        range "2..65535";
+      }
+      default "15";
+    }
+  }
+
+  grouping mpls-ldp-hello-interval-target {
+    leaf ldp-hello-interval-target {
+      type uint32 {
+        range "1..32767";
+      }
+      default "15";
+    }
+  }
+
+  grouping mpls-ldp-hello-interval-basic {
+    leaf ldp-hello-interval-basic {
+      type uint32 {
+        range "1..32767";
+      }
+      default "5";
+    }
+  }
+
+  grouping mpls-ldp-ka-int {
+    leaf ldp-ka-int {
+      type uint32 {
+        range "1..65535";
+      }
+      default "6";
+    }
+  }
+
+  grouping mpls-ldp-ka-int-cnt {
+    leaf ldp-ka-int-cnt {
+      type uint32 {
+        range "1..65535";
+      }
+      default "6";
+    }
+  }
+
+  grouping mpls-ldp-ka-timeout {
+    leaf ldp-ka-timeout {
+      type uint32 {
+        range "1..65535";
+      }
+    }
+  }
+
+  grouping mpls-ldp-fec-filter-in {
+    leaf ldp-fec-filter-in {
+      type string {
+        length "1..64";
+      }
+    }
+  }
+
+  grouping mpls-ldp-fec-filter-out {
+    leaf ldp-fec-filter-out {
+      type string {
+        length "1..64";
+      }
+    }
+  }
+
+  grouping mpls-ldp-advertise-label {
+    leaf ldp-advertise-label {
+      type string {
+        length "1..64";
+      }
+    }
+  }
+
+  grouping mpls-ldp-session-cmds {
+    list ldp-session {
+      key "ldp-session-ip";
+      leaf ldp-session-ip {
+        type inet:ipv4-address;
+      }
+      leaf ldp-session-fec-filter-out {
+        type string {
+          length "1..64";
+        }
+      }
+      leaf ldp-session-auth-key {
+        type string {
+          length "1..80";
+        }
+      }
+    }
+  }
+
+  grouping mpls-ldp-targeted-peer {
+    list ldp-targeted-peer {
+      key "ldp-targeted-peer-ip";
+      leaf ldp-targeted-peer-ip {
+        type inet:ipv4-address;
+      }
+    }
+  }
+
+  grouping mpls-ldp-rcv-label-silence-time {
+    leaf ldp-rcv-label-silence-time {
+      type uint32 {
+        range "100..60000";
+      }
+      default "1000";
+    }
+  }
+
+  grouping mpls-ldp-gr {
+    container ldp-gr {
+      presence "true";
+      leaf ldp-gr-helper-only {
+        type empty;
+      }
+      leaf ldp-gr-max-neighbor-reconnect-time {
+        type uint32 {
+          range "60..300";
+        }
+        default "120";
+      }
+      leaf ldp-gr-max-neighbor-recovery-time {
+        type uint32 {
+          range "60..3600";
+        }
+        default "120";
+      }
+      leaf ldp-gr-reconnect-time {
+        type uint32 {
+          range "60..300";
+        }
+        default "120";
+      }
+      leaf ldp-gr-recovery-time {
+        type uint32 {
+          range "60..3600";
+        }
+        default "120";
+      }
+    }
+  }
+
+  grouping mpls-ldp-eol {
+    container ldp-eol {
+      presence "true";
+      leaf ldp-eol-tx-silence {
+        type uint32 {
+          range "100..60000";
+        }
+        default "1000";
+      }
+      leaf ldp-eol-notification {
+        type uint32 {
+          range "100..120000";
+        }
+        default "60000";
+      }
+    }
+  }
+
+  grouping mpls-ldp-tunnel-metric {
+    leaf ldp-tunnel-metric {
+      type uint32 {
+        range "0..65535";
+      }
+      default "0";
+    }
+  }
+
+  grouping mpls-ldp-lw-delay {
+    leaf ldp-lw-delay {
+      type uint32 {
+        range "0..300";
+      }
+      default "60";
+    }
+  }
+
+  grouping mpls-ldp-cmds {
+    container ldp {
+      presence "true";
+      container ldp-holder {
+        uses mpls-ldp-ecmp;
+        uses mpls-ldp-hello-interval-basic;
+        uses mpls-ldp-hello-interval-target;
+        uses mpls-ldp-hello-timeout-basic;
+        uses mpls-ldp-hello-timeout-target;
+        uses mpls-ldp-ka-int;
+        uses mpls-ldp-ka-int-cnt;
+        uses mpls-ldp-ka-timeout;
+        uses mpls-ldp-fec-filter-in;
+        uses mpls-ldp-fec-filter-out;
+        uses mpls-ldp-advertise-label;
+        uses mpls-ldp-fec-128-for-auto-discovered;
+        uses mpls-ldp-lsr-id;
+        uses mpls-ldp-session-cmds;
+        uses mpls-ldp-targeted-peer;
+        uses mpls-ldp-rcv-label-silence-time;
+        uses mpls-ldp-gr;
+        uses mpls-ldp-eol;
+        uses mpls-ldp-tunnel-metric;
+        uses mpls-ldp-lw-delay;
+      }
+    }
+  }
+
+  grouping mpls-cmds {
+    container mpls {
+      presence "true";
+      container mpls-cmds-holder {
+        uses router-mpls-cmds;
+        uses policy-cmds;
+        uses rsvp-cmds;
+        uses mpls-ldp-cmds;
+        uses group-mpls-dynamic-bypass-cmds;
+        uses mpls-interface-cmds;
+        uses autobw-template-cmds;
+        uses autobw-threshold-table-cmds;
+        uses group-cspf-group-cmds;
+        uses path-cmds;
+        uses bypass-lsp-cmds;
+        uses lsp-cmds;
+      }
+    }
+  }
+
+  grouping router-mpls-cmds {
+    container lsp-xc-traps {
+      leaf lsp-xc-traps-enable {
+        type empty;
+      }
+    }
+  }
+
+  grouping autobw-template-cmds {
+    list autobw-template {
+      max-elements "100";
+      key "autobw-template-name";
+      leaf autobw-template-name {
+        type string {
+          length "1..64";
+        }
+      }
+      uses autobw-common-cmds;
+    }
+  }
+
+  grouping lsp-cmds {
+    list lsp {
+      key "lsp-name";
+      leaf lsp-name {
+        type string {
+          length "1..64";
+        }
+      }
+      leaf lsp-dest-address {
+        type inet:ipv4-address;
+      }
+      leaf lsp-cspf {
+        type enable-disable;
+      }
+      leaf lsp-ipmtu {
+        type uint32 {
+          range "576..1526";
+        }
+      }
+      leaf lsp-metric {
+        type uint32 {
+          range "1..65535";
+        }
+      }
+      leaf lsp-revert-timer {
+        type uint32 {
+          range "1..65535";
+        }
+      }
+      leaf lsp-tie-breaking {
+        type tie-breaking;
+        default "random";
+      }
+      leaf lsp-src-address {
+        type inet:ipv4-address;
+      }
+      leaf lsp-primary-path {
+        type string {
+          length "1..64";
+        }
+      }
+      uses group-rsvp-lsp-common-cmds;
+      leaf lsp-soft-preemption {
+        type empty;
+      }
+      container lsp-auto-bandwidth {
+        presence "true";
+        leaf lsp-autobw-template {
+          type leafref {
+            path "../../../autobw-template/autobw-template-name";
+          }
+        }
+        uses autobw-common-cmds;
+      }
+      container lsp-frr {
+        presence "true";
+        uses lsp-frr-cmds;
+      }
+      list secondary-path {
+        max-elements "100";
+        key "secpath-name";
+        leaf secpath-name {
+          type string {
+            length "1..64";
+          }
+        }
+        leaf secpath-standby {
+          type empty;
+        }
+        leaf secpath-cspf {
+          type enable-disable;
+        }
+        leaf secpath-ipmtu {
+          type uint32 {
+            range "576..1526";
+          }
+        }
+        uses group-rsvp-lsp-common-cmds;
+        leaf secpath-soft-preemption {
+          type empty;
+        }
+        container lsp-secpath-auto-bandwidth {
+          presence "true";
+          leaf lsp-secpath-autobw-template {
+            type leafref {
+              path "../../../../autobw-template/autobw-template-name";
+            }
+          }
+          uses autobw-common-cmds;
+        }
+      }
+      container lsp-select-path {
+        leaf lsp-select-path-mode {
+          type enumeration {
+            enum "manual" {
+              value 1;
+            }
+            enum "unconditional" {
+              value 2;
+            }
+          }
+        }
+        choice choice-lsp-select-path-type {
+          case case-lsp-select-path-type-primary {
+            leaf lsp-select-path-primary {
+              type empty;
+            }
+          }
+          case case-lsp-select-path-type-secondary {
+            leaf lsp-select-path-secondary-name {
+              type string {
+                length "1..64";
+              }
+            }
+          }
+        }
+      }
+      leaf lsp-enable {
+        type empty;
+      }
+    }
+  }
+
+  grouping lsp-frr-cmds {
+    container lsp-frr-bandwidth {
+      choice lsp-frr-bandwidth-options {
+        case lsp-frr-bandwidth-case-exact {
+          leaf lsp-frr-bandwidth {
+            type uint32 {
+              range "0..2147483647";
+            }
+            default "0";
+          }
+        }
+        case lsp-frr-bandwidth-case-inherit {
+          leaf lsp-frr-bandwidth-inherit {
+            type empty;
+          }
+        }
+      }
+    }
+    leaf-list lsp-frr-exclude-any {
+      type string {
+        length "1..256";
+      }
+    }
+    leaf-list lsp-frr-include-any {
+      type string {
+        length "1..256";
+      }
+    }
+    leaf-list lsp-frr-include-all {
+      type string {
+        length "1..256";
+      }
+    }
+    leaf lsp-frr-hop-limit {
+      type uint8 {
+        range "0..255";
+      }
+      default "0";
+    }
+    leaf lsp-frr-facility-backup {
+      type empty;
+    }
+    leaf lsp-frr-link-protection {
+      type empty;
+    }
+    container lsp-frr-priority {
+      leaf lsp-frr-setup-priority {
+        type uint32 {
+          range "0..7";
+        }
+      }
+      leaf lsp-frr-hold-priority {
+        type uint32 {
+          range "0..7";
+        }
+      }
+    }
+    container lsp-frr-revertive {
+      leaf lsp-frr-revertive-holdtime {
+        type uint8 {
+          range "1..60";
+        }
+        default "5";
+      }
+      leaf lsp-frr-revertive-mode-global {
+        type enable-disable;
+      }
+    }
+  }
+
+  grouping mpls-interface-cmds {
+    list mpls-interface {
+      key "interface-type interface-name";
+      uses interface-name-info;
+      uses mpls-interface-ldp-cmds;
+      uses mpls-interface-rsvp-cmds;
+      uses group-mpls-interface-dynamic-bypass-cmds;
+    }
+  }
+
+  grouping autobw-threshold-table-cmds {
+    container autobw-threshold-table {
+      presence "true";
+      list autobw-threshold-table-bandwidth {
+        key "bandwidth-value";
+        leaf bandwidth-value {
+          type uint32 {
+            range "0..2147483647";
+          }
+        }
+        leaf autobw-threshold-table-threshold {
+          type uint32 {
+            range "0..2147483647";
+          }
+        }
+      }
+      container max-bw-threshold {
+        choice max-bw-threshold-options {
+          case max-bw-threshold-case-absolute {
+            leaf max-bw-threshold-absolute {
+              type uint32 {
+                range "0..2147483647";
+              }
+            }
+          }
+          case max-bw-threshold-case-percentage {
+            leaf max-bw-threshold-percentage {
+              type uint32 {
+                range "0..100";
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  grouping bypass-lsp-cmds {
+    list bypass-lsp {
+      key "bypass-lsp-name";
+      leaf bypass-lsp-name {
+        type string {
+          length "1..64";
+        }
+      }
+      leaf bypass-lsp-dest-address {
+        type inet:ipv4-address;
+      }
+      leaf bypass-lsp-src-address {
+        type inet:ipv4-address;
+      }
+      leaf bypass-lsp-tie-breaking {
+        type tie-breaking;
+        default "random";
+      }
+      uses group-rsvp-lsp-common-cmds;
+      list exclude-interface {
+        key "bypass-exclude-interface-type bypass-exclude-interface-name";
+        uses bypass-exclude-interface-name-info;
+      }
+      leaf bypass-lsp-primary-path {
+        type string {
+          length "1..64";
+        }
+      }
+      leaf bypass-lsp-enable {
+        type empty;
+      }
+    }
+  }
+
+  grouping group-rsvp-lsp-common-cmds {
+    leaf lsp-adaptive {
+      type empty;
+    }
+    leaf lsp-reoptimize-timer {
+      type uint32 {
+        range "300..65535";
+      }
+    }
+    leaf lsp-commit {
+      type empty;
+    }
+    leaf lsp-record {
+      type enable-disable;
+    }
+    leaf lsp-cos {
+      type uint32 {
+        range "0..7";
+      }
+    }
+    leaf lsp-hop-limit {
+      type uint16 {
+        range "0..255";
+      }
+    }
+    leaf lsp-cspf-computation-mode {
+      type cspf-computation-mode;
+    }
+    container lsp-traffic-engineering {
+      leaf lsp-te-mean-rate {
+        type uint32 {
+          range "0..2147483647";
+        }
+        default "0";
+      }
+      leaf lsp-te-max-rate {
+        type uint32 {
+          range "0..2147483647";
+        }
+        default "0";
+      }
+      leaf lsp-te-max-burst {
+        type uint32 {
+          range "0..2147483647";
+        }
+        default "0";
+      }
+    }
+    container priority {
+      leaf lsp-setup-priority {
+        type uint32 {
+          range "0..7";
+        }
+      }
+      leaf lsp-hold-priority {
+        type uint32 {
+          range "0..7";
+        }
+      }
+    }
+    leaf-list lsp-exclude-any {
+      type string {
+        length "1..256";
+      }
+    }
+    leaf-list lsp-include-any {
+      type string {
+        length "1..256";
+      }
+    }
+    leaf-list lsp-include-all {
+      type string {
+        length "1..256";
+      }
+    }
+  }
+
+  grouping group-mpls-dynamic-bypass-cmds {
+    container dynamic-bypass {
+      presence "true";
+      uses group-mpls-dynamic-bypass-sub-cmds;
+    }
+  }
+
+  grouping group-mpls-dynamic-bypass-sub-cmds {
+    container mpls-dynamic-bypass-sub-cmds {
+      leaf dynamic-bypass-max-bypasses {
+        type uint32 {
+          range "1..500";
+        }
+        default "250";
+      }
+      leaf dynamic-bypass-max-bypasses-per-mp {
+        type uint32 {
+          range "1..500";
+        }
+        default "250";
+      }
+      leaf dynamic-bypass-enable-all-interfaces {
+        type empty;
+      }
+      leaf dynamic-bypass-reoptimize-timer {
+        type uint32 {
+          range "300..65535";
+        }
+      }
+      leaf dynamic-bypass-disable {
+        type empty;
+      }
+    }
+  }
+
+  grouping path-cmds {
+    list path {
+      key "path-name";
+      leaf path-name {
+        type string {
+          length "1..64";
+        }
+      }
+      uses group-path-hop-cmds;
+    }
+  }
+
+  grouping group-path-hop-cmds {
+    list path-hop {
+      key "path-hop-ip";
+      ordered-by user;
+      leaf path-hop-ip {
+        type inet:ipv4-address;
+      }
+      leaf path-hop-type {
+        type strict-loose-hop;
+      }
+    }
+    list path-insert {
+      key "path-insert-ip";
+      leaf path-insert-ip {
+        type inet:ipv4-address;
+      }
+      leaf path-insert-type {
+        type strict-loose-hop;
+      }
+      leaf path-insert-before-hop-ip {
+        type inet:ipv4-address;
+      }
+    }
+  }
+
+  grouping policy-cmds {
+    container policy {
+      presence "true";
+      list policy-admin-group {
+        key "admin-group-name admin-group-number";
+        leaf admin-group-name {
+          type string {
+            length "1..32";
+          }
+        }
+        leaf admin-group-number {
+          type uint32 {
+            range "0..31";
+          }
+        }
+      }
+      leaf backup-retry-time {
+        type uint32 {
+          range "10..600";
+        }
+        default "30";
+      }
+      container cspf-computation-mode {
+        leaf use-bypass-liberal {
+          type empty;
+        }
+        leaf use-bypass-metric {
+          type empty;
+        }
+        leaf ignore-overload-bit {
+          type empty;
+        }
+        leaf cspf-metric-type {
+          type cspf-computation-mode;
+        }
+      }
+      container cspf-group-computation {
+        leaf add-penalty {
+          type empty;
+        }
+      }
+      leaf cspf-interface-constraint {
+        type empty;
+      }
+      leaf handle-isis-neighbor-down {
+        type empty;
+      }
+      leaf handle-ospf-neighbor-down {
+        type empty;
+      }
+      leaf retry-time {
+        type uint32 {
+          range "1..600";
+        }
+        default "30";
+      }
+      leaf retry-limit {
+        type uint32 {
+          range "0..8192 | 65535";
+        }
+        default "65535";
+      }
+      leaf rapid-retry {
+        type enable-disable;
+      }
+      leaf rsvp-periodic-flooding-time {
+        type uint32 {
+          range "0 | 30..3600";
+        }
+        default "300";
+      }
+      container rsvp-flooding-threshold {
+        leaf-list rsvp-flooding-threshold-down {
+          type uint32 {
+            range "0..99";
+          }
+        }
+        leaf-list rsvp-flooding-threshold-up {
+          type uint32 {
+            range "1..100";
+          }
+        }
+      }
+      container soft-preemption {
+        leaf cleanup-timer {
+          type uint32 {
+            range "0 | 30..300";
+          }
+          default "30";
+        }
+      }
+      container global-auto-bandwidth {
+        presence "true";
+        leaf autobw-sample-interval {
+          type uint32 {
+            range "60..86400";
+          }
+          default "300";
+        }
+        leaf autobw-num-sample-record {
+          type uint32 {
+            range "1..1500";
+          }
+          default "1500";
+        }
+      }
+      container implicit-commit {
+        choice implicit-commit-options {
+          case implicit-commit-case-all {
+            leaf implicit-commit-all {
+              type empty;
+            }
+          }
+          case implicit-commit-case-selective {
+            leaf implicit-commit-autobw-adjustment {
+              type empty;
+            }
+            leaf implicit-commit-lsp-reoptimize-timer {
+              type empty;
+            }
+          }
+        }
+      }
+      container traffic-engineering {
+        leaf isis-set-level {
+          type enumeration {
+            enum "level-1" {
+              value 1;
+            }
+            enum "level-2" {
+              value 2;
+            }
+          }
+        }
+        container traffic-eng-ospf {
+          container area {
+            choice ch-ospf-area-type {
+              case ca-area-type-ip-address {
+                leaf ospf-area-as-ip-address {
+                  type inet:ipv4-address;
+                }
+              }
+              case ca-area-type-decimal {
+                leaf ospf-area-as-decimal {
+                  type uint32 {
+                    range "0..2147483647";
+                  }
+                }
+              }
+              case ca-area-all {
+                leaf ospf-area-all {
+                  type empty;
+                }
+              }
+            }
+          }
+        }
+      }
+      leaf qos-ttl-mode {
+        type enumeration {
+          enum "uniform" {
+            value 1;
+            description
+              "uniform";
+          }
+          enum "pipe" {
+            value 2;
+            description
+              "pipe";
+          }
+        }
+      }
+      leaf ingress-tunnel-accounting {
+        type empty;
+      }
+      leaf transit-session-accounting {
+        type empty;
+      }
+    }
+  }
+
+  grouping group-rsvp-reliable-messaging-cmds {
+    leaf rapid-retrans-decay {
+      type uint32 {
+        range "0..100";
+      }
+      default "100";
+    }
+    leaf rapid-retrans-interval {
+      type uint32 {
+        range "100..30000";
+      }
+      default "2000";
+    }
+    leaf rapid-retry-limit {
+      type uint32 {
+        range "1..16";
+      }
+      default "5";
+    }
+  }
+
+  grouping group-rsvp-refresh-reduction-cmds {
+    leaf summary-refresh {
+      type empty;
+    }
+    container bundle-message {
+      presence "true";
+      leaf bundle-send-delay {
+        type uint32 {
+          range "20..1000";
+        }
+        default "40";
+      }
+    }
+  }
+
+  grouping rsvp-cmds {
+    container rsvp {
+      presence "true";
+      leaf refresh-interval {
+        type uint32 {
+          range "1..360";
+        }
+        default "30";
+      }
+      leaf refresh-multiple {
+        type uint32 {
+          range "1..255";
+        }
+        default "3";
+      }
+      container g-refresh-reduction {
+        uses group-rsvp-refresh-reduction-cmds;
+      }
+      container g-reliable-messaging {
+        presence "true";
+        uses group-rsvp-reliable-messaging-cmds;
+      }
+      container global-rsvp-hello {
+        presence "true";
+        leaf global-rsvp-hello-interval {
+          type uint32 {
+            range "1..60";
+          }
+          default "9";
+        }
+        leaf global-rsvp-hello-tolerance {
+          type uint32 {
+            range "1..255";
+          }
+          default "3";
+        }
+      }
+      leaf global-rsvp-hello-acknowledgements {
+        type empty;
+      }
+      leaf g-rsvp-backup-bw-guarantee {
+        type empty;
+      }
+      leaf delay-resv-send {
+        type empty;
+      }
+    }
+  }
+
+  grouping autobw-common-cmds {
+    leaf adjustment-interval {
+      type uint32 {
+        range "300..2147483647";
+      }
+    }
+    container adjustment-threshold {
+      choice threshold-options {
+        case threshold-case-percentage {
+          leaf threshold-percentage {
+            type uint32 {
+              range "0..100";
+            }
+          }
+        }
+        case threshold-case-table {
+          leaf use-threshold-table {
+            type empty;
+          }
+        }
+      }
+    }
+    leaf min-bandwidth {
+      type uint32 {
+        range "0..2147483647";
+      }
+    }
+    leaf max-bandwidth {
+      type uint32 {
+        range "0..2147483647";
+      }
+    }
+    leaf overflow-limit {
+      type uint32 {
+        range "0..65535";
+      }
+    }
+    leaf underflow-limit {
+      type uint32 {
+        range "0..65535";
+      }
+    }
+    leaf mode {
+      type autobw-mode;
+    }
+    leaf sample-recording {
+      type enable-disable;
+    }
+  }
+
+  grouping mpls-interface-ldp-cmds {
+    leaf mpls-interface-ldp-enable {
+      type empty;
+    }
+    container ldp-params {
+      container ldp-param-cmds {
+        leaf hello-interval {
+          type uint32 {
+            range "1..32767";
+          }
+          default "5";
+        }
+        leaf hello-timeout {
+          type uint32 {
+            range "2..65535";
+          }
+          default "15";
+        }
+      }
+    }
+  }
+
+  grouping mpls-interface-rsvp-cmds {
+    container rsvp {
+      container rsvp-reservable-bandwidth {
+        choice rsvp-reservable-bandwidth-options {
+          case reservable-bandwidth-case-exact {
+            leaf reservable-bandwidth {
+              type uint32 {
+                range "0..2000000000";
+              }
+            }
+          }
+          case reservable-bandwidth-case-percentage {
+            leaf reservable-bandwidth-percentage {
+              type uint32 {
+                range "0..100";
+              }
+            }
+          }
+        }
+      }
+      container rsvp-authentication {
+        leaf rsvp-authentication-key {
+          type string {
+            length "1..64";
+          }
+        }
+      }
+      container interface-rsvp-hello {
+        presence "true";
+        leaf rsvp-hello-interval {
+          type uint32 {
+            range "1..60";
+          }
+          default "9";
+        }
+        leaf rsvp-hello-tolerance {
+          type uint32 {
+            range "1..255";
+          }
+          default "3";
+        }
+      }
+      leaf rsvp-hello-disable {
+        type empty;
+      }
+      leaf rsvp-te-metric {
+        type uint32 {
+          range "1..65535";
+        }
+      }
+      container rsvp-intf-flooding-threshold {
+        leaf-list rsvp-intf-flooding-threshold-down {
+          type uint32 {
+            range "0..99";
+          }
+        }
+        leaf-list rsvp-intf-flooding-threshold-up {
+          type uint32 {
+            range "1..100";
+          }
+        }
+      }
+      leaf-list interface-rsvp-admin-group {
+        type string {
+          length "1..256";
+        }
+      }
+      container interface-refresh-reduction {
+        uses group-rsvp-refresh-reduction-cmds;
+        leaf rsvp-refresh-reduction-disable {
+          type empty;
+        }
+      }
+      container interface-reliable-messaging {
+        presence "true";
+        uses group-rsvp-reliable-messaging-cmds;
+        leaf rsvp-reliable-messaging-disable {
+          type empty;
+        }
+      }
+    }
+  }
+
+  grouping group-mpls-interface-dynamic-bypass-cmds {
+    container interface-dynamic-bypass {
+      presence "true";
+      uses group-mpls-interface-dynamic-bypass-sub-cmds;
+    }
+  }
+
+  grouping group-mpls-interface-dynamic-bypass-sub-cmds {
+    container mpls-interface-dynamic-bypass-sub-cmds {
+      leaf interface-dynamic-bypass-disable {
+        type empty;
+      }
+      leaf interface-dynamic-bypass-max-bypasses {
+        type uint32 {
+          range "1..500";
+        }
+        default "250";
+      }
+      leaf interface-dynamic-bypass-max-bypasses-per-mp {
+        type uint32 {
+          range "1..500";
+        }
+        default "250";
+      }
+      leaf interface-dynamic-bypass-reoptimize-timer {
+        type uint32 {
+          range "300..65535";
+        }
+      }
+      leaf interface-dynamic-bypass-cos {
+        type uint32 {
+          range "0..7";
+        }
+        default "0";
+      }
+      leaf interface-dynamic-bypass-from {
+        type inet:ip-address;
+      }
+      leaf interface-dynamic-bypass-adaptive {
+        type enable-disable;
+      }
+      leaf interface-dynamic-bypass-record-route {
+        type enable-disable;
+      }
+      leaf interface-dynamic-bypass-hop-limit {
+        type uint8 {
+          range "0..255";
+        }
+        default "4";
+      }
+      leaf-list interface-dynamic-bypass-exclude-any {
+        type string {
+          length "1..256";
+        }
+      }
+      leaf-list interface-dynamic-bypass-include-any {
+        type string {
+          length "1..256";
+        }
+      }
+      leaf-list interface-dynamic-bypass-include-all {
+        type string {
+          length "1..256";
+        }
+      }
+      leaf interface-dynamic-bypass-primary-path {
+        type string {
+          length "1..64";
+        }
+      }
+      leaf interface-dynamic-bypass-name-prefix {
+        type string {
+          length "1..21";
+        }
+        default "dbyp";
+      }
+      leaf interface-dynamic-bypass-tie-breaking {
+        type tie-breaking;
+        default "random";
+      }
+      leaf interface-dynamic-bypass-cspf-computation-mode {
+        type cspf-computation-mode;
+      }
+      container priority {
+        leaf interface-dynamic-bypass-setup-priority {
+          type uint32 {
+            range "0..7";
+          }
+        }
+        leaf interface-dynamic-bypass-holding-priority {
+          type uint32 {
+            range "0..7";
+          }
+        }
+      }
+      container traffic-eng {
+        leaf interface-dynamic-bypass-traffic-eng-max-burst {
+          type uint32 {
+            range "0..214748364";
+          }
+          default "0";
+        }
+        leaf interface-dynamic-bypass-traffic-eng-max-rate {
+          type uint32 {
+            range "0..214748364";
+          }
+          default "0";
+        }
+        leaf interface-dynamic-bypass-traffic-eng-mean-rate {
+          type uint32 {
+            range "0..214748364";
+          }
+          default "0";
+        }
+      }
+    }
+  }
+
+  grouping group-cspf-group-cmds {
+    list cspf-group {
+      key "cspf-group-name";
+      leaf cspf-group-name {
+        type string {
+          length "1..128";
+        }
+      }
+      uses group-cspf-group-from-ip-cmds;
+      uses group-cspf-group-link-cmds;
+      uses group-cspf-group-subnet-cmds;
+      uses group-cspf-group-node-cmds;
+      uses group-cspf-group-penalty-cmds;
+    }
+  }
+
+  grouping group-cspf-group-from-ip-cmds {
+    list cspf-group-ip {
+      key "cspf-group-ip-address";
+      leaf cspf-group-ip-address {
+        type inet:ipv4-address;
+      }
+    }
+  }
+
+  grouping group-cspf-group-link-cmds {
+    list cspf-group-link {
+      key "cspf-group-link-from cspf-group-link-to";
+      leaf cspf-group-link-from {
+        type inet:ipv4-address;
+      }
+      leaf cspf-group-link-to {
+        type inet:ipv4-address;
+      }
+    }
+  }
+
+  grouping group-cspf-group-subnet-cmds {
+    list cspf-group-subnet {
+      key "cspf-group-subnet-ip";
+      leaf cspf-group-subnet-ip {
+        type inet:ipv4-prefix;
+      }
+    }
+  }
+
+  grouping group-cspf-group-node-cmds {
+    list cspf-group-node {
+      key "cspf-group-node-ip";
+      leaf cspf-group-node-ip {
+        type inet:ipv4-address;
+      }
+    }
+  }
+
+  grouping group-cspf-group-penalty-cmds {
+    container cspf-group-penalty-n {
+      leaf cspf-group-penalty {
+        type uint32 {
+          range "1..65535";
+        }
+      }
+    }
+  }
+
+  container mpls-config {
+    container router {
+      uses mpls-cmds;
+    }
+  }
+
+  grouping group-mpls-prot-statistics-pkt-type {
+    list g_mpls_prot_statistics_pkt_types {
+      description
+        "Statistics for MPLS PROT packet types";
+      leaf pkt_type_name {
+        description
+          "Packet Type";
+        type string;
+      }
+      leaf pkt_type_count_tx {
+        description
+          "Packet count TX";
+        type uint32;
+      }
+      leaf pkt_type_count_rx {
+        description
+          "Packet count RX";
+        type uint32;
+      }
+      leaf pkt_type_count_since_last_cleared_tx {
+        description
+          "Packet count since last cleared TX";
+        type uint32;
+      }
+      leaf pkt_type_count_since_last_cleared_rx {
+        description
+          "Packet count since last cleared RX";
+        type uint32;
+      }
+    }
+  }
+
+  grouping group-show-mpls-lsp-admin-group {
+    container lsp-admin-group {
+      list lsp-admin-group-exclude-any {
+        key "lsp-admin-group-exclude-any-group-id";
+        leaf lsp-admin-group-exclude-any-group-id {
+          description
+            "Exclude any admin group id";
+          type uint32;
+        }
+      }
+      list lsp-admin-group-include-any {
+        key "lsp-admin-group-include-any-group-id";
+        leaf lsp-admin-group-include-any-group-id {
+          description
+            "Include any admin group id";
+          type uint32;
+        }
+      }
+      list lsp-admin-group-include-all {
+        key "lsp-admin-group-include-all-group-id";
+        leaf lsp-admin-group-include-all-group-id {
+          description
+            "Include all admin group id";
+          type uint32;
+        }
+      }
+    }
+  }
+
+  grouping group-show-mpls-lsp-hop-list {
+    container show-mpls-lsp-hop-list {
+      list hop {
+        key "lsp-hop-address";
+        leaf lsp-hop-address {
+          description
+            "Hop IP address";
+          type inet:ipv4-address;
+        }
+        leaf lsp-hop-strict-hop {
+          description
+            "CSPF path Strict hop";
+          type boolean;
+        }
+        leaf lsp-hop-loose-hop {
+          description
+            "CSPF path Loose hop";
+          type boolean;
+        }
+        leaf lsp-hop-is-router-id {
+          description
+            "Hop is a router id hop";
+          type boolean;
+        }
+        leaf lsp-hop-has-protection {
+          description
+            "RRO hop Protection available";
+          type boolean;
+        }
+        leaf lsp-hop-has-node-protection {
+          description
+            "RRO hop Node Protection available";
+          type boolean;
+        }
+        leaf lsp-hop-has-bandwidth-protection {
+          description
+            "RRO hop bandwidth Protection available";
+          type boolean;
+        }
+        leaf lsp-hop-has-protection-in-use {
+          description
+            "RRO hop protection is in use";
+          type boolean;
+        }
+        leaf lsp-hop-avoid-node {
+          description
+            "Avoid address type is node";
+          type boolean;
+        }
+        leaf lsp-hop-avoid-local {
+          description
+            "Avoid address type is local";
+          type boolean;
+        }
+        leaf lsp-hop-avoid-remote {
+          description
+            "Avoid address type is remote";
+          type boolean;
+        }
+      }
+    }
+  }
+
+  grouping group-show-mpls-lsp-history-info {
+    container show-mpls-lsp-history-info {
+      leaf lsp-history {
+        description
+          "LSP history";
+        type string;
+      }
+    }
+  }
+
+  grouping group-show-mpls-lsp-basic-info {
+    container show-mpls-lsp-basic-info {
+      leaf lsp-name {
+        description
+          "MPLS LSP name";
+        type string;
+      }
+      leaf lsp-type-bypass {
+        description
+          "Lsp is bypass LSP";
+        type boolean;
+      }
+      leaf lsp-type-dynamic {
+        description
+          "Lsp is a dynamically created LSP";
+        type boolean;
+      }
+      leaf lsp-from-address {
+        description
+          "LSP from address";
+        type inet:ipv4-address;
+      }
+      leaf lsp-to-address {
+        description
+          "LSP to address";
+        type inet:ipv4-address;
+      }
+      leaf lsp-tunnel-id {
+        description
+          "LSP Tunnel ID";
+        type uint32;
+      }
+      leaf lsp-lsp-id {
+        description
+          "LSP instance id or LSP ID";
+        type uint32;
+      }
+      leaf lsp-admin-up {
+        description
+          "LSP Admin State";
+        type boolean;
+      }
+      leaf lsp-operational-up {
+        description
+          "LSP operational-state";
+        type boolean;
+      }
+      leaf lsp-is-active {
+        description
+          "LSP operational and active";
+        type boolean;
+      }
+      leaf lsp-path-name {
+        description
+          "LSP path name";
+        type string;
+      }
+      leaf lsp-out-label {
+        description
+          "LSP out label";
+        type uint32;
+      }
+      leaf lsp-out-interface-name {
+        description
+          "LSP outgoing interface name";
+        type string;
+      }
+    }
+  }
+
+  rpc clear-mpls-lsp {
+    input {
+      leaf mpls-clear-lsp-name-in {
+        description
+          "Clear LSP(both primary and secondary) lsp-name";
+        type string {
+          length "1..64";
+        }
+      }
+    }
+  }
+  rpc mpls-reopt-lsp {
+    input {
+      leaf mpls-reoptimize-lsp-name-in {
+        description
+          "LSP Name";
+        type string {
+          length "1..64";
+        }
+      }
+    }
+  }
+  rpc clear-mpls-rsvp-statistics {
+    output {
+      container clear-mpls-rsvp-statistics-out {
+        leaf clear-mpls-rsvp-statistics-ret-msg {
+          description
+            "clear mpls rsvp statistics return message";
+          type string {
+            length "1..128";
+          }
+        }
+      }
+    }
+  }
+  rpc clear-mpls-rsvp-statistics-neighbor {
+    input {
+      leaf clear-mpls-rsvp-statistics-neighbor-address {
+        description
+          "RSVP neighbor IP to be cleared";
+        type mpls-ipv4-address;
+      }
+      leaf clear-mpls-rsvp-statistics-neighbor-all {
+        description
+          "Clear all RSVP neighbors";
+        type boolean;
+      }
+    }
+    output {
+      container clear-mpls-rsvp-statistics-neighbor-out {
+        leaf clear-mpls-rsvp-statistics-neighbor-ret-msg {
+          description
+            "clear mpls rsvp statistics return message";
+          type string {
+            length "1..128";
+          }
+        }
+      }
+    }
+  }
+  rpc clear-mpls-ldp-statistics {
+    output {
+      container clear-mpls-ldp-statistics-out {
+        leaf clear-mpls-ldp-statistics-ret-msg {
+          description
+            "clear mpls ldp statistics return message";
+          type string {
+            length "1..128";
+          }
+        }
+      }
+    }
+  }
+  rpc clear-mpls-statistics {
+    input {
+      leaf mpls-clear-statistics-type {
+        description
+          "1=OAM, 2=Transit, 3=Tunnel";
+        type uint8;
+      }
+      leaf protocol {
+        description
+          "ldp or rsvp";
+        type string;
+      }
+      leaf fec-prefix {
+        description
+          "fec prefix";
+        type mpls-ipv4-prefix;
+      }
+      leaf prefix-address {
+        description
+          "prefix address";
+        type mpls-ipv4-address;
+      }
+      leaf prefix-mask {
+        description
+          "prefix mask";
+        type mpls-ipv4-subnet-mask;
+      }
+      leaf label {
+        description
+          "giving label as filter";
+        type uint8;
+      }
+      leaf in-label {
+        description
+          "Value of in-label";
+        type uint32;
+      }
+      leaf tunnel-id-present {
+        description
+          "giving tunnel-id as filter";
+        type uint8;
+      }
+      leaf tunnel-id {
+        description
+          "Value of tunnel-id";
+        type uint32;
+      }
+      leaf bypass {
+        description
+          "giving bypass as filter";
+        type uint8;
+      }
+      leaf tunnel-name {
+        description
+          "Tunnel Name";
+        type string;
+      }
+      leaf tunnel-dest {
+        description
+          "Tunnel Destination";
+        type mpls-ipv4-address;
+      }
+    }
+    output {
+      leaf mpls-clear-statistics-ret-msg {
+        description
+          "clear mpls statistics return message";
+        type string {
+          length "1..128";
+        }
+      }
+    }
+  }
+  rpc clear-mpls-statistics-ldp-tunnel {
+    input {
+      leaf clear-statistics-ldp-tunnel-id {
+        description
+          "Tunnel ID to be cleared";
+        type uint32;
+      }
+    }
+    output {
+      container clear-mpls-statistics-ldp-tunnel-out {
+        leaf clear-mpls-statistics-ldp-tunnel-ret-msg {
+          description
+            "clear mpls statistics ldp tunnel return message";
+          type string {
+            length "1..128";
+          }
+        }
+      }
+    }
+  }
+  rpc clear-mpls-ldp-neighbor {
+    input {
+      leaf mpls-clear-all-ldp-sessions {
+        description
+          " Clear All LDP neighbors";
+        type boolean;
+      }
+      leaf mpls-clear-one-ldp-sessions {
+        description
+          "LDP neighbors IP to be cleared";
+        type inet:ipv4-address;
+      }
+    }
+    output {
+      container clear-mpls-ldp-neighbor-out {
+        leaf clear-mpls-ldp-neighbor-ret-msg {
+          description
+            "clear mpls ldp neighbor return message";
+          type string {
+            length "1..128";
+          }
+        }
+      }
+    }
+  }
+  rpc clear-mpls-statistics-ldp-transit {
+    input {
+      leaf clear-statistics-ldp-transit-fec-prefix {
+        description
+          "Transit fec prefix";
+        type mpls-ipv4-prefix;
+      }
+      leaf clear-statistics-ldp-transit-fec-prefix-address {
+        description
+          "Fec prefix address";
+        type mpls-ipv4-address;
+      }
+      leaf clear-statistics-ldp-transit-fec-prefix-mask {
+        description
+          "Fec prefix address mask";
+        type mpls-ipv4-subnet-mask;
+      }
+    }
+    output {
+      container clear-mpls-statistics-ldp-tunnel-out {
+        leaf clear-mpls-statistics-ldp-transit-ret-msg {
+          description
+            "clear mpls statistics ldp transit return message";
+          type string {
+            length "1..128";
+          }
+        }
+      }
+    }
+  }
+  rpc clear-mpls-auto-bandwidth-statistics-lsp {
+    input {
+      leaf lsp-name {
+        description
+          "LSP Name";
+        type string {
+          length "1..64";
+        }
+      }
+    }
+    output {
+      leaf clear-mpls-auto-bandwidth-statistics-lsp-ret-msg {
+        description
+          "clear mpls autobw statistics return message";
+        type string {
+          length "1..128";
+        }
+      }
+    }
+  }
+  rpc clear-mpls-auto-bandwidth-sample-history-lsp {
+    input {
+      leaf lsp-name {
+        description
+          "LSP Name";
+        type string {
+          length "1..64";
+        }
+      }
+    }
+    output {
+      leaf clear-mpls-auto-bandwidth-sample-history-lsp-ret-msg {
+        description
+          "clear mpls autobw sample history return message";
+        type string {
+          length "1..128";
+        }
+      }
+    }
+  }
+  rpc mpls-adjust-bandwidth-lsp {
+    input {
+      leaf lsp-name {
+        description
+          "LSP Name";
+        type string {
+          length "1..64";
+        }
+      }
+    }
+    output {
+      leaf adjust-bandwidth-lsp-ret-msg {
+        description
+          "Adjust Bandwidth return message";
+        type string {
+          length "1..128";
+        }
+      }
+    }
+  }
+}

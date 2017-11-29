@@ -1,0 +1,956 @@
+/*************************************************************************
+ *   Copyright (C) 2017-2022 Brocade Communications Systems, Inc.          *
+ *   All rights reserved.                                                  *
+ *   Author : swrel                                                        *
+ ************************************************************************/
+module brocade-nsm-operational {
+  namespace "urn:brocade.com:mgmt:brocade-nsm-operational";
+  prefix nsm-operational;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal:\t130 Holger Way
+        San Jose, CA 95134 U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage nsm";
+
+  revision 2017-09-26 {
+    description
+      "First implementation of nsm module";
+  }
+
+  typedef intf-type {
+    description
+      "interface type";
+    type enumeration {
+      enum "ethernet" {
+        value 1;
+        description
+          "physical interface";
+      }
+      enum "port-channel" {
+        value 2;
+        description
+          "port channel";
+      }
+      enum "ccep" {
+        value 3;
+        description
+          "CCEP";
+      }
+    }
+  }
+
+  typedef nsm-dcm-lif-main-intf-type {
+    description
+      "LIF Main interface type";
+    type enumeration {
+      enum "nsm-dcm-lif-main-intf-type-unknown" {
+        value 0;
+        description
+          "LIF Main interface type unknown";
+      }
+      enum "nsm-dcm-lif-main-intf-type-phy" {
+        value 1;
+        description
+          "LIF Main interface physical";
+      }
+      enum "nsm-dcm-lif-main-intf-type-lag" {
+        value 2;
+        description
+          "LIF Main interface LAG";
+      }
+      enum "nsm-dcm-lif-main-intf-type-tunnel-vxlan" {
+        value 3;
+        description
+          "LIF Main interface VxLAN Tunnel";
+      }
+      enum "nsm-dcm-lif-main-intf-type-tunnel-l2gre" {
+        value 4;
+        description
+          "LIF Main interface L2GRE Tunnel";
+      }
+      enum "nsm-dcm-lif-main-intf-type-pw" {
+        value 5;
+        description
+          "LIF Main interface Pseudo Wire";
+      }
+    }
+  }
+
+  container bridge-domain-state {
+    description
+      " brief Bridge-domain information";
+    config false;
+    container bridge-domain-counter {
+      description
+        " bridge_domain_counter";
+      leaf no-of-bd {
+        description
+          "no_of_bd";
+        type uint32;
+      }
+      leaf no-of-vpls-bd {
+        description
+          "no_of_vpls_bd";
+        type uint32;
+      }
+      leaf no-of-dynamic-mac {
+        description
+          "no_of_dynamic_mac";
+        type uint32;
+      }
+      leaf no-of-static-mac {
+        description
+          "no_of_static_mac";
+        type uint32;
+      }
+    }
+    list bridge-domain-list {
+      description
+        " bridge domain node";
+      key "bd-id";
+      leaf bd-id {
+        description
+          "BD id";
+        type uint32;
+      }
+      leaf vc-id {
+        description
+          "vc id";
+        type uint32;
+      }
+      leaf active-ac-lif-count {
+        description
+          "active ac lif count";
+        type uint16;
+      }
+      leaf config-ac-lif-count {
+        description
+          "config ac lif count";
+        type uint16;
+      }
+      leaf active-vfi-lif-count {
+        description
+          "active vfi lif count";
+        type uint16;
+      }
+      leaf config-vfi-lif-count {
+        description
+          "config vfi lif count";
+        type uint16;
+      }
+      leaf local-switching {
+        description
+          "local switching";
+        type boolean;
+      }
+      leaf block-bpdu {
+        description
+          "block bpdu";
+        type boolean;
+      }
+      leaf bd-type {
+        description
+          "bd type";
+        type uint16;
+      }
+      leaf transparent {
+        description
+          "transparent type bd";
+        type uint16;
+      }
+      leaf ve-ifindex {
+        description
+          "ve_ifindex";
+        type uint32;
+      }
+      leaf ve-id {
+        description
+          "ve_id";
+        type uint32;
+      }
+      leaf pw-profile {
+        description
+          "pw_profile";
+        type string;
+      }
+      leaf mac-limit {
+        description
+          "mac_limit";
+        type uint16;
+      }
+      leaf statistics {
+        description
+          "statistics";
+        type boolean;
+      }
+      leaf description {
+        description
+          "bridge domain specific description";
+        type string;
+      }
+      list outer-vlan-list {
+        description
+          "bd_vlan_tag_info";
+        key "outer-vlan";
+        leaf outer-vlan {
+          description
+            "outer_vlan";
+          type uint32;
+        }
+        leaf no-of-up-tagged-ports {
+          description
+            "no_of_up_tagged_ports";
+          type uint32;
+        }
+        leaf no-of-up-untagged-ports {
+          description
+            "no_of_up_untagged_ports";
+          type uint32;
+        }
+        list untagged-ports-list {
+          description
+            "untagged_port_list";
+          key "lif-name";
+          leaf lif-name {
+            description
+              "lif_name";
+            type string;
+          }
+          leaf lif-ifindex {
+            description
+              "lif_ifindex";
+            type uint32;
+          }
+          leaf lif-main-intf-type {
+            description
+              "LIF Main interface type";
+            type nsm-dcm-lif-main-intf-type;
+          }
+          leaf outer-vlan {
+            description
+              "outer_tag_value";
+            type uint32;
+          }
+          leaf flags {
+            description
+              "flags";
+            type uint32;
+          }
+          leaf ivid {
+            description
+              "ivid";
+            type uint32;
+          }
+          leaf encap-id {
+            description
+              "encap_id";
+            type uint32;
+          }
+          leaf ingress-stats-id {
+            description
+              "ingress_stats_id";
+            type uint32;
+          }
+          leaf egress-stats-id {
+            description
+              "egress_stats_id";
+            type uint32;
+          }
+          leaf op-state {
+            description
+              "op_state";
+            type boolean;
+          }
+          leaf service-instance {
+            description
+              "service_instance";
+            type uint32;
+          }
+        }
+        list tagged-ports-list {
+          description
+            "untagged_port_list";
+          key "lif-name";
+          leaf lif-name {
+            description
+              "lif_name";
+            type string;
+          }
+          leaf lif-ifindex {
+            description
+              "lif_ifindex";
+            type uint32;
+          }
+          leaf lif-main-intf-type {
+            description
+              "LIF Main interface type";
+            type nsm-dcm-lif-main-intf-type;
+          }
+          leaf outer-vlan {
+            description
+              "outer_tag_value";
+            type uint32;
+          }
+          leaf inner-vlan {
+            description
+              "inner_tag_value";
+            type uint32;
+          }
+          leaf flags {
+            description
+              "flags";
+            type uint32;
+          }
+          leaf ivid {
+            description
+              "ivid";
+            type uint32;
+          }
+          leaf encap-id {
+            description
+              "encap_id";
+            type uint32;
+          }
+          leaf ingress-stats-id {
+            description
+              "ingress_stats_id";
+            type uint32;
+          }
+          leaf egress-stats-id {
+            description
+              "egress_stats_id";
+            type uint32;
+          }
+          leaf op-state {
+            description
+              "op_state";
+            type boolean;
+          }
+          leaf service-instance {
+            description
+              "service_instance";
+            type uint32;
+          }
+        }
+      }
+    }
+  }
+  container logical-interface-state {
+    description
+      "Logical interface";
+    config false;
+    container main-interface-pseudo-wire {
+      description
+        "main interface pseudo wire";
+      uses group-main-interface-params;
+      container logical-interface-pseudo-wire {
+        description
+          "logical interface pseudo wire";
+        uses group-lif;
+        leaf ip-address {
+          description
+            "inner vlan id";
+          type inet:ipv4-address;
+        }
+      }
+    }
+    container main-interface-tunnel {
+      description
+        "main interface tunnel";
+      uses group-main-interface-params;
+      container logical-interface-tunnel {
+        description
+          "logical interface tunnel";
+        uses group-lif;
+        leaf vni-tni {
+          description
+            "VNI or TNI";
+          type uint32;
+        }
+      }
+    }
+    list main-interface-physical {
+      description
+        "main interface";
+      uses group-main-interface-params;
+      key "intf-name";
+      leaf intf-type {
+        description
+          "interface type";
+        type intf-type;
+      }
+      leaf intf-name {
+        description
+          "main interface name";
+        type string;
+      }
+      leaf is-tagged {
+        description
+          "is Lif tagged";
+        type boolean;
+      }
+      leaf port-mode {
+        description
+          "port mode";
+        type string;
+      }
+      container logical-interface-physical {
+        description
+          "logical interface physical";
+        uses group-lif;
+        leaf outer-vlan-id {
+          description
+            "outer vlan id";
+          type uint32;
+        }
+        leaf inner-vlan-id {
+          description
+            "inner vlan id";
+          type uint32;
+        }
+        leaf intf-type {
+          description
+            "interface type";
+          type intf-type;
+        }
+        leaf is-tagged {
+          description
+            "is Lif tagged";
+          type boolean;
+        }
+      }
+    }
+  }
+  container mct-state {
+    description
+      "MCT Operational Information";
+    config false;
+    list show-cluster {
+      description
+        "parent mo name";
+      key "cluster-id";
+      leaf cluster-id {
+        description
+          "cluster ID";
+        type uint32;
+      }
+      leaf is-cluster-client-command {
+        description
+          "Is the client ID specific command";
+        type boolean;
+      }
+      leaf is-cluster-all-command {
+        description
+          "Is the show all command";
+        type boolean;
+      }
+      leaf cluster-name {
+        description
+          "cluster name";
+        type string;
+      }
+      leaf cluster-status {
+        description
+          "cluster status";
+        type boolean;
+      }
+      leaf client-isolation-status {
+        description
+          "Is client islotaion strict or loose";
+        type boolean;
+      }
+      leaf num-peers {
+        description
+          "Number of Peers";
+        type uint32;
+      }
+      leaf num-clients {
+        description
+          "Number of Clients";
+        type uint32;
+      }
+      leaf num-config-vlans {
+        description
+          "Number of configured vlans";
+        type uint32;
+      }
+      leaf num-active-vlans {
+        description
+          "Number of active vlans";
+        type uint32;
+      }
+      leaf num-bds {
+        description
+          "";
+        type uint32;
+      }
+      leaf num-active-bds {
+        description
+          "";
+        type uint32;
+      }
+      leaf client-interfaces-shutdown {
+        description
+          "client interfaces shutdown";
+        type boolean;
+      }
+      leaf control-vlan {
+        description
+          "cluster control vlan";
+        type uint32;
+      }
+      leaf df-hold-time {
+        description
+          "Designated Forwarder Hold Time";
+        type uint32;
+      }
+      list active-vlan-list {
+        description
+          "";
+        key "vlan-id";
+        leaf vlan-id {
+          description
+            "Vlan Id";
+          type uint32;
+        }
+      }
+      list active-bd-list {
+        description
+          "List of BDs Active";
+        key "bd-id";
+        leaf bd-id {
+          description
+            "BD Id";
+          type uint32;
+        }
+      }
+      list peer-info-list {
+        description
+          "Peer Info";
+        key "peer-ip-addr";
+        leaf peer-ip-addr {
+          description
+            "Peer IP address";
+          type uint32;
+        }
+        leaf peer-state {
+          description
+            "Peer state";
+          type boolean;
+        }
+        leaf peer-interface {
+          description
+            "Peer Interface";
+          type string;
+        }
+      }
+      list client-info-list {
+        description
+          "";
+        key "cluster-id client-id";
+        leaf client-name {
+          description
+            "";
+          type string;
+        }
+        leaf cluster-id {
+          description
+            "";
+          type uint32;
+        }
+        leaf client-id {
+          description
+            "";
+          type uint32;
+        }
+        leaf client-esi {
+          description
+            "";
+          type string;
+        }
+        leaf client-interface {
+          description
+            "";
+          type string;
+        }
+        leaf client-state {
+          description
+            "Client state";
+          type boolean;
+        }
+        leaf num-config-vlans {
+          description
+            "Number of vlans";
+          type uint32;
+        }
+        leaf num-config-bds {
+          description
+            "Number of BDs";
+          type uint32;
+        }
+        list config-vlans {
+          key "vlan-id";
+          uses group-show-cluster-config-vlan;
+        }
+        list config-bds {
+          key "bd-id";
+          uses group-show-cluster-bds;
+        }
+      }
+      list config-vlan-list {
+        key "vlan-id";
+        uses group-show-cluster-config-vlan;
+      }
+      list bd-list {
+        key "bd-id";
+        uses group-show-cluster-bds;
+      }
+    }
+  }
+  container sub-interface-statistics-state {
+    description
+      "sub-interface statistics";
+    config false;
+    list vlan-statistics {
+      description
+        "vlan_statistics";
+      key "vlan-id";
+      leaf vlan-id {
+        description
+          "vlan index";
+        type uint32;
+      }
+      list port-statistics {
+        description
+          "port statistics";
+        uses group-statistics;
+        key "port-id";
+        leaf port-id {
+          description
+            "port index";
+          type uint32;
+        }
+        leaf port-name {
+          description
+            "port name";
+          type string;
+        }
+      }
+    }
+    list bridge-domain-statistics {
+      description
+        "bridge-domain statistics";
+      key "bd-id";
+      leaf bd-id {
+        description
+          "bridge-domain index";
+        type uint32;
+      }
+      list lif-statistics {
+        description
+          "lif statistics";
+        uses group-statistics;
+        key "lif-id";
+        leaf lif-id {
+          description
+            "lif index";
+          type uint32;
+        }
+        leaf lif-name {
+          description
+            "lif name";
+          type string;
+        }
+      }
+    }
+  }
+  container topology-group-state {
+    description
+      " Topology Group related information";
+    config false;
+    list topology-group-data {
+      description
+        "topology-group id";
+      key "topology-group-id";
+      leaf topology-group-id {
+        description
+          "Topology group id";
+        type uint16;
+      }
+      leaf l2-protocol {
+        description
+          "L2 Protocol Configured";
+        type string;
+      }
+      container master-vlan {
+        description
+          "master vlan info";
+        leaf vlan-id {
+          description
+            "master vlan id";
+          type uint16;
+        }
+        leaf control-ports {
+          description
+            "Control ports";
+          type string;
+        }
+        leaf free-ports {
+          description
+            "Free ports";
+          type string;
+        }
+      }
+      list member-vlan {
+        description
+          "member vlan info";
+        key "vlan-id";
+        leaf vlan-id {
+          description
+            "member vlan id";
+          type uint16;
+        }
+        leaf free-ports {
+          description
+            "Free ports";
+          type string;
+        }
+      }
+      list member-bd {
+        description
+          "member bd info";
+        key "bd-id";
+        leaf bd-id {
+          description
+            "member bd id";
+          type uint32;
+        }
+        leaf free-ports {
+          description
+            "Free ports";
+          type string;
+        }
+      }
+    }
+  }
+  list link-fault-signalling-counters-state {
+    description
+      "Link fault signalling counters";
+    config false;
+    key "name";
+    leaf name {
+      description
+        "Port name";
+      type string;
+    }
+    leaf local-fault-counter {
+      description
+        "Local Link fault counter";
+      type uint64;
+    }
+    leaf remote-fault-counter {
+      description
+        "Remote Link fault counter";
+      type uint64;
+    }
+    leaf local-fault-time {
+      description
+        "Local Link fault time";
+      type uint64;
+    }
+    leaf remote-fault-time {
+      description
+        "Remote Link fault time";
+      type uint64;
+    }
+  }
+  list tvf-domain-list-state {
+    description
+      "List of Tvf Domains";
+    config false;
+    key "domain-count";
+    leaf domain-count {
+      description
+        "Total number of Tvf Domains";
+      type uint32;
+    }
+    list domain-list {
+      description
+        "Tvf Domain";
+      key "id";
+      leaf id {
+        description
+          "Tvf Domain Id";
+        type uint32;
+      }
+      container port-list {
+        description
+          "Port with Tvf Domain binding";
+        leaf name {
+          description
+            "Port name";
+          type string;
+        }
+      }
+    }
+  }
+
+  grouping group-lif {
+    description
+      "lif";
+    leaf logical-interface-name {
+      description
+        "Logical Interface name";
+      type string;
+    }
+    leaf source-type {
+      description
+        "source type";
+      type string;
+    }
+    leaf protocol-status {
+      description
+        "Protocol Status";
+      type boolean;
+    }
+    leaf admin-status {
+      description
+        "Admin Status";
+      type boolean;
+    }
+    leaf lif-index {
+      description
+        "Lif index";
+      type uint32;
+    }
+    leaf bridge-domain-index {
+      description
+        "Bridge Domain index";
+      type uint32;
+    }
+    leaf interface-name {
+      description
+        "interface name";
+      type string;
+    }
+    leaf is-binded {
+      description
+        "Is the lif binded";
+      type boolean;
+    }
+  }
+
+  grouping group-main-interface-params {
+    description
+      "main interface params ";
+    leaf protocol-status {
+      description
+        "Protocol Status";
+      type boolean;
+    }
+    leaf admin-status {
+      description
+        "Admin Status";
+      type boolean;
+    }
+    leaf interface-index {
+      description
+        "interface index";
+      type uint32;
+    }
+    container counters {
+      description
+        "Lif counters";
+      leaf lif-type {
+        description
+          "interface type";
+        type intf-type;
+      }
+      leaf total-lifs {
+        description
+          "total Lifs";
+        type uint32;
+      }
+      leaf protocol-status-up-lifs {
+        description
+          "Protocol status up lifs";
+        type uint32;
+      }
+      leaf binded-lifs {
+        description
+          "binded lifs";
+        type uint32;
+      }
+      leaf unbinded-lifs {
+        description
+          "unbinded lifs";
+        type uint32;
+      }
+      leaf implicit-lifs {
+        description
+          "implicit lifs";
+        type uint32;
+      }
+      leaf explicit-lifs {
+        description
+          "explicit lifs";
+        type uint32;
+      }
+    }
+  }
+
+  grouping group-statistics {
+    description
+      "statistics";
+    leaf rx-packets {
+      description
+        "Received Packets count in Lif";
+      type uint64;
+    }
+    leaf tx-packets {
+      description
+        "Transmitted Packets count in Lif";
+      type uint64;
+    }
+    leaf rx-bytes {
+      description
+        "Received Bytes count in Lif";
+      type uint64;
+    }
+    leaf tx-bytes {
+      description
+        "Transmitted Bytes count in Lif";
+      type uint64;
+    }
+  }
+
+  grouping group-show-cluster-bds {
+    description
+      "List of BDs configured";
+    leaf bd-id {
+      description
+        "BD Id";
+      type uint32;
+    }
+  }
+
+  grouping group-show-cluster-config-vlan {
+    description
+      "";
+    leaf vlan-id {
+      description
+        "Vlan Id";
+      type uint32;
+    }
+  }
+}

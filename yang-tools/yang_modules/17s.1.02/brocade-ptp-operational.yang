@@ -1,0 +1,474 @@
+/*************************************************************************
+ *   Copyright (C) 2017-2022 Brocade Communications Systems, Inc.          *
+ *   All rights reserved.                                                  *
+ *   Author : swrel                                                        *
+ ************************************************************************/
+module brocade-ptp-operational {
+  namespace "urn:brocade.com:mgmt:brocade-ptp-operational";
+  prefix ptp-operational;
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal:\t130 Holger Way
+        San Jose, CA 95134 U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage ptp";
+
+  revision 2017-09-26 {
+    description
+      "First implementation of ptp module";
+  }
+
+  container ptp-state {
+    description
+      "PTP Operational Information";
+    config false;
+    container brief {
+      description
+        "";
+      list port-detail-list {
+        description
+          "";
+        key "port";
+        leaf port {
+          description
+            "";
+          type string;
+        }
+        leaf ptp-state {
+          description
+            "";
+          type string;
+        }
+      }
+    }
+    container clock {
+      description
+        "";
+      leaf type {
+        description
+          "";
+        type string;
+      }
+      leaf identity {
+        description
+          "";
+        type string;
+      }
+      leaf domain {
+        description
+          "";
+        type uint32;
+      }
+      leaf clock-state {
+        description
+          "";
+        type string;
+      }
+      leaf ptp-port-count {
+        description
+          "";
+        type uint32;
+      }
+      leaf priority1 {
+        description
+          "";
+        type uint8;
+      }
+      leaf priority2 {
+        description
+          "";
+        type uint8;
+      }
+      leaf offset-from-master {
+        description
+          "";
+        type string;
+      }
+      leaf mpd {
+        description
+          "";
+        type string;
+      }
+      leaf steps-removed {
+        description
+          "";
+        type uint32;
+      }
+      leaf local-time {
+        description
+          "";
+        type string;
+      }
+      container quality {
+        description
+          "";
+        leaf clock-class {
+          description
+            "";
+          type uint32;
+        }
+        leaf accuracy {
+          description
+            "";
+          type uint32;
+        }
+        leaf offset {
+          description
+            "";
+          type uint32;
+        }
+      }
+    }
+    container clock-foreign-masters {
+      description
+        "";
+      list foreign-master-detail-list {
+        description
+          "";
+        key "interface";
+        leaf interface {
+          description
+            "";
+          type string;
+        }
+        leaf clock-id {
+          description
+            "";
+          type string;
+        }
+        leaf priority1 {
+          description
+            "";
+          type uint32;
+        }
+        leaf priority2 {
+          description
+            "";
+          type uint32;
+        }
+        leaf clock-class {
+          description
+            "";
+          type uint32;
+        }
+        leaf accuracy {
+          description
+            "";
+          type uint32;
+        }
+        leaf oslv {
+          description
+            "";
+          type uint32;
+        }
+        leaf steps-removed {
+          description
+            "";
+          type uint32;
+        }
+      }
+    }
+    container corrections {
+      description
+        "";
+      list correction-detail-list {
+        description
+          "";
+        key "slave-port sup-time";
+        leaf slave-port {
+          description
+            "";
+          type string;
+        }
+        leaf sup-time {
+          description
+            "";
+          type string;
+        }
+        leaf correction {
+          description
+            "";
+          type int32;
+        }
+      }
+    }
+    container parent-port-detail {
+      description
+        "";
+      leaf parent-clock-identity {
+        description
+          "";
+        type string;
+      }
+      leaf parent-port-number {
+        description
+          "";
+        type uint32;
+      }
+      leaf parent-ip-address {
+        description
+          "";
+        type string;
+      }
+      leaf parent-offset {
+        description
+          "";
+        type int32;
+      }
+      leaf parent-cpcr {
+        description
+          "";
+        type int32;
+      }
+      leaf grandparent-identity {
+        description
+          "";
+        type string;
+      }
+      leaf grandparent-quality-class {
+        description
+          "";
+        type uint32;
+      }
+      leaf grandparent-quality-accuracy {
+        description
+          "";
+        type uint32;
+      }
+      leaf grandparent-quality-oslv {
+        description
+          "";
+        type uint32;
+      }
+      leaf grandparent-quality-priority1 {
+        description
+          "";
+        type uint32;
+      }
+      leaf grandparent-quality-priority2 {
+        description
+          "";
+        type uint32;
+      }
+    }
+    container time-property {
+      description
+        "";
+      leaf utc-offset-valid {
+        description
+          "";
+        type uint32;
+      }
+      leaf utc-offset {
+        description
+          "";
+        type uint32;
+      }
+      leaf leap59 {
+        description
+          "";
+        type uint32;
+      }
+      leaf leap61 {
+        description
+          "";
+        type uint32;
+      }
+      leaf time-traceable {
+        description
+          "";
+        type uint32;
+      }
+      leaf frequency-traceable {
+        description
+          "";
+        type uint32;
+      }
+      leaf timescale {
+        description
+          "";
+        type uint32;
+      }
+      leaf timesource {
+        description
+          "";
+        type string;
+      }
+    }
+    list interfaces-detail {
+      description
+        "";
+      key "interface-key";
+      leaf interface-key {
+        description
+          "";
+        type string;
+      }
+      list interface-detail-list {
+        description
+          "";
+        key "id";
+        leaf id {
+          description
+            "";
+          type string;
+        }
+        leaf port-dataset {
+          description
+            "";
+          type string;
+        }
+        leaf clock-identity {
+          description
+            "";
+          type string;
+        }
+        leaf port-number {
+          description
+            "";
+          type uint32;
+        }
+        leaf ptp-version {
+          description
+            "";
+          type uint16;
+        }
+        leaf port-state {
+          description
+            "";
+          type string;
+        }
+        leaf port-type {
+          description
+            "";
+          type string;
+        }
+        leaf vlan-info {
+          description
+            "";
+          type uint16;
+        }
+        leaf dri {
+          description
+            "";
+          type int32;
+        }
+        leaf arto {
+          description
+            "";
+          type uint16;
+        }
+        leaf pmpd {
+          description
+            "";
+          type string;
+        }
+        leaf annouce-interval {
+          description
+            "";
+          type int32;
+        }
+        leaf sync-interval {
+          description
+            "";
+          type int32;
+        }
+        leaf delay-mechanism {
+          description
+            "";
+          type string;
+        }
+        leaf transport-mode {
+          description
+            "";
+          type string;
+        }
+        leaf announce-msg-sent {
+          description
+            "";
+          type uint32;
+        }
+        leaf announce-msg-received {
+          description
+            "";
+          type uint32;
+        }
+        leaf sync-msg-sent {
+          description
+            "";
+          type uint32;
+        }
+        leaf sync-msg-received {
+          description
+            "";
+          type uint32;
+        }
+        leaf followup-msg-sent {
+          description
+            "";
+          type uint32;
+        }
+        leaf followup-msg-received {
+          description
+            "";
+          type uint32;
+        }
+        leaf delay-req-msg-sent {
+          description
+            "";
+          type uint32;
+        }
+        leaf delay-req-msg-received {
+          description
+            "";
+          type uint32;
+        }
+        leaf delay-res-msg-sent {
+          description
+            "";
+          type uint32;
+        }
+        leaf delay-res-msg-received {
+          description
+            "";
+          type uint32;
+        }
+        leaf peer-delay-req-msg-sent {
+          description
+            "";
+          type uint32;
+        }
+        leaf peer-delay-req-msg-received {
+          description
+            "";
+          type uint32;
+        }
+        leaf peer-delay-res-msg-sent {
+          description
+            "";
+          type uint32;
+        }
+        leaf peer-delay-res-msg-received {
+          description
+            "";
+          type uint32;
+        }
+        leaf peer-delay-res-fm-sent {
+          description
+            "";
+          type uint32;
+        }
+        leaf peer-delay-res-fm-received {
+          description
+            "";
+          type uint32;
+        }
+      }
+    }
+  }
+}

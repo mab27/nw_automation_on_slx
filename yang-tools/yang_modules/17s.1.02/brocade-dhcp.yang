@@ -1,0 +1,118 @@
+/*********************************************************************
+ * Copyright (c) 2013 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-dhcp.yang: Brocade YANG data model for DHCP configuration.
+		 			  Currently supports basic relay agent functionality
+ *					  only.
+ *
+ * May 2013, Aparna Kuppachi
+ *
+ *
+ ********************************************************************/
+module brocade-dhcp {
+  namespace "urn:brocade.com:mgmt:brocade-dhcp";
+  prefix dhcp;
+
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-ip-config {
+    prefix ip-config;
+  }
+  import brocade-common-def {
+    prefix common-def;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way,
+             San Jose, CA 95134 
+              U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage 
+     DHCP functionality.";
+
+  revision 2013-05-20 {
+    description
+      "Initial version of this management module.";
+  }
+
+  typedef dhcp-ipv4-address {
+    type inet:ipv4-address;
+  }
+
+  grouping interface-eth-dhcp {
+    container interface-eth-dhcp-conf {
+      uses interface-dhcp;
+    }
+  }
+
+  grouping interface-ve-dhcp {
+    container interface-ve-dhcp-conf {
+      uses interface-dhcp;
+    }
+  }
+
+  grouping interface-dhcp {
+    container dhcp {
+      container relay {
+        list servers {
+          key "relay-ip-addr server-vrf-name";
+          max-elements "16";
+          leaf relay-ip-addr {
+            type dhcp-ipv4-address;
+            description
+              "DHCP server IP address";
+          }
+          leaf server-vrf-name {
+            type common-def:vrf-name;
+            description
+              "Name of the VRF that the DHCP server is within";
+          }
+        }
+        leaf gateway {
+          description
+            "Gateway address";
+          type dhcp-ipv4-address;
+        }
+      }
+    }
+  }
+
+  grouping dhcp-cmds {
+    container dhcp {
+      description
+        "DHCP Global Configuration";
+      container relay {
+        description
+          "IPv4 DHCP Relay Options";
+        container information {
+          description
+            "DHCP Relay Information Option";
+          leaf option {
+            description
+              "DHCP Relay Information Option";
+            type empty;
+          }
+        }
+      }
+    }
+  }
+
+  augment "/common-def:routing-system/common-def:ip" {
+    uses dhcp-cmds;
+  }
+  augment "/common-def:routing-system/interface:interface/interface:ve/ip-config:ip" {
+    uses interface-ve-dhcp;
+  }
+  augment "/interface:interface/interface:ethernet/interface:ip" {
+    uses interface-eth-dhcp;
+  }
+}

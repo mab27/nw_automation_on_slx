@@ -1,0 +1,163 @@
+/*********************************************************************
+ * Copyright (c) 2011 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-bridge-domain.yang: Brocade Bridge Domain data model
+ *
+ *
+ *
+ ********************************************************************/
+module brocade-bridge-domain {
+  namespace "urn:brocade.com:mgmt:brocade-bridge-domain";
+  prefix bridge-domain;
+
+  import brocade-common-def {
+    prefix common-def;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import brocade-lif {
+    prefix import-lif;
+  }
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-system-capabilities {
+    prefix cap;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way,
+             San Jose, CA 95134
+              U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage Bridge-Domain .";
+
+  revision 2011-06-21 {
+    description
+      "Initial version of this management module
+       brocade-bridgeDomain.";
+  }
+
+  typedef bridge-domain-id-type {
+    type uint32 {
+      range "1..4096";
+    }
+    description
+      "The definition for specifying a bridge-domain  identifier.";
+  }
+
+  list bridge-domain {
+    key "bridge-domain-id bridge-domain-type";
+    leaf bridge-domain-id {
+      type bridge-domain-id-type;
+    }
+    leaf bridge-domain-type {
+      type enumeration {
+        enum "p2mp" {
+          value 1;
+        }
+        enum "p2p" {
+          value 2;
+        }
+      }
+      description
+        "This leaf specifies Bridge Domain Type.";
+    }
+    uses bd_cfg_cmds;
+  }
+
+  grouping bd_cfg_cmds {
+    leaf vc-id-num {
+      when "(/cap:capabilities/cap:l2/cap:bridgedomain_local_switching = \"true\")";
+      type uint32 {
+        range "1..4294967295" {
+          error-message
+            "vc-id  must be in the
+             range 1 - 4294967295";
+        }
+      }
+      description
+        "The leaf specifies the VC-ID under bridge-domain.";
+    }
+    leaf description {
+      type string {
+        length "1 .. 63";
+      }
+    }
+    list peer {
+      when "(/cap:capabilities/cap:l2/cap:bridgedomain_local_switching = \"true\")";
+      key "peer-ip";
+      leaf peer-ip {
+        type inet:ipv4-address;
+      }
+      leaf load-balance {
+        type empty;
+      }
+      leaf cos {
+        type uint32 {
+          range "0..7";
+        }
+      }
+      leaf-list lsp {
+        max-elements "32";
+        type string {
+          length "1..64";
+        }
+      }
+    }
+    leaf statistics {
+      type empty;
+      description
+        "Enable Statistics on Bridge-domain";
+    }
+    leaf transparent {
+      when "(/cap:capabilities/cap:l2/cap:bridgedomain_transparent = \"true\")";
+      type empty;
+      description
+        "Configure Bridge Domain as transparent Bridge Domain";
+    }
+    container router-interface {
+      leaf router-ve {
+        type interface:ve-type;
+      }
+    }
+    container logical-interface {
+      list ethernet {
+        key "lif-bind-id";
+        leaf lif-bind-id {
+          type import-lif:lif-interface-type;
+        }
+      }
+      list port-channel {
+        key "pc-lif-bind-id";
+        leaf pc-lif-bind-id {
+          type import-lif:lif-port-channel-type;
+        }
+      }
+    }
+    leaf pw-profile-name {
+      when "(/cap:capabilities/cap:l2/cap:bridgedomain_local_switching = \"true\")";
+      description
+        "Configure PW profile name";
+      type common-def:name-string64;
+    }
+    leaf bpdu-drop-enable {
+      when "(/cap:capabilities/cap:l2/cap:bridgedomain_local_switching = \"true\")";
+      type empty;
+      description
+        "Drop forwarding L2 protocol BPDU packets on end-points";
+    }
+    leaf local-switching {
+      when "(/cap:capabilities/cap:l2/cap:bridgedomain_local_switching = \"true\")";
+      type empty;
+      description
+        "Enable local switching on Bridge-domain";
+    }
+  }
+}

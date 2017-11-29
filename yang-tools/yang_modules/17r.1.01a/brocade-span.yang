@@ -1,0 +1,131 @@
+/*********************************************************************
+ * Copyright (c) 2011 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-span.yang: Brocade SPAN  module data model
+ *
+ * March 2011, Ojasvita Parate
+ *
+ *
+ ********************************************************************/
+module brocade-span {
+  namespace "urn:brocade.com:mgmt:brocade-span";
+  prefix span;
+
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-system-capabilities {
+    prefix c;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+             San Jose, CA 95134
+             U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This module manages Port Mirroring (SPAN)";
+
+  revision 2010-04-28 {
+    description
+      "Initial version of this management module.";
+  }
+
+  typedef session-type {
+    type uint32 {
+      range "1..512" {
+        description
+          "1-512;;Description Session_Id";
+      }
+    }
+  }
+
+  typedef span-if-type {
+    type string {
+      length "3..16";
+    }
+  }
+
+  container monitor {
+    list session {
+      key "session-number";
+      leaf session-number {
+        type session-type;
+      }
+      leaf description {
+        type string {
+          length "1..64" {
+            error-message "The length of the description should be in the range 1-64";
+          }
+        }
+      }
+      container span-command {
+        leaf source {
+          type enumeration {
+            enum "source" {
+              value 0;
+            }
+          }
+        }
+        leaf src-ethernet {
+          type enumeration {
+            enum "ethernet" {
+              value 8;
+            }
+          }
+        }
+        leaf src-ethernet-val {
+          type span-if-type;
+        }
+        leaf destination {
+          when "( (../src-ethernet-val) or (/c:capabilities/c:qos/c:mqc/c:span = \"true\") )";
+          type enumeration {
+            enum "destination" {
+              value 0;
+            }
+          }
+        }
+        leaf dest-ethernet {
+          type enumeration {
+            enum "ethernet" {
+              value 8;
+            }
+            enum "rspan-vlan" {
+              value 4;
+            }
+            enum "port-channel" {
+              value 3;
+            }
+          }
+        }
+        leaf dest-ethernet-val {
+          type span-if-type;
+        }
+        leaf dest-vlan-val {
+          default "1";
+          type interface:vlan-type;
+        }
+        leaf dest-port-channel-val {
+          type interface:portchannel-type;
+        }
+        leaf direction {
+          type enumeration {
+            enum "tx" {
+              value 0;
+            }
+            enum "rx" {
+              value 1;
+            }
+            enum "both" {
+              value 2;
+            }
+          }
+        }
+      }
+    }
+  }
+}

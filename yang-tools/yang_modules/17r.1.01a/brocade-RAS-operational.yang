@@ -1,0 +1,915 @@
+/*************************************************************************
+ *   Copyright (C) 2017-2022 Brocade Communications Systems, Inc.          *
+ *   All rights reserved.                                                  *
+ ************************************************************************/
+module brocade-RAS-operational {
+  namespace "urn:brocade.com:mgmt:brocade-RAS-operational";
+  prefix RAS-operational;
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal:\t130 Holger Way
+        San Jose, CA 95134 U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage RAS";
+
+  revision 2017-10-12 {
+    description
+      "First implementation of RAS module";
+  }
+
+  container cpu-state {
+    description
+      "CPU information";
+    config false;
+    container summary {
+      description
+        "Overall CPU utilization summary";
+      leaf summary-cpu-load-average-one-min {
+        description
+          "CPU load average in the last one minute";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf summary-cpu-load-average-five-min {
+        description
+          "CPU load average in the last five minute";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf summary-cpu-load-average-fifteen-min {
+        description
+          "CPU load average in the last fifteen minute";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf summary-cpu-util-current {
+        description
+          "Current total CPU utilization percentage";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf summary-cpu-util-current-user {
+        description
+          "Current CPU utilization percentage of user processes";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf summary-cpu-util-current-kernel {
+        description
+          "Current CPU utilization percentage of kernel processes";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf summary-cpu-util-current-iowait {
+        description
+          "Current CPU utilization percentage of iowait";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+    }
+    container history {
+      description
+        " CPU utilization histogram ";
+      leaf cpu-load-average-one-min {
+        description
+          "CPU load average in the last one minute";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-load-average-five-min {
+        description
+          "CPU load average in the last five minute";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-load-average-fifteen-min {
+        description
+          "CPU load average in the last fifteen minute";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-current {
+        description
+          "Current total CPU utilization percentage";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-current-user {
+        description
+          "Current CPU utilization percentage of user processes";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-current-kernel {
+        description
+          "Current CPU utilization percentage of kernel processes";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-current-iowait {
+        description
+          "Current CPU utilization percentage of iowait";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-1min {
+        description
+          "Total CPU utilization percentage in the last 1 min";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-1min-user {
+        description
+          "CPU utilization percentage of user processes in the last 1 min ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-1min-kernel {
+        description
+          "CPU utilization percentage of kernel processes in the last 1 min ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-1min-iowait {
+        description
+          "CPU utilization percentage of iowait in the last 1 min ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-5min {
+        description
+          "Total CPU utilization percentage in the last 5 min";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-5min-user {
+        description
+          "CPU utilization percentage of user processes in the last 5 min ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-5min-kernel {
+        description
+          "CPU utilization percentage of kernel processes in the last 5 min ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-5min-iowait {
+        description
+          "CPU utilization percentage of iowait in the last 5 min ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-15min {
+        description
+          "Total CPU utilization percentage in the last 15 min";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-15min-user {
+        description
+          "CPU utilization percentage of user processes in the last 15 min ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-15min-kernel {
+        description
+          "CPU utilization percentage of kernel processes in the last 15 min ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-15min-iowait {
+        description
+          "CPU utilization percentage of iowait in the last 15 min ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-1hour {
+        description
+          "Total CPU utilization percentage in the last 1 hour";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-1hour-user {
+        description
+          "CPU utilization percentage of user processes in the last 1 hour ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-1hour-kernel {
+        description
+          "CPU utilization percentage of kernel processes in the last 1 hour ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-1hour-iowait {
+        description
+          "CPU utilization percentage of iowait in the last 1 hour ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-5hour {
+        description
+          "Total CPU utilization percentage in the last 5 hour ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-5hour-user {
+        description
+          "CPU utilization percentage of user processes in the last 5 hour ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-5hour-kernel {
+        description
+          "CPU utilization percentage of kernel processes in the last 5 hour ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-5hour-iowait {
+        description
+          "CPU utilization percentage of iowait in the last 5 hour ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-24hour {
+        description
+          "Total CPU utilization percentage in the last 24 hour ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-24hour-user {
+        description
+          "CPU utilization percentage of user processes in the last 24 hour ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-24hour-kernel {
+        description
+          "CPU utilization percentage of kernel processes in the last 24 hour ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-24hour-iowait {
+        description
+          "CPU utilization percentage of iowait in the last 24 hour ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-72hour {
+        description
+          "Total CPU utilization percentage in the last 72 hour ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-72hour-user {
+        description
+          "CPU utilization percentage of user processes in the last 72 hour ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-72hour-kernel {
+        description
+          "CPU utilization percentage of kernel processes in the last 72 hour ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-72hour-iowait {
+        description
+          "CPU utilization percentage of iowait in the last 72 hour ";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      list cpu-util-process-history {
+        description
+          " CPU utilization histogram per process";
+        key "cpu-process-id";
+        leaf cpu-process-id {
+          description
+            "Process ID";
+          type uint32;
+        }
+        leaf cpu-process-name {
+          description
+            "Process name";
+          type string;
+        }
+        leaf cpu-util-current {
+          description
+            "Current CPU utilization of the process";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf cpu-util-1m {
+          description
+            "CPU utilization of the process in the last 1 minute";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf cpu-util-5m {
+          description
+            "CPU utilization of the process in the last 5 minute";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf cpu-util-15m {
+          description
+            "CPU utilization of the process in the last 15 minute";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf cpu-util-1h {
+          description
+            "CPU utilization of the process in the last 1 hour";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf cpu-util-5h {
+          description
+            "CPU utilization of the process in the last 1 hour";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf cpu-util-24h {
+          description
+            "CPU utilization of the process in the last 24 hour";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf cpu-util-72h {
+          description
+            "CPU utilization of the process in the last 72 hour";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+      }
+    }
+    container top {
+      description
+        "Top CPU utilization";
+      leaf cpu-curr-time {
+        description
+          "Current time of the system";
+        type string;
+      }
+      leaf cpu-system-uptime {
+        description
+          "System uptime since last boot";
+        type string;
+      }
+      leaf cpu-no-of-users {
+        description
+          "Current number of users logged in";
+        type uint32;
+      }
+      leaf cpu-load-average-one-min {
+        description
+          "CPU load average in the last one minute";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-load-average-five-min {
+        description
+          "CPU load average in the last five minute";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-load-average-fifteen-min {
+        description
+          "CPU load average in the last fifteen minute";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-total-task {
+        description
+          "Total number of tasks running";
+        type uint32;
+      }
+      leaf cpu-running-task {
+        description
+          "Number of running tasks ";
+        type uint32;
+      }
+      leaf cpu-sleeping-task {
+        description
+          "N umber of sleeping tasks ";
+        type uint32;
+      }
+      leaf cpu-stopped-task {
+        description
+          "Number of stopped tasks ";
+        type uint32;
+      }
+      leaf cpu-zombie-task {
+        description
+          "Number of zombie tasks ";
+        type uint32;
+      }
+      leaf cpu-util-user {
+        description
+          "CPU utlization % by user processes";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-kernel {
+        description
+          "CPU utlization % by kernel processes";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-nice {
+        description
+          "CPU utlization % by processes with nice value";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-idle {
+        description
+          "CPU utlization % at idle state";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-iowait {
+        description
+          "CPU utlization % waiting for I/O";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-hi {
+        description
+          "CPU utlization % for hardware interrupt";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-si {
+        description
+          "CPU utlization % for software interrupt";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-util-st {
+        description
+          "CPU utlization % for steal time";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf cpu-total-mem {
+        description
+          "Total memory";
+        type string;
+      }
+      leaf cpu-used-mem {
+        description
+          "Total used memory";
+        type string;
+      }
+      leaf cpu-free-mem {
+        description
+          "Total Free memory";
+        type string;
+      }
+      leaf cpu-buffer-mem {
+        description
+          "Total memory used for buffers";
+        type string;
+      }
+      leaf cpu-total-mem-swap {
+        description
+          "Total swap memory";
+        type string;
+      }
+      leaf cpu-used-mem-swap {
+        description
+          "Total used swap memory";
+        type string;
+      }
+      leaf cpu-free-mem-swap {
+        description
+          "Total Free swap memory";
+        type string;
+      }
+      leaf cpu-cache-mem-swap {
+        description
+          "Total memory used by cache";
+        type string;
+      }
+      list cpu-top-process-information {
+        description
+          " Process information list from the top ";
+        key "cpu-process-id";
+        leaf cpu-process-id {
+          description
+            "Process ID";
+          type uint32;
+        }
+        leaf cpu-process-user {
+          description
+            "User who runs this process";
+          type string;
+        }
+        leaf cpu-process-priority {
+          description
+            "Priority of the process";
+          type string;
+        }
+        leaf cpu-process-ni {
+          description
+            "Nice value of the process";
+          type string;
+        }
+        leaf cpu-process-virtual-mem {
+          description
+            "Virtual memory used by the process";
+          type string;
+        }
+        leaf cpu-process-resident-mem {
+          description
+            "Resident memory used by the process";
+          type string;
+        }
+        leaf cpu-process-shared-mem {
+          description
+            "Shared memory used by the process";
+          type string;
+        }
+        leaf cpu-process-state {
+          description
+            "Process state";
+          type string;
+        }
+        leaf cpu-process-cpuutil {
+          description
+            "CPU utilization % of the process";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf cpu-process-memutil {
+          description
+            "Memory utilization % of the process";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf cpu-process-running-time {
+          description
+            "Total time since the process is running";
+          type string;
+        }
+        leaf cpu-process-cmd {
+          description
+            "Command name of the process";
+          type string;
+        }
+      }
+    }
+    container all-partition {
+      description
+        " CPU utilization summary of all the MMs and LCs ";
+      list cpu-allpart-load {
+        description
+          "CPU average load history of the blade MM/LC ";
+        key "cpu-blade-name";
+        leaf cpu-blade-name {
+          description
+            "MM/LC name";
+          type string;
+        }
+        leaf cpu-load-average-1min {
+          description
+            "CPU load average in the last one minute";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf cpu-load-average-5min {
+          description
+            "CPU load average in the last five minute";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf cpu-load-average-15min {
+          description
+            "CPU load average in the last fifteen minute";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+      }
+      list cpu-allpart-util {
+        description
+          "CPU utilization percentage of the blade MM/LC";
+        key "cpu-blade-name";
+        leaf cpu-blade-name {
+          description
+            "MM/LC name";
+          type string;
+        }
+        leaf cpu-util-current {
+          description
+            "Current Total CPU utilization";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf cpu-util-user {
+          description
+            "Current CPU utilization by user process";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf cpu-util-kernel {
+          description
+            " Current CPU utilization by kernel processes ";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf cpu-util-iowait {
+          description
+            "Current CPU utilization in iowait";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+      }
+    }
+    container process-list {
+      description
+        "CPU utilization summary and list of all the process";
+      leaf list-cpu-load-average-one-min {
+        description
+          "CPU load average in the last one minute";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf list-cpu-load-average-five-min {
+        description
+          "CPU load average in the last five minute";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf list-cpu-load-average-fifteen-min {
+        description
+          "CPU load average in the last fifteen minute";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf list-cpu-util-current {
+        description
+          "Current total CPU utilization percentage";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf list-cpu-util-current-user {
+        description
+          "Current CPU utilization percentage of user processes";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf list-cpu-util-current-kernel {
+        description
+          "Current CPU utilization percentage of kernel processes";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf list-cpu-util-current-iowait {
+        description
+          "Current CPU utilization percentage of iowait";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      list cpu-process-list {
+        description
+          "CPU utilization list of all the process";
+        key "cpu-process-id";
+        leaf cpu-process-id {
+          description
+            "Process ID";
+          type uint32;
+        }
+        leaf cpu-process-name {
+          description
+            "Process name";
+          type string;
+        }
+        leaf cpu-process-util {
+          description
+            "Current CPU utilization percentage of the process";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf cpu-process-state {
+          description
+            "Process state";
+          type string;
+        }
+        leaf cpu-process-start-time {
+          description
+            "The time process is started";
+          type string;
+        }
+      }
+    }
+  }
+  container mem-state {
+    description
+      "Memory information";
+    config false;
+    container summary {
+      description
+        " Overall Memory utilization summary ";
+      leaf memory-used-percentage {
+        description
+          "Total memory used percentage";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf memory-total {
+        description
+          "Total Memory in KB";
+        type uint32;
+      }
+      leaf memory-total-used {
+        description
+          "Total Memory used in KB";
+        type uint32;
+      }
+      leaf memory-total-free {
+        description
+          "Total free used in KB";
+        type uint32;
+      }
+      leaf memory-low-free {
+        description
+          "Low memory free in KB";
+        type uint32;
+      }
+      leaf memory-high-free {
+        description
+          "High memory free in KB";
+        type uint32;
+      }
+      leaf memory-cached {
+        description
+          "Total cached memory in KB";
+        type uint32;
+      }
+    }
+    container mem-list {
+      description
+        " Memory utilization of all the process ";
+      leaf memory-used-percentage {
+        description
+          "Total memory used percentage";
+        type decimal64 {
+          fraction-digits 2;
+        }
+      }
+      leaf memory-total {
+        description
+          "Total Memory in KB";
+        type uint32;
+      }
+      leaf memory-total-used {
+        description
+          "Total Memory used in KB";
+        type uint32;
+      }
+      leaf memory-total-free {
+        description
+          "Total free used in KB";
+        type uint32;
+      }
+      leaf memory-low-free {
+        description
+          "Low memory free in KB";
+        type uint32;
+      }
+      leaf memory-high-free {
+        description
+          "High memory free in KB";
+        type uint32;
+      }
+      leaf memory-cached {
+        description
+          "Total cached memory in KB";
+        type uint32;
+      }
+      list memory-per-process {
+        description
+          " Memory utilization per process ";
+        key "memory-process-id";
+        leaf memory-process-id {
+          description
+            "Process ID";
+          type uint32;
+        }
+        leaf memory-process-name {
+          description
+            "Process name";
+          type string;
+        }
+        leaf memory-utilized {
+          description
+            "Percentage of memory used by the process";
+          type decimal64 {
+            fraction-digits 2;
+          }
+        }
+        leaf memory-utilized-vsize {
+          description
+            "Virtual set size of the process in KB";
+          type uint32;
+        }
+        leaf memory-utilized-rss {
+          description
+            "Residual set size of the process in KB";
+          type uint32;
+        }
+        leaf memory-utilized-pss {
+          description
+            "Proportional set size of the process in KB";
+          type uint32;
+        }
+      }
+    }
+  }
+}

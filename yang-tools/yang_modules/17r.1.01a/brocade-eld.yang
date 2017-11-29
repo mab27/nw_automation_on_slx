@@ -1,0 +1,43 @@
+module brocade-eld {
+  namespace "urn:brocade.com:mgmt:brocade-eld";
+  prefix eld;
+
+  import brocade-interface {
+    prefix interface;
+  }
+
+  revision 2011-08-08 {
+    description
+      "Initial version";
+  }
+
+  augment "/interface:protocol" {
+    container edge-loop-detection {
+      presence "true";
+      leaf pdu-rx-limit {
+        type uint32 {
+          range "1..5";
+        }
+        default "1";
+      }
+      leaf hello-interval {
+        type uint32 {
+          range "100..5000";
+        }
+        default "1000";
+      }
+      leaf shutdown-time {
+        type uint32 {
+          range "0..1440";
+        }
+        default "0";
+      }
+      leaf raslog-duration {
+        type uint32 {
+          range "10..1440";
+        }
+        default "10";
+      }
+    }
+  }
+}

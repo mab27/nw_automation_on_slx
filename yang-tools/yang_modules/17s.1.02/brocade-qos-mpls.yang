@@ -1,0 +1,168 @@
+/*********************************************************************
+ * Copyright (c) 2015 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-qos-mpls.yang: Brocade MPLS QOS module data model
+ *
+ * April 2015, Youn-Mor Chen
+ *
+ *
+ ********************************************************************/
+module brocade-qos-mpls {
+  namespace "urn:brocade.com:mgmt:brocade-qos-mpls";
+  prefix qos-mpls;
+
+  import brocade-system-capabilities {
+    prefix c;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+             San Jose, CA 95134
+             U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "This module manages MPLS Quality Of Service (QOS)";
+
+  revision 2015-04-07 {
+    description
+      "Initial version of this management module.";
+  }
+
+  typedef map-name-type {
+    type string {
+      pattern "[a-zA-Z]{1}([-a-zA-Z0-9_]{0,63})";
+    }
+  }
+
+  container qos-mpls {
+    when "(/c:capabilities/c:maps/c:qos_mpls = \"true\")";
+    container map {
+      list exp-traffic-class {
+        key "exp-traffic-class-map-name";
+        leaf exp-traffic-class-map-name {
+          type map-name-type;
+        }
+        list exp {
+          key "exp-in-values";
+          leaf exp-in-values {
+            type uint32 {
+              range "0 .. 7" {
+                description
+                  "0-7;;Exp Traffic Class value";
+              }
+            }
+          }
+          container to {
+            leaf priority {
+              type uint32 {
+                range "0 .. 7" {
+                  description
+                    "0-7;;Traffic class";
+                }
+              }
+            }
+            leaf drop-precedence {
+              type uint32 {
+                range "0 .. 3" {
+                  description
+                    "0-3;;drop-precedence value";
+                }
+              }
+            }
+          }
+        }
+      }
+      list traffic-class-exp {
+        key "traffic-class-exp-map-name";
+        leaf traffic-class-exp-map-name {
+          type map-name-type;
+        }
+        list priority {
+          key "priority-in-values";
+          leaf priority-in-values {
+            type uint32 {
+              range "0 .. 7" {
+                description
+                  "0-7;;Traffic class";
+              }
+            }
+          }
+          leaf drop-precedence {
+            type uint32 {
+              range "0 .. 3" {
+                description
+                  "0-3;;drop-precedence value";
+              }
+            }
+          }
+          leaf to {
+            type empty;
+          }
+          leaf exp {
+            type uint32 {
+              range "0 .. 7" {
+                description
+                  "0-7;;exp value";
+              }
+            }
+          }
+        }
+      }
+      list dscp-exp {
+        key "dscp-exp-map-name";
+        leaf dscp-exp-map-name {
+          type map-name-type;
+        }
+        list dscp {
+          key "dscp-in-values";
+          leaf dscp-in-values {
+            type uint32 {
+              range "0 .. 63" {
+                description
+                  "0-63;;dscp value";
+              }
+            }
+          }
+          container to {
+            leaf exp {
+              type uint32 {
+                range "0 .. 7" {
+                  description
+                    "0-7;;exp value";
+                }
+              }
+            }
+          }
+        }
+      }
+      list exp-dscp {
+        key "exp-dscp-map-name";
+        leaf exp-dscp-map-name {
+          type map-name-type;
+        }
+        list exp {
+          key "exp-in-values";
+          leaf exp-in-values {
+            type uint32 {
+              range "0 .. 7";
+            }
+          }
+          container to {
+            leaf dscp {
+              type uint32 {
+                range "0 .. 63" {
+                  description
+                    "0-63;;dscp value";
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

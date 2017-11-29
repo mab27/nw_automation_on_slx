@@ -1,0 +1,552 @@
+/*********************************************************************
+ * Copyright (c) 2011 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-vrrp.yang: Brocade VRRP data model
+ *
+ * March 2010, Hasan Raza, Karthik Rao
+ *
+ *
+ ********************************************************************/
+module brocade-vrrp {
+  namespace "urn:brocade.com:mgmt:brocade-vrrp";
+  prefix vrrp;
+
+  import brocade-interface {
+    prefix interface;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import brocade-common-def {
+    prefix comn;
+  }
+  import brocade-mac-access-list {
+    prefix mac-access-list;
+  }
+  import brocade-ip-config {
+    prefix ip-config;
+  }
+  import brocade-ipv6-config {
+    prefix ipv6-config;
+  }
+  import brocade-system-capabilities {
+    prefix c;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 1745 Technology Drive,
+             San Jose, CA 95110
+              U.S.A
+     Tel: +1-408-392-6061
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This module describes the data model for Virtual Router Redundancy Protocol";
+  reference
+    "RFC 3768 'Virtual Router Redundancy Protocol (VRRP)' and 
+     RFC 2787 'Definitions of Managed Objects for the Virtual Router Redundancy Protocol'";
+
+  revision 2011-10-31 {
+    description
+      "Initial version of this management module.";
+  }
+
+  typedef vrid-type {
+    type uint8 {
+      range "1..255" {
+        description
+          "Virtual router identifier, Range: 1-255";
+      }
+    }
+  }
+
+  typedef track-iftype {
+    type enumeration {
+      enum "ethernet" {
+        value 8;
+        description
+          "Ethernet interface";
+      }
+      enum "port-channel" {
+        value 3;
+        description
+          "Port-channel interface";
+      }
+    }
+  }
+
+  typedef track-ifname {
+    type union {
+      type interface:interface-type;
+      type string {
+        pattern "([1-9]|[1-9][0-9]|[1-4][0-9]{2}|50[0-9]|51[0-2])";
+      }
+    }
+  }
+
+  typedef network-addr-ipv4-prefix-mask {
+    type string {
+      pattern "(([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.)(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){2}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([1-9])|([1-2][0-9])|(3[0-2]))" {
+        error-message "Invalid IPv4 Address/Mask format.";
+      }
+    }
+  }
+
+  grouping global-vrrp-cmds {
+    container hide-vrrp-holder {
+      leaf vrrp {
+        type empty;
+        description
+          "Virtual Router Redundacy Protocol (VRRP)";
+      }
+      leaf vrrp-extended {
+        type empty;
+        description
+          "Virtual Router Redundacy Protocol Extended (VRRP-E)";
+      }
+    }
+  }
+
+  grouping vrrp-owner-cmds {
+    container owner {
+      description
+        "VRRP owner";
+      leaf owner-priority {
+        description
+          "VRRP owner priority";
+        type uint8 {
+          range "1..254";
+        }
+      }
+      leaf owner-track-priority {
+        description
+          "VRRP owner track priority";
+        type uint8 {
+          range "0..254";
+        }
+        default "0";
+      }
+    }
+  }
+
+  grouping vrrp-interface-cmds {
+    list vrrp {
+      description
+        "Start VRRP configuration";
+      key "vrid version";
+      leaf vrid {
+        type vrid-type;
+      }
+      leaf version {
+        type uint8 {
+          range "2..3";
+        }
+      }
+      leaf use-v2-checksum {
+        type empty;
+        description
+          "Enables v2 checksum computation method for VRRPv3 session";
+      }
+      uses vrrp-owner-cmds;
+      list virtual-ip {
+        key "virtual-ipaddr";
+        leaf virtual-ipaddr {
+          type inet:ipv4-address;
+          description
+            "Virtual IPv4 address in dotted decimal";
+        }
+      }
+      container track {
+        description
+          "Interface to be tracked";
+        list interface {
+          key "interface-type interface-name";
+          leaf interface-type {
+            type track-iftype;
+          }
+          leaf interface-name {
+            type track-ifname;
+          }
+          leaf track-priority {
+            type uint8 {
+              range "1..254";
+            }
+            description
+              "Track Priority";
+          }
+        }
+      }
+      uses vrrp-groups;
+    }
+    list vrrpe {
+      when "(/c:capabilities/c:l3/c:vrrp_extended_group_phy = \"true\")";
+      key "vrid";
+      leaf vrid {
+        type vrid-type;
+      }
+      leaf virtual-mac {
+        description
+          "Virtual MAC";
+        type enumeration {
+          enum "02e0.5200.00xx" {
+            value 1;
+          }
+        }
+      }
+      list virtual-ip {
+        key "virtual-ipaddr";
+        leaf virtual-ipaddr {
+          type inet:ipv4-address;
+          description
+            "Virtual IPv4 address";
+        }
+      }
+      container track {
+        description
+          "Interface to be tracked";
+        list network {
+          key "network-address";
+          leaf network-address {
+            type union {
+              type network-addr-ipv4-prefix-mask;
+              type inet:ipv4-prefix;
+            }
+            description
+              "IPv4 global address";
+          }
+          leaf network-priority {
+            type uint8 {
+              range "1..254";
+            }
+          }
+        }
+        list interface {
+          key "interface-type interface-name";
+          leaf interface-type {
+            type track-iftype;
+          }
+          leaf interface-name {
+            type track-ifname;
+          }
+          leaf track-priority {
+            type uint8 {
+              range "1..254";
+            }
+            description
+              "Track Priority";
+          }
+        }
+      }
+      uses vrrp-groups;
+      uses vrrpe-cmds-only;
+    }
+  }
+
+  augment "/comn:routing-system/comn:ip" {
+    container static-ag-ip-config {
+      container anycast-gateway-mac {
+        description
+          "Anycast gateway MAC address.";
+        leaf ip-anycast-gateway-mac {
+          type mac-access-list:mac-address-type;
+        }
+        leaf ip-anycast-default-mac {
+          type empty;
+          description
+            "Anycast gateway default MAC.";
+        }
+      }
+    }
+  }
+  augment "/comn:routing-system/comn:ipv6" {
+    container static-ag-ipv6-config {
+      container anycast-gateway-mac {
+        description
+          "Anycast gateway MAC address.";
+        leaf ipv6-anycast-gateway-mac {
+          type mac-access-list:mac-address-type;
+        }
+        leaf ipv6-anycast-default-mac {
+          type empty;
+          description
+            "Anycast gateway default MAC.";
+        }
+      }
+    }
+  }
+  augment "/comn:routing-system/interface:protocol" {
+    uses global-vrrp-cmds;
+  }
+
+  grouping vrrpe-cmds-only {
+    leaf advertise-backup {
+      type empty;
+      description
+        "Enable periodic backup advertisement messages";
+    }
+    leaf vrrpe-garp-timer {
+      type uint32 {
+        range "0..3600";
+      }
+    }
+    leaf backup-advertisement-interval {
+      type uint32 {
+        range "60..3600";
+      }
+      default "60";
+      description
+        "Set Backup advertisement interval";
+    }
+    container short-path-forwarding {
+      description
+        "Enable backup router to send traffic";
+      leaf basic {
+        type empty;
+      }
+      leaf revert-priority {
+        type uint8 {
+          range "1..254";
+        }
+        description
+          "Set revert priority";
+      }
+    }
+    leaf advertisement-interval-scale {
+      type uint32 {
+        range "1..10";
+      }
+      description
+        "Ipv4 session advertisement interval scale factor <1|2|5|10>";
+    }
+  }
+
+  grouping vrrp-vcs-cmds {
+    leaf priority {
+      type uint8 {
+        range "1..254";
+      }
+      default "100";
+      description
+        "Set router priority within virtual router";
+    }
+    leaf description {
+      type string {
+        length "1..64" {
+          description
+            "Characters describing this interface (Max Size - 64)";
+        }
+      }
+      description
+        "Interface specific description";
+    }
+  }
+
+  grouping vrrp-groups {
+    leaf advertisement-interval {
+      type uint32 {
+        range "1..40900";
+      }
+      description
+        "Ipv4 session advertisement interval";
+    }
+    leaf enable {
+      type empty;
+      description
+        "Enable Session";
+    }
+    leaf hold-time {
+      type uint32 {
+        range "1..3600";
+      }
+      description
+        "Configure hold time for this session";
+    }
+    leaf preempt-mode {
+      type empty;
+      description
+        "Set preempt mode for the session";
+    }
+    container arp {
+      description
+        "Modify ARP requests";
+      container unicast-request {
+        description
+          "Modify Unicast ARP requests";
+        leaf receive {
+          type empty;
+          description
+            "Receive unicast ARP requests";
+        }
+      }
+    }
+    uses vrrp-vcs-cmds;
+  }
+
+  augment "/interface:interface/interface:ethernet" {
+    uses vrrp-interface-cmds;
+  }
+  augment "/comn:routing-system/interface:interface/interface:ve" {
+    list vrrp {
+      key "vrid version";
+      leaf vrid {
+        type vrid-type;
+      }
+      leaf version {
+        type uint8 {
+          range "2..3";
+        }
+      }
+      leaf use-v2-checksum {
+        type empty;
+        description
+          "Enables v2 checksum computation method for VRRPv3 session";
+      }
+      uses vrrp-owner-cmds;
+      list virtual-ip {
+        key "virtual-ipaddr";
+        leaf virtual-ipaddr {
+          type inet:ipv4-address;
+          description
+            "Virtual IPv4 address";
+        }
+      }
+      container track {
+        description
+          "Interface to be tracked";
+        list interface {
+          key "interface-type interface-name";
+          leaf interface-type {
+            type track-iftype;
+          }
+          leaf interface-name {
+            type track-ifname;
+          }
+          leaf track-priority {
+            type uint8 {
+              range "1..254";
+            }
+            description
+              "Track Priority";
+          }
+        }
+      }
+      uses vrrp-groups;
+    }
+    list vrrpe {
+      key "vrid";
+      leaf vrid {
+        type vrid-type;
+      }
+      leaf virtual-mac {
+        description
+          "Virtual MAC";
+        type enumeration {
+          enum "02e0.5200.00xx" {
+            value 1;
+          }
+        }
+      }
+      list virtual-ip {
+        key "virtual-ipaddr";
+        leaf virtual-ipaddr {
+          type inet:ipv4-address;
+          description
+            "Virtual IPv4 address";
+        }
+      }
+      container track {
+        description
+          "Interface to be tracked";
+        list network {
+          key "network-address";
+          leaf network-address {
+            type union {
+              type network-addr-ipv4-prefix-mask;
+              type inet:ipv4-prefix;
+            }
+            description
+              "IPv4 global address";
+          }
+          leaf network-priority {
+            type uint8 {
+              range "1..254";
+            }
+          }
+        }
+        list interface {
+          key "interface-type interface-name";
+          leaf interface-type {
+            type track-iftype;
+          }
+          leaf interface-name {
+            type track-ifname;
+          }
+          leaf track-priority {
+            type uint8 {
+              range "1..254";
+            }
+            description
+              "Track Priority";
+          }
+        }
+      }
+      uses vrrp-groups;
+      uses vrrpe-cmds-only;
+    }
+  }
+  augment "/comn:routing-system/interface:interface/interface:ve/ip-config:ip" {
+    list ip-anycast-address {
+      key "ip-address";
+      leaf ip-address {
+        type union {
+          type comn:ipv4-prefix-mask;
+          type inet:ipv4-prefix;
+        }
+      }
+    }
+  }
+  augment "/comn:routing-system/interface:interface/interface:ve/ipv6-config:ipv6" {
+    list ipv6-anycast-address {
+      key "ipv6-address";
+      leaf ipv6-address {
+        type union {
+          type comn:ipv6-address-prefix;
+          type inet:ipv6-prefix;
+        }
+      }
+    }
+  }
+
+  grouping vrrpe-auth-cmds {
+    container auth-type {
+      description
+        "Authentication type";
+      container md5-auth {
+        description
+          "MD5 Authentication";
+        leaf auth-data {
+          description
+            "Authentication data";
+          type string;
+        }
+      }
+    }
+  }
+
+  augment "/comn:routing-system/interface:interface/interface:ve/ip-config:ip" {
+    container ip-vrrp-extended {
+      description
+        "VRRP Extended";
+      uses vrrpe-auth-cmds;
+    }
+  }
+  augment "/comn:routing-system/interface:interface/interface:ve/ipv6-config:ipv6" {
+    container ipv6-vrrp-extended {
+      description
+        "VRRP Extended";
+      uses vrrpe-auth-cmds;
+    }
+  }
+}

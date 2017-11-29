@@ -1,0 +1,168 @@
+/*********************************************************************
+ * Copyright (c) 2014 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-lif.yang: Brocade Interface Management Data Model
+ *
+ *
+ *
+ ********************************************************************/
+module brocade-lif {
+  namespace "urn:brocade.com:mgmt:brocade-lif";
+  prefix lif;
+
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-system-capabilities {
+    prefix cap;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal:\t130 Holger Way
+     San Jose, CA 95134 U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "
+     This module defines configuration commands related for creating logical interfaces for
+     physical and port channel interfaces.
+     
+     Configuration examples:
+     interface e 1/1.1
+     interface e 2/2.23
+     interface port-channel 2.1
+     interface port-channel 2.23
+    ";
+
+  revision 2014-06-04 {
+    description
+      "First implementation of Logical Interface configuration commands";
+  }
+
+  typedef lif-interface-type {
+    type string {
+      pattern "((([0-9]|[1][0-6]))/([1-9]|[1-9][0-9])(:[1-4])?)(\\.([1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|1[0-1][0-9][0-9][0-9]|12[0-1][0-9][0-9]|122[0-7][0-9]|1228[0-8]))";
+    }
+    description
+      "This typedef models the LIF interface representation in doted format.";
+  }
+
+  typedef lif-port-channel-type {
+    type string {
+      pattern "(([1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-6][0-9][0-9][0-9])\\.([1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|1[0-1][0-9][0-9][0-9]|12[0-1][0-9][0-9]|122[0-7][0-9]|1228[0-8]))";
+    }
+    description
+      "This typedef models the port-channel LIF representation in doted format.";
+  }
+
+  grouping get-tagged-vlan {
+    container tagged-outer-vlan {
+      leaf outer-tagged-vlan-id {
+        type uint32 {
+          range "1 .. 4090";
+        }
+      }
+      leaf inner-vlan {
+        when "(/cap:capabilities/cap:l2/cap:lif_inner_vlan = \"true\")";
+        type empty;
+      }
+      leaf inner-tagged-vlan-id {
+        when "(/cap:capabilities/cap:l2/cap:lif_inner_vlan = \"true\")";
+        type uint32 {
+          range "1 .. 4090";
+        }
+      }
+    }
+  }
+
+  grouping get-untagged-vlan {
+    container get-untagged-vlan-dummy {
+      container untagged-vlan {
+        leaf untagged-flag {
+          type empty;
+        }
+        leaf untagged-vlan-id {
+          when "(/cap:capabilities/cap:l2/cap:lif_untagged_vlan_id = \"true\")";
+          type interface:vlan-type;
+        }
+      }
+      leaf egress {
+        when "(/cap:capabilities/cap:l2/cap:lif_egress = \"true\")";
+        type enumeration {
+          enum "tagged" {
+            value 1;
+          }
+          enum "untagged" {
+            value 2;
+          }
+        }
+      }
+    }
+  }
+
+  grouping service-instance-vlan-cmds {
+    container service-instance-vlan-cmds-dummy-container {
+      uses get-untagged-vlan;
+      uses get-tagged-vlan;
+    }
+  }
+
+  grouping service-instance-common-commands {
+    container service-instance-common-commands-dummy {
+      container shutdown {
+        leaf shutdown-status {
+          type empty;
+        }
+      }
+      container name {
+        leaf logical-interface-name {
+          type string {
+            length "1 .. 64";
+          }
+        }
+      }
+    }
+  }
+
+  grouping phy-interface-lif-cmds {
+    container logical-interface {
+      list ethernet {
+        key "instance-id";
+        max-elements "4096";
+        leaf instance-id {
+          type lif-interface-type;
+        }
+        container cmd-container-dummy {
+          uses service-instance-common-commands;
+          uses service-instance-vlan-cmds;
+        }
+      }
+    }
+  }
+
+  grouping po-interface-lif-cmds {
+    container logical-interface {
+      list port-channel {
+        key "pc-instance-id";
+        max-elements "4096";
+        leaf pc-instance-id {
+          type lif-port-channel-type;
+        }
+        container pc-cmd-container-dummy {
+          uses service-instance-common-commands;
+          uses service-instance-vlan-cmds;
+        }
+      }
+    }
+  }
+
+  augment "/interface:interface/interface:ethernet" {
+    uses phy-interface-lif-cmds;
+  }
+  augment "/interface:interface/interface:port-channel" {
+    uses po-interface-lif-cmds;
+  }
+}

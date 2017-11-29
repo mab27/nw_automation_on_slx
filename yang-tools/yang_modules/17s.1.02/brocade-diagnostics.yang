@@ -1,0 +1,49 @@
+/*********************************************************************
+ * Copyright (c) 2011 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-diagnostics.yang-: Brocade FOS diagnostics Data Model
+ *
+ * April 2011, Mobin Mohan
+ *
+ *
+ ********************************************************************/
+module brocade-diagnostics {
+  namespace "urn:brocade.com:mgmt:brocade-diagnostics";
+  prefix diagnostics;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "sshaik@brocade.com";
+  description
+    "Modules for entities to support Diagnostics feature";
+
+  revision 2016-08-20 {
+    description
+      "Initial version.";
+  }
+
+  feature platform_chassis {
+    description
+      "chassis-platform";
+  }
+
+  feature platform_pizzabox {
+    description
+      "pizzabox-platform";
+  }
+
+  container diag {
+    tailf:action "diag-install" {
+      input;
+      output {
+        leaf diag-install-msg {
+          type string;
+        }
+      }
+    }
+  }
+}

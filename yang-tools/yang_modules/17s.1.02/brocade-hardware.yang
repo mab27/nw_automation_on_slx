@@ -1,0 +1,438 @@
+/****************************************************************
+* Copyright (c) 2016 by Brocade Communications Systems, Inc.
+* All rights reserved.
+* brocade-hardware.yang: Brocade Hardware Management Data Model 
+*
+*****************************************************************/
+module brocade-hardware {
+  namespace "urn:brocade.com:mgmt:brocade-hardware";
+  prefix hardware;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-common-def {
+    prefix common-def;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+             San Jose, CA 95134
+              U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This hardware management module is used to manage HW connectors,
+     portgroup and profile.";
+
+  revision 2016-02-01 {
+    description
+      "Fusion-Davinci initial version of this management module.";
+  }
+
+  typedef connector-type {
+    type string {
+      pattern "((([0-9]|[1][0-6]))/([1-9]|[1-9][0-9]|[1-9][0-9][0-9]))";
+      length "3..16";
+    }
+    description
+      "The definition for specifying a network interface 
+       using 2-tuple canonical format: slot/port.";
+  }
+
+  typedef connector-mode-type {
+    type enumeration {
+      enum "disabled" {
+        value 0;
+        description
+          "breakout disabled";
+      }
+      enum "2x40g" {
+        value 5;
+        description
+          "breakout 2x40G mode";
+      }
+      enum "2x50g" {
+        value 6;
+        description
+          "breakout 2x50G mode";
+      }
+      enum "4x10g" {
+        value 7;
+        description
+          "breakout 4x10G mode";
+      }
+      enum "4x25g" {
+        value 8;
+        description
+          "breakout 4x25G mode";
+      }
+    }
+    description
+      "Definition for the connector mode.";
+  }
+
+  typedef portgroup-speed-type {
+    type enumeration {
+      enum "40g" {
+        value 1;
+        description
+          "port group 40G mode";
+      }
+      enum "100g" {
+        value 2;
+        description
+          "port group 100G mode";
+      }
+    }
+    description
+      "Definition for specifying the type of port group speed mode.";
+  }
+
+  typedef tcam-profile-subtype {
+    type enumeration {
+      enum "default" {
+        value 0;
+      }
+      enum "vxlan-ext" {
+        value 1;
+      }
+      enum "openflow-optimised-1" {
+        value 2;
+      }
+      enum "openflow-optimised-2" {
+        value 3;
+      }
+      enum "l2-acl-l3-iacl" {
+        value 21;
+      }
+      enum "l2-iacl-l3-acl" {
+        value 22;
+      }
+      enum "l2-l3-iacl-l2-iqos" {
+        value 23;
+      }
+      enum "l2-l3-iqos-l2-iacl" {
+        value 24;
+      }
+      enum "l2-l3-iqos-l3-iacl" {
+        value 25;
+      }
+      enum "l2-l3-iqos-l2-eacl" {
+        value 26;
+      }
+      enum "l2-l3-iqos-l3-eacl" {
+        value 27;
+      }
+      enum "l2-l3-iacl" {
+        value 28;
+      }
+      enum "l3-acl" {
+        value 29;
+      }
+      enum "l3-iacl-l2-eacl" {
+        value 30;
+      }
+      enum "l2-l3-iqos" {
+        value 31;
+      }
+      enum "l3-iacl-l2-iqos" {
+        value 32;
+      }
+      enum "l3-iqos-l2-iacl" {
+        value 33;
+      }
+      enum "user-defined" {
+        value 99;
+      }
+    }
+  }
+
+  typedef overlay-visibility-subtype {
+    type enumeration {
+      enum "default" {
+        value 0;
+      }
+      enum "tunnel-vni" {
+        value 1;
+      }
+      enum "endpoint-vni" {
+        value 2;
+      }
+      enum "endpoint" {
+        value 3;
+      }
+      enum "vni" {
+        value 4;
+      }
+    }
+  }
+
+  typedef routing-profile-subtype {
+    type enumeration {
+      enum "default" {
+        value 0;
+      }
+      enum "ipv4-max-arp" {
+        value 1;
+      }
+      enum "ipv6-max-nd" {
+        value 2;
+      }
+      enum "multicast" {
+        value 3;
+      }
+      enum "multicast-snoop" {
+        value 4;
+      }
+      enum "user-defined" {
+        value 99;
+      }
+    }
+  }
+
+  typedef kap-profile-subtype {
+    type enumeration {
+      enum "default" {
+        value 0;
+      }
+    }
+  }
+
+  typedef ecmp-subtype {
+    type enumeration {
+      enum "8" {
+        value 0;
+      }
+      enum "16" {
+        value 1;
+      }
+      enum "32" {
+        value 2;
+      }
+      enum "64" {
+        value 3;
+      }
+    }
+  }
+
+  typedef openflow-subtype {
+    type enumeration {
+      enum "off" {
+        value 0;
+      }
+      enum "on" {
+        value 1;
+      }
+    }
+  }
+
+  typedef lag-profile-subtype {
+    type enumeration {
+      enum "default" {
+        value 0;
+      }
+      enum "lag-profile-1" {
+        value 1;
+      }
+    }
+  }
+
+  typedef counters-profile-subtype {
+    type enumeration {
+      enum "default" {
+        value 0;
+      }
+      enum "counter-profile-1" {
+        value 1;
+      }
+      enum "counter-profile-2" {
+        value 2;
+      }
+      enum "counter-profile-3" {
+        value 3;
+      }
+    }
+  }
+
+  typedef system-mode-type {
+    type enumeration {
+      enum "default" {
+        value 0;
+      }
+      enum "npb" {
+        value 1;
+      }
+    }
+  }
+
+  container hardware {
+    description
+      "This specifies the group of configuration/operational 
+       elements to manage the hardware chracteristics of this
+       managed entity.";
+    list connector {
+      key "name";
+      leaf name {
+        type connector-type;
+        mandatory true;
+      }
+      container breakout {
+        presence "true";
+        leaf cage-mode {
+          type connector-mode-type;
+        }
+      }
+    }
+    list port-group {
+      key "name";
+      leaf name {
+        type interface:port-group-type;
+        mandatory true;
+      }
+      leaf portgroup-speed {
+        type portgroup-speed-type;
+      }
+    }
+    container profile {
+      container tcam {
+        container predefined {
+          leaf tcam_profiletype {
+            type tcam-profile-subtype;
+          }
+        }
+      }
+      container overlay-visibility {
+        container predefined {
+          leaf overlay_visibility_profiletype {
+            type overlay-visibility-subtype;
+          }
+        }
+      }
+      container route-table {
+        container predefined {
+          leaf routing_profiletype {
+            type routing-profile-subtype;
+          }
+          container routing_parameter {
+            leaf maximum_paths {
+              type ecmp-subtype;
+            }
+            leaf openflow_enable {
+              type openflow-subtype;
+            }
+          }
+        }
+      }
+      container lag {
+        container predefined {
+          leaf lag_profiletype {
+            type lag-profile-subtype;
+          }
+        }
+      }
+      container counters {
+        container predefined {
+          leaf counters_profiletype {
+            type counters-profile-subtype;
+          }
+        }
+      }
+      container kap {
+        container predefined {
+          leaf kap_profiletype {
+            type kap-profile-subtype;
+          }
+        }
+        container customized {
+          leaf kap_profilename {
+            type string {
+              length "1..64";
+            }
+          }
+        }
+      }
+    }
+    leaf system-mode {
+      type system-mode-type;
+    }
+  }
+  augment "/common-def:show" {
+    container hardware {
+      tailf:action "port-group" {
+        input;
+        output;
+      }
+      tailf:action "profile" {
+        input {
+          choice profile-type {
+            default "current";
+            case tcam {
+              leaf tcam {
+                type tcam-profile-subtype;
+                mandatory false;
+              }
+            }
+            case overlay-visibility {
+              leaf overlay-visibility {
+                type overlay-visibility-subtype;
+                mandatory false;
+              }
+            }
+            case route-table {
+              leaf route-table {
+                type routing-profile-subtype;
+                mandatory false;
+              }
+              leaf openflow-flag {
+                type empty;
+                mandatory false;
+              }
+            }
+            case lag {
+              leaf lag {
+                type lag-profile-subtype;
+                mandatory false;
+              }
+            }
+            case counters {
+              leaf counters {
+                type counters-profile-subtype;
+                mandatory false;
+              }
+            }
+            case current {
+              container current-container {
+                leaf current {
+                  type empty;
+                  mandatory false;
+                }
+                leaf usage {
+                  type empty;
+                  mandatory false;
+                }
+                leaf slot {
+                  type uint32 {
+                    range "1 .. 16";
+                  }
+                }
+                leaf chip {
+                  type uint32 {
+                    range "0 .. 5";
+                  }
+                }
+              }
+            }
+          }
+        }
+        output;
+      }
+    }
+  }
+}

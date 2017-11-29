@@ -1,0 +1,167 @@
+/*******************************************************************
+ * Copyright (c) 2011 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-vrf.yang: Brocade VRF module data model
+ *
+ *
+ ******************************************************************/
+module brocade-vrf {
+  namespace "urn:brocade.com:mgmt:brocade-vrf";
+  prefix vrf;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import brocade-common-def {
+    prefix common-def;
+  }
+  import brocade-interface {
+    prefix interface;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+     San Jose, CA 95134
+     U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This module manages Virtual Routing and Forwarding (VRF)";
+
+  revision 2012-04-28 {
+    description
+      "Initial version of this management module.";
+  }
+
+  typedef rd-type {
+    type string {
+      pattern "((\\s*(((([1-9][0-9]{0,8})|(4[0-1][0-9]{8})|(42[0-8][0-9]{7})|(429[0-3][0-9]{6})|(4294[0-8][0-9]{5})|(42949[0-5][0-9]{4})|(429496[0-6][0-9]{3})|(4294967[0-1][0-9]{2})|(42949672[0-8][0-9])|(429496729[0-5])):(([1-9][0-9]{0,3})|([1-5][0-9]{4})|(6[0-4][0-9]{3})|(65[0-4][0-9]{2})|(655[0-2][0-9])|(6553[0-5])))|(((([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.)(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){2}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])):(([1-9][0-9]{0,3})|([1-5][0-9]{4})|(6[0-4][0-9]{3})|(65[0-4][0-9]{2})|(655[0-2][0-9])|(6553[0-5])))))*)";
+    }
+  }
+
+  typedef rt-type {
+    type string {
+      pattern "((\\s*(((([1-9][0-9]{0,8})|(4[0-1][0-9]{8})|(42[0-8][0-9]{7})|(429[0-3][0-9]{6})|(4294[0-8][0-9]{5})|(42949[0-5][0-9]{4})|(429496[0-6][0-9]{3})|(4294967[0-1][0-9]{2})|(42949672[0-8][0-9])|(429496729[0-5])):(([1-9][0-9]{0,3})|([1-5][0-9]{4})|(6[0-4][0-9]{3})|(65[0-4][0-9]{2})|(655[0-2][0-9])|(6553[0-5])))|(((([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.)(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){2}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])):(([1-9][0-9]{0,3})|([1-5][0-9]{4})|(6[0-4][0-9]{3})|(65[0-4][0-9]{2})|(655[0-2][0-9])|(6553[0-5])))))*)";
+    }
+  }
+
+  typedef route-map-type {
+    type common-def:name-string63;
+  }
+
+  grouping evpn-config {
+    container evpn {
+      container irb {
+        leaf ve {
+          type interface:ve-type;
+        }
+      }
+    }
+  }
+
+  grouping af-route-map-config {
+    container import {
+      leaf map-import {
+        type route-map-type;
+      }
+      leaf evpn-import {
+        type empty;
+      }
+    }
+    container export {
+      leaf map-export {
+        type route-map-type;
+      }
+      leaf evpn-export {
+        type empty;
+      }
+    }
+  }
+
+  grouping af-route-target-config {
+    list route-target {
+      key "action target-community";
+      leaf action {
+        type enumeration {
+          enum "export" {
+            value 0;
+          }
+          enum "import" {
+            value 1;
+          }
+          enum "both" {
+            value 2;
+          }
+        }
+      }
+      leaf target-community {
+        type rt-type;
+        description
+          "Target VPN Extended Community";
+      }
+      leaf evpn {
+        type empty;
+      }
+    }
+  }
+
+  grouping vrf-address-family {
+    container address-family {
+      container ip {
+        container unicast {
+          presence "true";
+          leaf max-route {
+            type uint32 {
+              range "1..4294967295";
+            }
+            description
+              "Maximum number of routes allowed in this routing table";
+          }
+          uses af-route-target-config;
+          uses af-route-map-config;
+        }
+      }
+      container ipv6 {
+        container unicast {
+          presence "true";
+          leaf max-route {
+            type uint32 {
+              range "1..4294967295";
+            }
+            description
+              "Maximum number of routes allowed in this routing table";
+          }
+          uses af-route-target-config;
+          uses af-route-map-config;
+        }
+      }
+    }
+  }
+
+  grouping vrf-cmds {
+    list vrf {
+      key "vrf-name";
+      leaf vrf-name {
+        type common-def:vrf-name;
+      }
+      leaf route-distiniguisher {
+        description
+          "Route distinguisher represented in ASN:nn
+           format.";
+        type rd-type;
+      }
+      uses evpn-config;
+      uses vrf-address-family;
+      container ip {
+        leaf vrf-router-id {
+          type inet:ipv4-address;
+        }
+      }
+    }
+  }
+
+  uses vrf-cmds;
+}

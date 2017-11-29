@@ -1,0 +1,137 @@
+/*********************************************************************
+ * Copyright (c) 2015 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-apply-qos-mpls.yang: Brocade apply MPLS QOS module data model
+ *
+ * April 2015, Youn-Mor Chen
+ *
+ *
+ ********************************************************************/
+module brocade-apply-qos-mpls {
+  namespace "urn:brocade.com:mgmt:brocade-apply-qos-mpls";
+  prefix apply-qos-mpls;
+
+  import brocade-qos-mpls {
+    prefix qos-mpls;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+             San Jose, CA 95134
+             U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "This module manages apply MPLS Quality Of Service (QOS)";
+
+  revision 2015-05-11 {
+    description
+      "Initial version of this management module.";
+  }
+
+  typedef map-name-type {
+    type string {
+      pattern "[a-zA-Z]{1}([-a-zA-Z0-9_]{0,63})";
+    }
+  }
+
+  grouping apply-qos-mpls-cmds {
+    container map-apply {
+      container apply-exp-traffic-class-map-name {
+        choice apply-exp-traffic-class {
+          case ca-map-name-cmd1 {
+            leaf map-name-cmd1 {
+              type map-name-type;
+            }
+          }
+          case ca-all-zero-map-cmd1 {
+            leaf all-zero-map-cmd1 {
+              type empty;
+            }
+          }
+          case ca-default-map-cmd1 {
+            leaf default-map-cmd1 {
+              type empty;
+            }
+          }
+        }
+        leaf All-cmd1 {
+          type empty;
+        }
+      }
+      container apply-traffic-class-exp-map-name {
+        choice apply-traffic-class-exp {
+          case ca-map-name-cmd2 {
+            leaf map-name-cmd2 {
+              type map-name-type;
+            }
+          }
+          case ca-all-zero-map-cmd2 {
+            leaf all-zero-map-cmd2 {
+              type empty;
+            }
+          }
+          case ca-default-map-cmd2 {
+            leaf default-map-cmd2 {
+              type empty;
+            }
+          }
+        }
+        leaf All-cmd2 {
+          type empty;
+        }
+      }
+      container apply-dscp-exp-map-name {
+        choice apply-dscp-exp {
+          case ca-map-name-cmd3 {
+            leaf map-name-cmd3 {
+              type map-name-type;
+            }
+          }
+          case ca-all-zero-map-cmd3 {
+            leaf all-zero-map-cmd3 {
+              type empty;
+            }
+          }
+          case ca-default-map-cmd3 {
+            leaf default-map-cmd3 {
+              type empty;
+            }
+          }
+        }
+        leaf All-cmd3 {
+          type empty;
+        }
+      }
+      container apply-exp-dscp-map-name {
+        choice apply-exp-dscp {
+          case ca-map-name-cmd4 {
+            leaf map-name-cmd4 {
+              type map-name-type;
+            }
+          }
+          case ca-all-zero-map-cmd4 {
+            leaf all-zero-map-cmd4 {
+              type empty;
+            }
+          }
+          case ca-default-map-cmd4 {
+            leaf default-map-cmd4 {
+              type empty;
+            }
+          }
+        }
+        leaf All-cmd4 {
+          type empty;
+        }
+      }
+    }
+  }
+
+  augment "/qos-mpls:qos-mpls" {
+    uses apply-qos-mpls-cmds;
+  }
+}

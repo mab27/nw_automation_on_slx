@@ -1,0 +1,69 @@
+/*********************************************************************
+ * Copyright (c) 2015 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-rpf.yang: Brocade RPF data model
+ *
+ * Febuary 2015, Sajad Qadri
+ *
+ *
+ ********************************************************************/
+module brocade-rpf {
+  namespace "urn:brocade.com:mgmt:brocade-rpf";
+  prefix rpf;
+
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-common-def {
+    prefix common-def;
+  }
+  import brocade-system-capabilities {
+    prefix c;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 1745 Technology Drive,
+             San Jose, CA 95110
+              U.S.A
+     Tel: +1-408-392-6061
+     E-mail: support@Brocade.com
+     web: www.brocade.com";
+  description
+    "This module describes the data model for Reverse Path Forwarding Protocol";
+
+  revision 2015-02-25 {
+    description
+      "Initial version of this management module.";
+  }
+
+  grouping interface-rpf-cmds {
+    container rpf {
+      when "(/c:capabilities/c:l3/c:rpf = \"true\")";
+      description
+        "Reverse Path Forwarding configuration";
+      leaf mode {
+        type enumeration {
+          enum "loose" {
+            value 2;
+            description
+              "Allow packets forwarding if there is a route to source";
+          }
+          enum "strict" {
+            value 3;
+            description
+              "Allow packets forwarding if route to source is towards the incoming port";
+          }
+        }
+      }
+    }
+  }
+
+  augment "/common-def:routing-system/interface:interface/interface:ve" {
+    uses interface-rpf-cmds;
+  }
+  augment "/interface:interface/interface:ethernet" {
+    uses interface-rpf-cmds;
+  }
+}

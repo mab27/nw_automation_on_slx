@@ -1,0 +1,55 @@
+/*********************************************************************
+* Copyright (c) 2014 by Brocade Communications Systems, Inc.
+* All rights reserved.
+* brocade-entity.yang: Brocade Entity management module.
+*
+* May 2014, Harish K Sekar
+*
+*
+********************************************************************/
+module brocade-entity {
+  namespace "urn:brocade.com:mgmt:brocade-entity";
+  prefix entity;
+
+  import brocade-common-def {
+    prefix common-def;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+     San Jose, CA 95134
+     U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage 
+     all physical and logical entities in the managed device.";
+  reference
+    "A. Bierman and K. McCloghrie, 'Entity MIB (Version 3)', 
+     RFC 4133, August 2005.";
+
+  revision 2014-05-09 {
+    description
+      "Initial version of this management module.";
+  }
+
+  rpc get-contained-in-ID {
+    description
+      "This is a function that returns the slot/container 
+       name/ID, where this managed device is 'contained in'. 
+       The managed device here, is typically 1 Rack Unit (RU) 
+       device.";
+    output {
+      leaf contained-in-ID {
+        type common-def:name-string64;
+        description
+          "This represents the textual name/ID of the 
+           slot/container that 'contains' this managed 
+           device.";
+      }
+    }
+  }
+}

@@ -1,0 +1,193 @@
+/*********************************************************************
+ * Copyright (c) 2016 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-system-capabilities.yang: Brocade System Capabilities model
+ *
+ * June 2016, Sajad Qadri
+ *
+ *
+ ********************************************************************/
+module brocade-system-capabilities {
+  namespace "urn:brocade.com:mgmt:brocade-system-capabilities";
+  prefix capabilities;
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 1745 Technology Drive,
+             San Jose, CA 95110
+             U.S.A
+     Tel: +1-408-392-6061
+     E-mail: support@Brocade.com
+     web: www.brocade.com";
+  description
+    "This module describes the System Capabilities of the platform.";
+
+  revision 2016-05-20 {
+    description
+      "Initial version of this management module.";
+  }
+
+  container capabilities {
+    config false;
+    container mqc {
+      leaf span {
+        type boolean;
+      }
+    }
+    container qos {
+      leaf system-rx-queue-limit {
+        type boolean;
+      }
+      leaf system-tx-queue-limit {
+        type boolean;
+      }
+      leaf show-rx-queue-interface {
+        type boolean;
+      }
+      leaf conf-rx-queue-interface {
+        type boolean;
+      }
+      container cee {
+        leaf nas {
+          type boolean;
+        }
+      }
+      container cpu {
+        leaf slot {
+          type boolean;
+        }
+        leaf queue {
+          type boolean;
+        }
+      }
+    }
+    container maps {
+      leaf qos_mpls {
+        type boolean;
+      }
+    }
+    container l2 {
+      leaf port_profile {
+        type boolean;
+      }
+      leaf overlap_vlan {
+        type boolean;
+      }
+      leaf rspan {
+        type boolean;
+      }
+      leaf mac_move {
+        type boolean;
+      }
+      leaf consistency_check {
+        type boolean;
+      }
+      leaf learning_mode {
+        type boolean;
+      }
+      leaf priority_tag {
+        type boolean;
+      }
+      leaf internal_nsm {
+        type boolean;
+      }
+      leaf lif_untagged_vlan_id {
+        type boolean;
+      }
+      leaf lif_egress {
+        type boolean;
+      }
+      leaf lif_inner_vlan {
+        type boolean;
+      }
+      leaf bridgedomain_local_switching {
+        type boolean;
+      }
+      leaf bridgedomain_transparent {
+        type boolean;
+      }
+      leaf dot1x {
+        type boolean;
+      }
+    }
+    container l3 {
+      leaf ip_mtu {
+        type boolean;
+      }
+      leaf vrrp_extended_group_phy {
+        type boolean;
+      }
+    }
+    container ipv6 {
+      leaf ipv6Raguard {
+        type boolean;
+      }
+    }
+    container ssm {
+      leaf aclTrafficType {
+        type boolean;
+      }
+    }
+    container lag {
+      leaf PortchannelRedundancy {
+        type boolean;
+      }
+    }
+    container bgp {
+      leaf next-hop-mpls {
+        type boolean;
+      }
+      leaf redistribute-isis {
+        type boolean;
+      }
+    }
+    container license {
+      leaf eula_display {
+        type boolean;
+      }
+      leaf dpod_display {
+        type boolean;
+      }
+      leaf slot_display {
+        type boolean;
+      }
+    }
+    container ip {
+      leaf igmp {
+        type boolean;
+      }
+      container igmp-snooping {
+        leaf igmp-snooping-version {
+          type boolean;
+        }
+      }
+    }
+    leaf tm {
+      type boolean;
+    }
+    leaf pw-profile {
+      type boolean;
+    }
+    container overlay {
+      leaf gre {
+        type boolean;
+      }
+      container vxlan {
+        leaf mac-learn-protocol-bgp {
+          type boolean;
+        }
+      }
+      leaf hardware-vtep {
+        description
+          "Indicates whether hardware_vtep gateway is
+           supported. This type of gateway requires NSX or
+           similar VTEP controller integration.";
+        type boolean;
+      }
+    }
+    leaf cfm {
+      type boolean;
+    }
+  }
+}

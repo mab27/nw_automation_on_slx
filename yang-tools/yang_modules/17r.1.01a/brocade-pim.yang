@@ -1,0 +1,272 @@
+/***********************************************************
+* Copyright (c) 2010 by Brocade Communications Systems, Inc.
+* All rights reserved.
+* Brocade PIM Data model 
+*
+*  September 2011, Rahul Jain
+*  June 2014, Chirag Shah
+*
+***********************************************************/
+module brocade-pim {
+  namespace "urn:brocade.com:mgmt:brocade-pim";
+  prefix pim;
+
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-ip-config {
+    prefix ip-config;
+  }
+  import brocade-intf-loopback {
+    prefix intf-loopback;
+  }
+  import brocade-common-def {
+    prefix common-def;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     130 Holger Way,
+     San Jose, CA 95134
+     U.S.A
+     Tel: +1-408-333-8000
+     E-mail: info@brocade.com
+     Web: www.brocade.com";
+  description
+    "This file describes the data modeliing of all
+     the configuration commands for the multicast 
+     protocol, Protocol Independent Multicast (PIM).";
+
+  revision 2011-06-01 {
+    description
+      "Initial version of PIM module";
+  }
+  revision 2014-06-01 {
+    description
+      "2nd version of PIM module for Fusion";
+  }
+
+  typedef spt-thr-type {
+    type union {
+      type uint32 {
+        range "1..4294967295";
+      }
+      type enumeration {
+        enum "infinity" {
+          value 0;
+        }
+      }
+    }
+  }
+
+  typedef pim-intf-types {
+    type enumeration {
+      enum "ethernet";
+      enum "port-channel";
+      enum "ve";
+      enum "loopback";
+    }
+  }
+
+  typedef ip-prefix-name-t {
+    type common-def:name-string32;
+    description
+      "Word:1-32;;IP prefix-list name";
+  }
+
+  grouping rtr-pim-cfg-cmd {
+    leaf max-mcache {
+      type uint32 {
+        range "1..32768";
+      }
+      default "32768";
+    }
+    leaf hello-interval {
+      type uint32 {
+        range "10..3600";
+      }
+      units "Seconds";
+      default "30";
+    }
+    leaf prune-wait {
+      type uint32 {
+        range "0..30";
+      }
+      default "3";
+    }
+    leaf nbr-timeout {
+      type uint16 {
+        range "35..12600";
+      }
+      default "105";
+    }
+    leaf inactivity-timer {
+      type uint16 {
+        range "60..3600";
+      }
+      default "180";
+    }
+    leaf message-interval {
+      type uint32 {
+        range "10..65535";
+      }
+      units "Seconds";
+      default "60";
+    }
+    leaf spt-threshold {
+      type spt-thr-type;
+      default "1";
+    }
+    container rpf {
+      container ecmp {
+        presence "true";
+        leaf rebalance {
+          type empty;
+        }
+      }
+    }
+    container ssm-enable {
+      presence "true";
+      leaf range {
+        type ip-prefix-name-t;
+      }
+    }
+    container bsr-candidate {
+      list bsr-cand-interface {
+        key "bsr-cand-intf-type bsr-cand-intf-id";
+        leaf bsr-cand-intf-type {
+          type pim-intf-types;
+        }
+        leaf bsr-cand-intf-id {
+          type string;
+        }
+        leaf hash-mask-length {
+          type uint16 {
+            range "1..32";
+          }
+        }
+        leaf bsr-cand-priority {
+          type uint32 {
+            range "0..255";
+          }
+          mandatory false;
+        }
+      }
+    }
+    container rp-candidate {
+      list rp-cand-interface {
+        key "rp-cand-intf-type rp-cand-intf-id";
+        max-elements "1";
+        leaf rp-cand-intf-type {
+          type pim-intf-types;
+        }
+        leaf rp-cand-intf-id {
+          type string;
+        }
+      }
+      list rp-cand-grp-prefix {
+        key "rp-cand-prefix-name";
+        max-elements "1";
+        leaf rp-cand-prefix-name {
+          description
+            "Prefix list name.";
+          type ip-prefix-name-t;
+        }
+      }
+    }
+    list anycast-rp {
+      max-elements "56";
+      key "anycast-ip-addr";
+      leaf anycast-ip-addr {
+        type inet:ipv4-address;
+      }
+      leaf anycast-prefix-list {
+        type ip-prefix-name-t;
+      }
+    }
+    list rp-address {
+      key "rp-ip-addr";
+      max-elements "56";
+      leaf rp-ip-addr {
+        type inet:ipv4-address;
+      }
+      leaf rp-addr-prefix-list {
+        type common-def:name-string63;
+      }
+    }
+    container route-precedence {
+      leaf uc-default {
+        type empty;
+      }
+      leaf uc-non-default {
+        type empty;
+      }
+      leaf none {
+        type empty;
+      }
+    }
+  }
+
+  grouping pim-intf-cfg-cmd {
+    container pim-int-cmd {
+      leaf pim-sparse {
+        type empty;
+      }
+      container pim {
+        leaf dr-priority {
+          type uint32 {
+            range "0..65535";
+          }
+          default "1";
+        }
+        leaf ttl-threshold {
+          type uint32 {
+            range "1..64";
+          }
+          default "1";
+        }
+      }
+    }
+  }
+
+  grouping pim-intf-phy-cfg {
+    container pim-intf-phy-cont {
+      uses pim-intf-cfg-cmd;
+    }
+  }
+
+  grouping pim-intf-vlan-cfg {
+    container pim-intf-vlan-cont {
+      uses pim-intf-cfg-cmd;
+    }
+  }
+
+  grouping pim-intf-loopback-cfg {
+    container pim-intf-loopback-cont {
+      uses pim-intf-cfg-cmd;
+    }
+  }
+
+  augment "/common-def:routing-system/common-def:router" {
+    list pim {
+      key "vrf";
+      leaf vrf {
+        type common-def:vrf-name;
+      }
+      uses rtr-pim-cfg-cmd;
+    }
+  }
+  augment "/interface:interface/interface:ethernet/interface:ip" {
+    uses pim-intf-phy-cfg;
+  }
+  augment "/common-def:routing-system/interface:interface/interface:ve/ip-config:ip" {
+    uses pim-intf-vlan-cfg;
+  }
+  augment "/common-def:routing-system/interface:interface/intf-loopback:loopback/ip-config:ip" {
+    uses pim-intf-loopback-cfg;
+  }
+}

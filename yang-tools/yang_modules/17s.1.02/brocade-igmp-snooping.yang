@@ -1,0 +1,219 @@
+/*********************************************************************
+ * Copyright (c) 2010 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-igmp-snooping.yang : Brocade IGMP Snooping data model
+ *
+ * June 2010, Anish Bhaskaran
+ *
+ *
+ ********************************************************************/
+module brocade-igmp-snooping {
+  namespace "urn:brocade.com:mgmt:brocade-igmp-snooping";
+  prefix igmp-snooping;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-system-capabilities {
+    prefix c;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 1745 Technology Drive,
+             San Jose, CA 95110 
+              U.S.A
+     Tel: +1-408-392-6061
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage the 
+     'Internet Group Management Protocol (IGMP) Snooping'.";
+
+  revision 2010-06-02 {
+    description
+      "Initial version of this module.";
+  }
+
+  container igmp-snooping {
+    container ip {
+      container igmp {
+        leaf router-alert-check-disable {
+          type empty;
+        }
+        container ssm-map {
+          leaf igmps-ssmmap {
+            type empty;
+          }
+          list igmps-prefix-list {
+            key "igmps-prefix-list-name igmps-prefix-src-addr";
+            leaf igmps-prefix-list-name {
+              type string;
+            }
+            leaf igmps-prefix-src-addr {
+              type inet:ipv4-address;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  typedef lmqt-type {
+    type uint32 {
+      range "100..25500";
+    }
+  }
+
+  typedef lmqc-type {
+    type uint32 {
+      range "2..10";
+    }
+  }
+
+  typedef sqc-type {
+    type uint32 {
+      range "1..10";
+    }
+  }
+
+  typedef sqi-type {
+    type uint32 {
+      range "1..450";
+    }
+  }
+
+  typedef rob-type {
+    type uint32 {
+      range "2..10";
+    }
+  }
+
+  typedef qi-type {
+    type uint32 {
+      range "1..18000";
+    }
+  }
+
+  typedef qmrt-type {
+    type uint32 {
+      range "1..25";
+    }
+  }
+
+  typedef igmps-version-type {
+    type uint32 {
+      range "1..3";
+    }
+    default "2";
+  }
+
+  typedef string-type {
+    type string {
+      length "1..10";
+    }
+  }
+
+  augment "/interface:interface-vlan/interface:vlan/interface:ip" {
+    description
+      "Internet Protocol v4 (IPv4)";
+    container igmpVlan {
+      container snooping {
+        leaf igmps-version {
+          when "(/c:capabilities/c:ip/c:igmp-snooping/c:igmp-snooping-version = \"true\")";
+          type igmps-version-type;
+          default "2";
+        }
+        leaf igmps-last-member-query-interval {
+          type lmqt-type;
+          units "milliSeconds";
+          default "1000";
+        }
+        leaf igmps-last-member-query-count {
+          type lmqc-type;
+        }
+        leaf igmps-query-interval {
+          type qi-type;
+          units "Seconds";
+          default "125";
+        }
+        leaf igmps-query-max-response-time {
+          type qmrt-type;
+          units "Seconds";
+          default "10";
+        }
+        leaf igmps-startup-query-interval {
+          type sqi-type;
+          units "Seconds";
+        }
+        leaf igmps-startup-query-count {
+          type sqc-type;
+          units "Seconds";
+        }
+        leaf igmps-enable {
+          type empty;
+        }
+        leaf igmps-fast-leave {
+          type empty;
+        }
+        leaf igmps_robustness-variable {
+          type rob-type;
+        }
+        leaf restrict-unknown-multicast {
+          type empty;
+        }
+        container igmps-querier {
+          leaf igmps-qenable {
+            type empty;
+          }
+        }
+        container igmps_mrouter {
+          list igmps-interface {
+            key "igmps-if-type igmps-value";
+            leaf igmps-if-type {
+              type enumeration {
+                enum "port-channel" {
+                  value 3;
+                }
+                enum "ethernet" {
+                  value 8;
+                }
+              }
+            }
+            leaf igmps-value {
+              type string-type;
+            }
+          }
+        }
+        list igmps_static-group {
+          key "igmps-mcast-address igmps-interface igmps-if-type igmps-value";
+          leaf igmps-mcast-address {
+            type inet:ipv4-address;
+          }
+          leaf igmps-interface {
+            type enumeration {
+              enum "interface";
+            }
+          }
+          leaf igmps-if-type {
+            type enumeration {
+              enum "port-channel" {
+                value 3;
+              }
+              enum "ethernet" {
+                value 8;
+              }
+            }
+          }
+          leaf igmps-value {
+            type string-type;
+          }
+        }
+      }
+    }
+  }
+}

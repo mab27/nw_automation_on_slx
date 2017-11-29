@@ -1,0 +1,145 @@
+/*********************************************************************
+* Copyright (c) 2016 by Brocade Communications Systems, Inc.
+* All rights reserved.
+* brocade-resource-monitor.yang
+*
+*
+********************************************************************/
+module brocade-resource-monitor {
+  namespace "urn:brocade.com:mgmt:brocade-resource-monitor";
+  prefix resource-monitor;
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Address :  120 Holger Way
+         San Jose, CA 95134
+         U.S.A
+     Phone    :  +1-408-333-8000
+     E-mail   :  support@brocade.com
+     Website  :  www.brocade.com";
+  description
+    "Data Model for Brocade's Resource Monitor configuration CLIs";
+
+  revision 2016-02-08 {
+    description
+      "Initial modelling of Yang";
+  }
+
+  typedef resource-monitor-actiontype {
+    type enumeration {
+      enum "raslog" {
+        value 1;
+      }
+    }
+  }
+
+  container resource-monitor {
+    container cpu {
+      leaf enable-cpu {
+        type empty;
+      }
+      leaf threshold-cpu {
+        type uint32 {
+          range "70 .. 100" {
+            error-message "High CPU usage threshold range 70-100";
+          }
+        }
+      }
+      leaf action-cpu {
+        type resource-monitor-actiontype;
+      }
+      leaf sample-rate-cpu {
+        type uint32 {
+          range "1 .. 20" {
+            error-message "Polling interval range 1-20 seconds";
+          }
+        }
+      }
+      leaf logging-rate-cpu {
+        type uint32 {
+          range "20 .. 60" {
+            error-message "logging interval range 20-60 seconds";
+          }
+        }
+      }
+      leaf grace-period-cpu {
+        type uint32 {
+          range "1 .. 720" {
+            error-message "Grace period range 1 - 720 hours";
+          }
+        }
+      }
+      leaf offset-cpu {
+        type uint32 {
+          range "0 .. 70" {
+            error-message "CPU usage threshold offset range 0-70 percent";
+          }
+        }
+      }
+    }
+    container memory {
+      leaf enable-memory {
+        type empty;
+      }
+      leaf threshold-memory {
+        type uint32 {
+          range "50 .. 200" {
+            error-message "Free low memory threshold range 50-200 MBytes";
+          }
+        }
+      }
+      leaf action-memory {
+        type resource-monitor-actiontype;
+      }
+      leaf sample-rate-memory {
+        type uint32 {
+          range "1 .. 20" {
+            error-message "Polling interval range 1-20";
+          }
+        }
+      }
+      leaf logging-rate-memory {
+        type uint32 {
+          range "10 .. 120" {
+            error-message "logging interval range 10-120 minutes";
+          }
+        }
+      }
+      leaf grace-period-memory {
+        type uint32 {
+          range "1 .. 720" {
+            error-message "Grace period range 1 - 720 hours";
+          }
+        }
+      }
+      leaf offset-memory {
+        type uint32 {
+          range "0 .. 70" {
+            error-message "Memory usage thrshold offset range 0-70 percent";
+          }
+        }
+      }
+    }
+    container process {
+      container memory {
+        leaf enable-process {
+          type empty;
+        }
+        leaf thresh-mem-alarm {
+          type uint32 {
+            range "800 .. 1000" {
+              error-message "Alarm threshold of memory usage range 800-1000 MBytes";
+            }
+          }
+        }
+        leaf thresh-mem-critic {
+          type uint32 {
+            range "1000 .. 1200" {
+              error-message "Critical threshold of memory usage range 1000-1200 MBytes";
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,109 @@
+module brocade-sysmon {
+  namespace "urn:brocade.com:mgmt:brocade-sysmon";
+  prefix sysmon;
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+             San Jose, CA 95134
+             U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This module manages TM/SFM Error Monitoring";
+
+  revision 2016-01-27 {
+    description
+      "Initial version of this management module.";
+  }
+
+  grouping fe-access-check-cmds {
+    container fe-access-check {
+      leaf fe-access-check-disable {
+        type empty;
+      }
+      leaf fe-access-check-interval {
+        type uint16 {
+          range "1 .. 300";
+        }
+      }
+      leaf fe-access-check-threshold {
+        type uint8 {
+          range "1 .. 10";
+        }
+      }
+      leaf fe-access-check-recovery-threshold {
+        type uint8 {
+          range "1 .. 3";
+        }
+      }
+      leaf fe-access-check-action {
+        type enumeration {
+          enum "log" {
+            value 1;
+          }
+          enum "recover" {
+            value 3;
+          }
+        }
+      }
+    }
+  }
+
+  grouping link-crc-monitoring-cmds {
+    container link-crc-monitoring {
+      leaf link-crc-mon-disable {
+        type empty;
+      }
+      leaf link-crc-mon-interval {
+        type uint16 {
+          range "1 .. 300";
+        }
+      }
+      leaf link-crc-mon-threshold {
+        type uint8 {
+          range "1 .. 10";
+        }
+      }
+      leaf link-crc-mon-action {
+        type enumeration {
+          enum "log" {
+            value 1;
+          }
+          enum "link-disable" {
+            value 2;
+          }
+        }
+      }
+    }
+  }
+
+  grouping sfm-walk-cmds {
+    container sfm-walk {
+      leaf sfm-walk-auto {
+        type empty;
+      }
+      leaf sfm-walk-dis-redundancy-check {
+        type empty;
+      }
+      leaf sfm-walk-interval {
+        type uint16 {
+          range "1 .. 600";
+        }
+      }
+      leaf sfm-walk-threshold {
+        type uint16 {
+          range "1 .. 600";
+        }
+      }
+    }
+  }
+
+  container sysmon {
+    uses fe-access-check-cmds;
+    uses link-crc-monitoring-cmds;
+    uses sfm-walk-cmds;
+  }
+}

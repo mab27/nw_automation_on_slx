@@ -1,0 +1,202 @@
+/*********************************************************************
+ * Copyright (c) 2010 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-arp.yang: Brocade ARP data model
+ *
+ * Jan 2011, jay pangalur , vamshi karnati
+ *
+ *
+ ********************************************************************/
+module brocade-arp {
+  namespace "urn:brocade.com:mgmt:brocade-arp";
+  prefix arp;
+
+  import brocade-mac-access-list {
+    prefix mac-access-list;
+  }
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-bridge-domain {
+    prefix bd;
+  }
+  import brocade-vrf {
+    prefix vrf;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger way,
+     San Jose, CA 95134,
+     U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage
+     ARPD Daemon";
+
+  revision 2011-10-31 {
+    description
+      "Initial version of this management module.";
+  }
+
+  grouping arp-entry-group {
+    list arp-entry {
+      key "arp-ip-address";
+      leaf arp-ip-address {
+        type inet:ipv4-address;
+        description
+          "IPv4 Address";
+      }
+      leaf mac-address-value {
+        type mac-access-list:mac-address-type;
+      }
+      leaf interfacename {
+        type enumeration {
+          enum "interface" {
+            description
+              "Interface to use";
+          }
+        }
+      }
+      choice interfacetype {
+        case Ethernet {
+          leaf Ethernet {
+            description
+              "Ethernet";
+            type interface:interface-type;
+          }
+        }
+        case Ve {
+          leaf Ve {
+            description
+              "Ve";
+            type interface:ve-type;
+          }
+        }
+      }
+    }
+  }
+
+  grouping conversational_arp {
+    container host-table {
+      container aging-mode {
+        leaf conversational {
+          type empty;
+        }
+      }
+      container aging-time {
+        leaf conversational-timeout {
+          type uint32 {
+            range "60..100000";
+          }
+        }
+      }
+    }
+  }
+
+  grouping suppress-arp {
+    container suppress-arp {
+      leaf suppress-arp-enable {
+        type empty;
+      }
+    }
+  }
+
+  uses arp-entry-group;
+  uses conversational_arp;
+  augment "/interface:interface-vlan/interface:vlan" {
+    uses suppress-arp;
+  }
+  augment "/bd:bridge-domain" {
+    uses suppress-arp;
+  }
+  augment "/vrf:vrf/vrf:address-family/vrf:ip/vrf:unicast" {
+    uses arp-entry-group;
+  }
+  rpc get-arp {
+    description
+      "This RPC returns ARP entries of the managed entity.
+       Depending on the input argument, the ARP entries are
+       displayed. When there is no input argument entered, all
+       the ARP entries of the managed entity are returned.";
+    input {
+      choice input-type {
+        case interface {
+          uses interface:interface-name-info;
+        }
+        case dynamic {
+          leaf dynamic {
+            type empty;
+            description
+              "This input queries for all the dynamic
+               arp entries";
+          }
+        }
+        case static {
+          leaf static {
+            type empty;
+            description
+              "This input queries for all the static
+               arp entries";
+          }
+        }
+        case ip {
+          leaf ip-address {
+            type inet:ipv4-address;
+            description
+              "This input queries for all the arp
+               entries for this ip address";
+          }
+        }
+      }
+    }
+    output {
+      list arp-entry {
+        key "ip-address";
+        leaf ip-address {
+          type inet:ipv4-address;
+          description
+            "IP address of the ARP entry";
+        }
+        leaf mac-address {
+          type mac-access-list:mac-address-type;
+          description
+            "Mac address of the ARP entry";
+        }
+        uses interface:interface-name-info;
+        leaf is-resolved {
+          type boolean;
+          description
+            "This indicates whether the arp entry is
+             resolved or not";
+        }
+        leaf age {
+          type string;
+          description
+            "This indicates the age of the arp entry";
+        }
+        leaf entry-type {
+          type enumeration {
+            enum "static" {
+              value 1;
+            }
+            enum "dynamic" {
+              value 2;
+            }
+            enum "unknown" {
+              value 3;
+            }
+          }
+          description
+            "This indicates the type of the arp entry";
+        }
+      }
+    }
+  }
+}

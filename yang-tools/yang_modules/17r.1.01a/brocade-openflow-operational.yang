@@ -1,0 +1,1222 @@
+/*************************************************************************
+ *   Copyright (C) 2017-2022 Brocade Communications Systems, Inc.          *
+ *   All rights reserved.                                                  *
+ ************************************************************************/
+module brocade-openflow-operational {
+  namespace "urn:brocade.com:mgmt:brocade-openflow-operational";
+  prefix openflow-operational;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal:\t130 Holger Way
+        San Jose, CA 95134 U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage openflow";
+
+  revision 2017-10-12 {
+    description
+      "First implementation of openflow module";
+  }
+
+  typedef async-type {
+    description
+      "Asynchronous Configuration type";
+    type enumeration {
+      enum "dcm-async-invalid" {
+        value 0;
+        description
+          "Invalid";
+      }
+      enum "dcm-packet-in" {
+        value 1;
+        description
+          "Packet in";
+      }
+      enum "dcm-port-status" {
+        value 2;
+        description
+          "Port status";
+      }
+      enum "dcm-flow-removed" {
+        value 3;
+        description
+          "Flow removed";
+      }
+    }
+  }
+
+  typedef ctrlr-connection-mode {
+    description
+      "Controller connection mode";
+    type enumeration {
+      enum "dcm-connection-mode-active" {
+        value 0;
+        description
+          "Active";
+      }
+      enum "dcm-connection-mode-passive" {
+        value 1;
+        description
+          "Passive";
+      }
+    }
+  }
+
+  typedef ctrlr-connection-status {
+    description
+      "Controller connection status";
+    type enumeration {
+      enum "dcm-ctrlr-status-init" {
+        value 0;
+        description
+          "INIT";
+      }
+      enum "dcm-ctrlr-status-unknown" {
+        value 1;
+        description
+          "UNKNOWN";
+      }
+      enum "dcm-ctrlr-status-close" {
+        value 2;
+        description
+          "CLOSE";
+      }
+      enum "dcm-ctrlr-status-tcp-connecting" {
+        value 3;
+        description
+          "TCP CONNECTING";
+      }
+      enum "dcm-ctrlr-status-tcp-established" {
+        value 4;
+        description
+          "TCP ESTABLISHED";
+      }
+      enum "dcm-ctrlr-status-openf-handshake" {
+        value 5;
+        description
+          "OPENF HANDSHAKE";
+      }
+      enum "dcm-ctrlr-status-openf-established" {
+        value 6;
+        description
+          "OPENF ESTABLISHED";
+      }
+      enum "dcm-ctrlr-status-tcp-listening" {
+        value 7;
+        description
+          "TCP LISTENING";
+      }
+      enum "dcm-ctrlr-status-max" {
+        value 8;
+        description
+          "MAX";
+      }
+    }
+  }
+
+  typedef ctrlr-connection-type {
+    description
+      "Controller connection type";
+    type enumeration {
+      enum "dcm-connection-type-tcp" {
+        value 0;
+        description
+          "TCP";
+      }
+      enum "dcm-connection-type-ssl" {
+        value 1;
+        description
+          "SSL";
+      }
+    }
+  }
+
+  typedef ctrlr-role {
+    description
+      "";
+    type enumeration {
+      enum "dcm-ctrlr-role-invalid" {
+        value 0;
+        description
+          "Invalid";
+      }
+      enum "dcm-ctrlr-role-equal" {
+        value 1;
+        description
+          "Equal";
+      }
+      enum "dcm-ctrlr-role-master" {
+        value 2;
+        description
+          "Master";
+      }
+      enum "dcm-ctrlr-role-slave" {
+        value 3;
+        description
+          "Slave";
+      }
+    }
+  }
+
+  typedef ctrlr-type {
+    description
+      "openflow type";
+    type enumeration {
+      enum "ofv100" {
+        value 0;
+        description
+          "ofv100";
+      }
+      enum "ofv130" {
+        value 1;
+        description
+          "ofv130";
+      }
+    }
+  }
+
+  typedef default-packet-action {
+    description
+      "default packet action";
+    type enumeration {
+      enum "dcm-action-invalid" {
+        value 0;
+        description
+          "INVALID";
+      }
+      enum "dcm-action-drop" {
+        value 1;
+        description
+          "Default packet action as Drop";
+      }
+      enum "dcm-action-send-to-controller" {
+        value 2;
+        description
+          "Default packet action as SEND TO CONTROLLER";
+      }
+    }
+  }
+
+  typedef flow-status {
+    description
+      "Flow status";
+    type enumeration {
+      enum "dcm-flow-not-programmed" {
+        value 0;
+        description
+          "Not Programmed";
+      }
+      enum "dcm-flow-pending-add" {
+        value 1;
+        description
+          "Pending Add";
+      }
+      enum "dcm-flow-pending-delete" {
+        value 2;
+        description
+          "Pending Delete";
+      }
+      enum "dcm-flow-pending-modify" {
+        value 3;
+        description
+          "Pending Modify";
+      }
+      enum "dcm-flow-programmed" {
+        value 4;
+        description
+          "Programmed";
+      }
+    }
+  }
+
+  typedef group-type {
+    description
+      "Group type";
+    type enumeration {
+      enum "dcm-group-type-invalid" {
+        value 0;
+        description
+          "Invalid";
+      }
+      enum "dcm-group-type-all" {
+        value 1;
+        description
+          "ALL";
+      }
+      enum "dcm-group-type-select" {
+        value 2;
+        description
+          "SELECT";
+      }
+      enum "dcm-group-type-indirect" {
+        value 3;
+        description
+          "INDIRECT";
+      }
+      enum "dcm-group-type-fast-failover" {
+        value 4;
+        description
+          "FAST FAILOVER";
+      }
+    }
+  }
+
+  typedef port-mode {
+    description
+      "Port mode";
+    type enumeration {
+      enum "dcm-port-mode-unknown" {
+        value 0;
+        description
+          "unknown";
+      }
+      enum "dcm-port-mode-l2" {
+        value 1;
+        description
+          "l2";
+      }
+      enum "dcm-port-mode-l3" {
+        value 2;
+        description
+          "l3";
+      }
+      enum "dcm-port-mode-l23" {
+        value 3;
+        description
+          "l23";
+      }
+      enum "dcm-port-mode-hybrid-l2" {
+        value 4;
+        description
+          "hybrid l2";
+      }
+      enum "dcm-port-mode-hybrid-l3" {
+        value 5;
+        description
+          "hybrid l3";
+      }
+      enum "dcm-port-mode-hybrid-l23" {
+        value 6;
+        description
+          "hybrid l23";
+      }
+      enum "egress-mode" {
+        value 7;
+        description
+          "egress mode";
+      }
+    }
+  }
+
+  typedef port-state {
+    description
+      "Port State";
+    type enumeration {
+      enum "dcm-port-state-invalid" {
+        value 0;
+        description
+          "invalid";
+      }
+      enum "dcm-port-state-link-down" {
+        value 1;
+        description
+          "Link Down";
+      }
+      enum "dcm-port-state-blocked" {
+        value 2;
+        description
+          "Blocked";
+      }
+      enum "dcm-port-state-live" {
+        value 3;
+        description
+          "Live";
+      }
+      enum "dcm-port-state-forward" {
+        value 4;
+        description
+          "Forward";
+      }
+    }
+  }
+
+  typedef vlan-action {
+    description
+      "Vlan Action";
+    type enumeration {
+      enum "dcm-vlan-action-set" {
+        value 0;
+        description
+          "Set vlan id";
+      }
+      enum "dcm-vlan-action-push" {
+        value 1;
+        description
+          "Push vlan tag";
+      }
+      enum "dcm-vlan-action-pop" {
+        value 2;
+        description
+          "Pop vlan tag";
+      }
+    }
+  }
+
+  container openflow-state {
+    description
+      "OPENFLOW Operational Information";
+    config false;
+    container detail {
+      description
+        "";
+      leaf admin-status {
+        description
+          "Admin status Enabled or Disabled";
+        type boolean;
+      }
+      leaf ssl-status {
+        description
+          "SSL status Enabled or Disabled";
+        type boolean;
+      }
+      leaf num-controllers {
+        description
+          "Number of controllers";
+        type uint32;
+      }
+      leaf data-path {
+        description
+          "Data path";
+        type string;
+      }
+      leaf l2-match {
+        description
+          "L2 match";
+        type string;
+      }
+      leaf l3-match {
+        description
+          "L3 match";
+        type string;
+      }
+      leaf max-l2-flows {
+        description
+          "Maximum number of flows allowed";
+        type uint32;
+      }
+      leaf active-flows {
+        description
+          "Active flows";
+        type uint32;
+      }
+      leaf enabled-ports {
+        description
+          "Openflow Enabled Ports";
+        type string;
+      }
+      leaf enabled-lags {
+        description
+          "Openflow Enabled LAGs";
+        type string;
+      }
+      leaf mirror-ports {
+        description
+          "Openflow Mirror Ports";
+        type string;
+      }
+      leaf min-group-id {
+        description
+          "Ingress Replication Range Min Group ID";
+        type uint32;
+      }
+      leaf max-group-id {
+        description
+          "Ingress Replication Range Max Group ID";
+        type uint32;
+      }
+      leaf default-action {
+        description
+          "Default action";
+        type default-packet-action;
+      }
+      list controller-detail-list {
+        description
+          "Controller detail";
+        key "controller-idx";
+        leaf controller-idx {
+          description
+            "Controller Index";
+          type uint32;
+        }
+        list controller-async-list {
+          description
+            "";
+          key "async-type";
+          leaf async-type {
+            description
+              "Asynchronous Configuration type";
+            type async-type;
+          }
+          leaf config-data {
+            description
+              "Asynchronous Configuration data";
+            type string;
+          }
+        }
+        container controller-info {
+          uses group-controller;
+        }
+      }
+      list hybrid-interfaces {
+        description
+          "";
+        key "hybrid-interface";
+        leaf hybrid-interface {
+          description
+            "Hybrid Interface";
+          type string;
+        }
+        leaf protected-vlans {
+          description
+            "Protected Vlans";
+          type string;
+        }
+      }
+    }
+    container flow {
+      description
+        "Flow details";
+      leaf data-packets-sent {
+        description
+          "Total Number of data packets sent to controller";
+        type uint64;
+      }
+      leaf data-bytes-sent {
+        description
+          "Total Number of data bytes sent to controller";
+        type uint64;
+      }
+      leaf port-based-flows {
+        description
+          "Total Number of Port based Flows";
+        type uint32;
+      }
+      leaf hw-generic-flows {
+        description
+          "Total Number of Generic based Flows";
+        type uint32;
+      }
+      leaf l2-interfaces {
+        description
+          "Total Number of L2  interfaces";
+        type uint32;
+      }
+      leaf l3-interfaces {
+        description
+          "Total Number of L3 interfaces";
+        type uint32;
+      }
+      leaf l23-interfaces {
+        description
+          "Total Number of L23 interfaces";
+        type uint32;
+      }
+      leaf lag-interfaces {
+        description
+          "Total Number of LAG interfaces";
+        type uint32;
+      }
+      list flow-info-list {
+        key "flow-id";
+        uses group-flow-info;
+      }
+    }
+    container group {
+      description
+        "Group details";
+      leaf max-groups {
+        description
+          "Max number of total groups";
+        type uint32;
+      }
+      leaf max-bkts-per-group {
+        description
+          "Max number of buckets per group";
+        type uint32;
+      }
+      leaf max-actions-per-bucket {
+        description
+          "Max number of actions per bucket";
+        type uint32;
+      }
+      leaf total-groups-all {
+        description
+          "TOTAL number of groups(Type:ALL) in the system";
+        type uint32;
+      }
+      leaf total-groups-select {
+        description
+          "TOTAL number of groups(Type:SELECT) in the system";
+        type uint32;
+      }
+      leaf total-groups-indirect {
+        description
+          "TOTAL number of groups(Type:Indirect)in the system";
+        type uint32;
+      }
+      leaf total-groups-fast-failover {
+        description
+          "TOTAL number of groups(Type:Fast Failover)in the system";
+        type uint32;
+      }
+      list group-info-list {
+        key "group-id";
+        uses group-group-info;
+      }
+    }
+    container meter {
+      description
+        "Meter";
+      leaf num-of-meters {
+        description
+          "Number of Meters";
+        type uint32;
+      }
+      list meter-info-list {
+        key "meter-id";
+        uses group-meter-info;
+      }
+    }
+    container resources {
+      description
+        "Openflow Meter Resources";
+      leaf meter-max {
+        description
+          "MAX";
+        type uint32;
+      }
+      leaf meter-used {
+        description
+          "Used";
+        type uint32;
+      }
+      leaf meter-free {
+        description
+          "Free";
+        type uint32;
+      }
+      leaf tcam-profile {
+        description
+          "Tcam Profile";
+        type string;
+      }
+      list group-resouces-list {
+        description
+          "Group resources";
+        key "group-type";
+        leaf max {
+          description
+            "MAX";
+          type uint32;
+        }
+        leaf used {
+          description
+            "Used";
+          type uint32;
+        }
+        leaf free {
+          description
+            "Free";
+          type uint32;
+        }
+        leaf group-type {
+          description
+            "Group Type";
+          type group-type;
+        }
+      }
+      list slot-resouces-list {
+        description
+          "Slot Resources";
+        key "slot-id";
+        leaf slot-id {
+          description
+            "Slot Id";
+          type uint32;
+        }
+        leaf module {
+          description
+            "Module";
+          type string;
+        }
+        list slot-match-profile-list {
+          description
+            "slot match profile details";
+          key "slot-match-profile-idx";
+          leaf slot-match-profile-idx {
+            description
+              "Index";
+            type uint32;
+          }
+          leaf max-flows {
+            description
+              "MAX";
+            type uint32;
+          }
+          leaf used-flows {
+            description
+              "Used";
+            type uint32;
+          }
+          leaf free-flows {
+            description
+              "Free";
+            type uint32;
+          }
+          list slot-chip-resource-list {
+            description
+              "slot chip resource details";
+            key "slot-chip-idx";
+            leaf slot-chip-idx {
+              description
+                "Index";
+              type uint32;
+            }
+            leaf max-flows {
+              description
+                "MAX";
+              type uint32;
+            }
+            leaf used-flows {
+              description
+                "Used";
+              type uint32;
+            }
+            leaf free-flows {
+              description
+                "Free";
+              type uint32;
+            }
+          }
+        }
+      }
+    }
+    list interface {
+      description
+        "Openflow enabled interface details";
+      key "port";
+      leaf port {
+        description
+          "Port";
+        type string;
+      }
+      leaf link {
+        description
+          "Link";
+        type boolean;
+      }
+      leaf port-state {
+        description
+          "Port State";
+        type port-state;
+      }
+      leaf speed {
+        description
+          "Speed";
+        type string;
+      }
+      leaf mac {
+        description
+          "MAC";
+        type string;
+      }
+      leaf port-id {
+        description
+          "OF-Port-ID";
+        type uint32;
+      }
+      leaf mode {
+        description
+          "Mode";
+        type port-mode;
+      }
+    }
+    list flow-interface {
+      description
+        "Flow details for an interface";
+      key "interface-type interface-value";
+      leaf interface-type {
+        description
+          "interface type";
+        type uint32;
+      }
+      leaf interface-value {
+        description
+          "interface value";
+        type string;
+      }
+      list flow-info-list {
+        key "flow-id";
+        uses group-flow-info;
+      }
+    }
+    list controller {
+      key "name";
+      uses group-controller;
+    }
+    container flow-id {
+      uses group-flow-info;
+    }
+    container group-id {
+      uses group-group-info;
+    }
+    container meter-id {
+      uses group-meter-info;
+    }
+    container queues-interface {
+      uses group-queues-interface;
+    }
+  }
+  container queues-state {
+    description
+      "Queues";
+    config false;
+    list queue-interface-list {
+      key "interface-value";
+      uses group-queues-interface;
+    }
+  }
+
+  grouping group-controller {
+    description
+      "Controller details";
+    leaf name {
+      description
+        "Controller name";
+      type string;
+    }
+    leaf mode {
+      description
+        "Controller connection mode";
+      type ctrlr-connection-mode;
+    }
+    leaf type {
+      description
+        "type";
+      type ctrlr-type;
+    }
+    leaf connection-type {
+      description
+        "Controller connection type";
+      type ctrlr-connection-type;
+    }
+    leaf ip-addr {
+      description
+        "IP address";
+      type inet:ipv4-address;
+    }
+    leaf port {
+      description
+        "Port";
+      type uint32;
+    }
+    leaf vrf-name {
+      description
+        "Vrf Name";
+      type string;
+    }
+    leaf status {
+      description
+        "Status";
+      type ctrlr-connection-status;
+    }
+    leaf role {
+      description
+        "Role";
+      type ctrlr-role;
+    }
+  }
+
+  grouping group-flow-info {
+    description
+      "Details of a flow";
+    leaf flow-id {
+      description
+        "Flow ID";
+      type uint32;
+    }
+    leaf priority {
+      description
+        "Priority";
+      type uint32;
+    }
+    leaf status {
+      description
+        "Status";
+      type flow-status;
+    }
+    leaf in-port {
+      description
+        "In Port";
+      type string;
+    }
+    leaf in-vlan {
+      description
+        "In Vlan";
+      type string;
+    }
+    leaf source-mac {
+      description
+        "Source Mac";
+      type string;
+    }
+    leaf destination-mac {
+      description
+        "Destination Mac";
+      type string;
+    }
+    leaf ether-type {
+      description
+        "Ether type";
+      type string;
+    }
+    leaf ip-protocol {
+      description
+        "IP Protocol";
+      type uint32;
+    }
+    leaf ip-protocol-source-port {
+      description
+        "IP Protocol Source Port";
+      type uint32;
+    }
+    leaf ip-protocol-destination-port {
+      description
+        "IP Protocol Destination Port";
+      type uint32;
+    }
+    leaf source-ip {
+      description
+        "Source IPv4";
+      type string;
+    }
+    leaf destination-ip {
+      description
+        "Destination IPv4";
+      type string;
+    }
+    leaf source-ipv6 {
+      description
+        "Source IPv6 Address";
+      type string;
+    }
+    leaf destination-ipv6 {
+      description
+        "Destination IPv6 Address";
+      type string;
+    }
+    leaf instructions {
+      description
+        "Instructions";
+      type string;
+    }
+    leaf action-data {
+      description
+        "Action";
+      type string;
+    }
+    leaf meter-id {
+      description
+        "Meter id";
+      type uint32;
+    }
+    leaf vlan-upbits {
+      description
+        "Vlan Priority";
+      type uint32;
+    }
+    leaf nw-tos {
+      description
+        "IP DSCP";
+      type uint32;
+    }
+    leaf source-ip-mask {
+      description
+        "Source IPv4 Mask";
+      type string;
+    }
+    leaf destination-ip-mask {
+      description
+        "Destination IPv4 Mask";
+      type string;
+    }
+    leaf total-packets {
+      description
+        "Total Packets";
+      type uint64;
+    }
+    leaf total-bytes {
+      description
+        "Total Bytes";
+      type uint64;
+    }
+    list flow-action-list {
+      description
+        "Details of an action";
+      key "action-idx";
+      leaf action-idx {
+        description
+          "Action index";
+        type uint32;
+      }
+      leaf group-id {
+        description
+          "Out Group";
+        type uint32;
+      }
+      leaf queue-id {
+        description
+          "Queue id";
+        type uint32;
+      }
+      leaf out-ports {
+        description
+          "Out Port";
+        type string;
+      }
+      leaf vlan-id {
+        description
+          "Vlan";
+        type uint32;
+      }
+      leaf action-vlan-upbits {
+        description
+          "Vlan PCP";
+        type uint32;
+      }
+      leaf out-vlan-tag {
+        description
+          "Vlan tag";
+        type vlan-action;
+      }
+      leaf out-vlan-etype {
+        description
+          "Vlan etype";
+        type string;
+      }
+    }
+  }
+
+  grouping group-group-info {
+    description
+      "Group info";
+    leaf group-id {
+      description
+        "Group id";
+      type uint32;
+    }
+    leaf transaction-id {
+      description
+        "Transaction id";
+      type string;
+    }
+    leaf group-type {
+      description
+        "Group type";
+      type group-type;
+    }
+    leaf packet-count {
+      description
+        "Packet Count";
+      type uint64;
+    }
+    leaf byte-count {
+      description
+        "Byte   Count";
+      type uint64;
+    }
+    leaf flow-count {
+      description
+        "Flow   Count";
+      type uint32;
+    }
+    leaf num-of-bkts {
+      description
+        "Number of buckets";
+      type uint32;
+    }
+    leaf mcast-group-id {
+      description
+        "Multicast group id";
+      type uint32;
+    }
+    leaf replication-type {
+      description
+        "Multicast Replication Method";
+      type string;
+    }
+    list group-bucket-list {
+      description
+        "Group Bucket Info";
+      key "bucket-id";
+      leaf bucket-id {
+        description
+          "Bucket";
+        type uint32;
+      }
+      leaf weight {
+        description
+          "Weight";
+        type uint32;
+      }
+      leaf watch-port {
+        description
+          "Watch port";
+        type string;
+      }
+      list group-action-list {
+        description
+          "group action info";
+        key "action-id";
+        leaf action-id {
+          description
+            "action id";
+          type uint32;
+        }
+        leaf out-port {
+          description
+            "out port";
+          type string;
+        }
+        leaf vlan-id {
+          description
+            "Vlan";
+          type uint32;
+        }
+        leaf out-vlan-tag {
+          description
+            "Vlan tag";
+          type vlan-action;
+        }
+        leaf out-vlan-etype {
+          description
+            "Vlan etype";
+          type string;
+        }
+      }
+    }
+  }
+
+  grouping group-meter-info {
+    description
+      "meter info";
+    leaf meter-id {
+      description
+        "Meter id";
+      type uint32;
+    }
+    leaf transaction-id {
+      description
+        "Transaction id";
+      type string;
+    }
+    leaf meterflags-type {
+      description
+        "Meter flags";
+      type string;
+    }
+    leaf flow-count {
+      description
+        "Flow Count";
+      type uint32;
+    }
+    leaf num-of-bands {
+      description
+        "Number of  bands";
+      type uint32;
+    }
+    leaf in-packet-count {
+      description
+        "In packet count";
+      type uint64;
+    }
+    leaf in-byte-count {
+      description
+        "In byte count";
+      type uint64;
+    }
+    list meterband-info-list {
+      description
+        "Meterband details";
+      key "band-type";
+      leaf band-type {
+        description
+          "Band Type";
+        type uint32;
+      }
+      leaf rate {
+        description
+          "Rate";
+        type uint32;
+      }
+      leaf burst-size {
+        description
+          "Burst size";
+        type uint32;
+      }
+      leaf in-packet-band-count {
+        description
+          "In packet band count";
+        type uint64;
+      }
+      leaf in-byte-band-count {
+        description
+          "In byte band count";
+        type uint64;
+      }
+    }
+  }
+
+  grouping group-queues-interface {
+    description
+      "queue details for an interface";
+    leaf interface-value {
+      description
+        "Port";
+      type string;
+    }
+    list queue-info-list {
+      description
+        "Queue Info";
+      key "interface num";
+      leaf interface {
+        description
+          "Port";
+        type string;
+      }
+      leaf num {
+        description
+          "Queue Number";
+        type uint32;
+      }
+      leaf tx-packets {
+        description
+          "Tx Packets";
+        type uint64;
+      }
+      leaf tx-bytes {
+        description
+          "Tx Bytes";
+        type uint64;
+      }
+    }
+  }
+}

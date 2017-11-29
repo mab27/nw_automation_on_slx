@@ -1,0 +1,190 @@
+/*********************************************************************
+ * Copyright (c) 2013 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-ipv6-config.yang: Brocade IPv6 Forwarding data model.
+ *
+ * July 2013, Mayank Maheshwari
+ *
+ *
+ ********************************************************************/
+module brocade-ipv6-config {
+  namespace "urn:brocade.com:mgmt:brocade-ipv6-config";
+  prefix ipv6-config;
+
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-common-def {
+    prefix common-def;
+  }
+  import brocade-intf-loopback {
+    prefix intf-loopback;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+            San Jose, CA 95134
+            U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     Web: www.brocade.com";
+  description
+    "This management sub-module contains the configuration
+     and rpc implementaion for IP Access-list.";
+
+  revision 2013-07-26 {
+    description
+      "Initial version of this management module.";
+  }
+
+  typedef ip-mtu {
+    type uint32 {
+      range "1300..9194";
+    }
+  }
+
+  grouping phy-intf-ipv6-config {
+    container ipv6-config {
+      container address {
+        leaf use-link-local-only {
+          type empty;
+        }
+        container link-local-config {
+          leaf link-local-address {
+            type inet:ipv6-address;
+          }
+          leaf link-local {
+            type empty;
+          }
+        }
+        list ipv6-address {
+          ordered-by user;
+          key "address";
+          leaf address {
+            type union {
+              type common-def:ipv6-address-prefix;
+              type inet:ipv6-prefix;
+            }
+          }
+          leaf secondary {
+            type empty;
+          }
+          container eui-config {
+            leaf eui64 {
+              type empty;
+            }
+            leaf eui-secondary {
+              type empty;
+            }
+          }
+          leaf anycast {
+            type empty;
+          }
+        }
+      }
+      leaf mtu {
+        type ip-mtu;
+        default "1500";
+      }
+    }
+  }
+
+  grouping intf-vlan-ipv6-config {
+    container ipv6-config {
+      container address {
+        leaf use-link-local-only {
+          type empty;
+        }
+        container link-local-config {
+          leaf link-local-address {
+            type inet:ipv6-address;
+          }
+          leaf link-local {
+            type empty;
+          }
+        }
+        list ipv6-address {
+          ordered-by user;
+          key "address";
+          leaf address {
+            type union {
+              type common-def:ipv6-address-prefix;
+              type inet:ipv6-prefix;
+            }
+          }
+          leaf secondary {
+            type empty;
+          }
+          container eui-config {
+            leaf eui64 {
+              type empty;
+            }
+            leaf eui-secondary {
+              type empty;
+            }
+          }
+          leaf anycast {
+            type empty;
+          }
+        }
+      }
+      leaf mtu {
+        type ip-mtu;
+        default "1500";
+      }
+    }
+  }
+
+  grouping loopback-intf-ipv6-config {
+    container ipv6-config {
+      container address {
+        leaf use-link-local-only {
+          type empty;
+        }
+        container link-local-config {
+          leaf link-local-address {
+            type inet:ipv6-address;
+          }
+          leaf link-local {
+            type empty;
+          }
+        }
+        list ipv6-address {
+          ordered-by user;
+          key "address";
+          leaf address {
+            type union {
+              type common-def:ipv6-address-prefix;
+              type inet:ipv6-prefix;
+            }
+          }
+          leaf eui64 {
+            type empty;
+          }
+          leaf anycast {
+            type empty;
+          }
+        }
+      }
+    }
+  }
+
+  augment "/interface:interface/interface:ethernet/interface:ipv6" {
+    uses phy-intf-ipv6-config;
+  }
+  augment "/common-def:routing-system/interface:interface/intf-loopback:loopback" {
+    container ipv6 {
+      uses loopback-intf-ipv6-config;
+    }
+  }
+  augment "/common-def:routing-system/interface:interface/interface:ve" {
+    container ipv6 {
+      uses intf-vlan-ipv6-config;
+    }
+  }
+}

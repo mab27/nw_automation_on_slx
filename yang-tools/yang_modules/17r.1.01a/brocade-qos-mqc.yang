@@ -1,0 +1,353 @@
+/*********************************************************************
+ * Copyright (c) 2011 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-qos-mqc.yang: Brocade 'Modular Quality of Service' module.
+ *
+ *  Jul 2012, Shivanand Tatpatti 
+ *
+ *
+ * This module contains Modular QoS data model, which comprises of following
+ *  3 parts:
+ * ----------> 1. Define a class-map[Packet classification criteria].
+ * ----------> 2. Define a policy-map[Action on the classified packet].
+ * ----------> 3. Binding the policy-map to an interface.
+ *
+ ********************************************************************/
+module brocade-qos-mqc {
+  namespace "urn:brocade.com:mgmt:brocade-qos-mqc";
+  prefix qos-mqc;
+
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-sflow {
+    prefix sflow;
+  }
+  import brocade-bridge-domain {
+    prefix bd;
+  }
+  import brocade-system-capabilities {
+    prefix c;
+  }
+
+  organization "Brocade Communications";
+  contact
+    "SSM-QoS Team";
+  description
+    "This module describes the data model for Modular Quality of Service
+     (Modular QoS)";
+
+  revision 2011-03-04 {
+    description
+      "Initial Version";
+  }
+
+  typedef map-name-type {
+    type string {
+      pattern "[a-zA-Z]{1}([-a-zA-Z0-9_]{0,63})";
+    }
+  }
+
+  typedef mac-ip-acl-name {
+    type string {
+      pattern "[a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,62})";
+    }
+    description
+      "The definition for the mac/ip access-list name.";
+  }
+
+  typedef shaping-rate-limit {
+    type uint64 {
+      range "28000 .. 100000000";
+    }
+  }
+
+  typedef session-type {
+    type uint32 {
+      range "1..512" {
+        description
+          "1-512;;Description Session_Id";
+      }
+    }
+  }
+
+  list class-map {
+    key "name";
+    leaf name {
+      type map-name-type;
+    }
+    container match {
+      when "((../name !=\"default\") and (../name !=\"cee\"))";
+      container access-group {
+        description
+          "This provides the grouping of configuration
+           elements of MAC/IP access list.";
+        leaf access-group-name {
+          type mac-ip-acl-name;
+          description
+            "This specifies the Access list name which is 
+             already configured at the global level. This
+             access list contains access rules.";
+        }
+      }
+      container vlan {
+        when "((/c:capabilities/c:qos/c:mqc/c:vlan-based-actions = \"true\"))";
+        leaf vlan-range {
+          type interface:ui32-vlan-20k-range;
+        }
+      }
+      container bridge-domain {
+        when "((/c:capabilities/c:qos/c:mqc/c:bd-based-actions = \"true\"))";
+        leaf bridge-domain-range {
+          type bd:ui32-bridge-domain-range;
+        }
+      }
+    }
+  }
+  list policy-map {
+    key "name";
+    leaf name {
+      type map-name-type;
+    }
+    list class {
+      key "cl-name";
+      leaf cl-name {
+        type map-name-type;
+      }
+      container police {
+        when "../cl-name != \"cee\"";
+        leaf cir {
+          type uint64 {
+            range "0..300000000000";
+          }
+          units "Bits Per Second.";
+        }
+        leaf cbs {
+          type uint64 {
+            range "1250..37500000000";
+          }
+          units "Bytes.";
+        }
+        leaf eir {
+          type uint64 {
+            range "0..300000000000";
+          }
+          units "Bits Per Second.";
+        }
+        leaf ebs {
+          type uint64 {
+            range "1250..37500000000";
+          }
+          units "Bytes.";
+        }
+      }
+      container set {
+        when "((../cl-name !=\"default\") and (../cl-name !=\"cee\"))";
+        container set_cos_tc {
+          leaf cos {
+            type uint8 {
+              range "0 .. 7" {
+                description
+                  "<0-7>;;CoS value";
+              }
+            }
+          }
+          leaf traffic-class {
+            type uint8 {
+              range "0 .. 7" {
+                description
+                  "<0-7>;;Traffic class value";
+              }
+            }
+          }
+        }
+        container set_dscp {
+          leaf dscp {
+            type uint16 {
+              range "0 .. 63" {
+                description
+                  "<0-63>;;dscp value";
+              }
+            }
+          }
+        }
+      }
+      container span {
+        when "((/c:capabilities/c:qos/c:mqc/c:span = \"true\") and (../cl-name !=\"default\"))";
+        description
+          "span sesion <id>";
+        leaf session {
+          type session-type;
+        }
+      }
+      container map {
+        when "../cl-name = \"default\"";
+        leaf cos-mutation {
+          when "../../cl-name = \"default\"";
+          type map-name-type;
+          description
+            "This specifies the mapping between CoS to CoS.";
+        }
+        leaf cos-traffic-class {
+          when "../../cl-name = \"default\"";
+          type map-name-type;
+          description
+            "This specifies the mapping between CoS to Traffic-Class.";
+        }
+        leaf dscp-cos {
+          when "../../cl-name = \"default\"";
+          type map-name-type;
+          description
+            "This specifies the mapping between DSCP to CoS.";
+        }
+        leaf dscp-traffic-class {
+          when "../../cl-name = \"default\"";
+          type map-name-type;
+          description
+            "This specifies the mapping between DSCP to Traffic-Class.";
+        }
+        leaf dscp-mutation {
+          when "../../cl-name = \"default\"";
+          type map-name-type;
+          description
+            "This specifies the mapping between DSCP to DSCP.";
+        }
+      }
+      leaf sflow-profile {
+        when "((../cl-name !=\"default\") and (../cl-name !=\"cee\"))";
+        type sflow:profile-name-type;
+        description
+          "This applies sflow profile.";
+      }
+      container shape {
+        when "../cl-name = \"default\"";
+        leaf shaping_rate {
+          type shaping-rate-limit;
+        }
+      }
+      container scheduler {
+        when "../cl-name = \"default\"";
+        container strict-priority {
+          leaf priority-number {
+            type uint8 {
+              range "0 .. 7";
+            }
+          }
+          leaf scheduler-type {
+            type enumeration {
+              enum "dwrr" {
+                value 1;
+              }
+            }
+          }
+          leaf dwrr-traffic-class0 {
+            type uint32 {
+              range "0 .. 100";
+            }
+          }
+          leaf dwrr-traffic-class1 {
+            type uint32 {
+              range "0 .. 100";
+            }
+          }
+          leaf dwrr-traffic-class2 {
+            type uint32 {
+              range "0 .. 100";
+            }
+          }
+          leaf dwrr-traffic-class3 {
+            type uint32 {
+              range "0 .. 100";
+            }
+          }
+          leaf dwrr-traffic-class4 {
+            type uint32 {
+              range "0 .. 100";
+            }
+          }
+          leaf dwrr-traffic-class5 {
+            type uint32 {
+              range "0 .. 100";
+            }
+          }
+          leaf dwrr-traffic-class6 {
+            type uint32 {
+              range "0 .. 100";
+            }
+          }
+          leaf dwrr-traffic-class-last {
+            type uint32 {
+              range "0 .. 100";
+            }
+          }
+          leaf TC1 {
+            type shaping-rate-limit;
+          }
+          leaf TC2 {
+            type shaping-rate-limit;
+          }
+          leaf TC3 {
+            type shaping-rate-limit;
+          }
+          leaf TC4 {
+            type shaping-rate-limit;
+          }
+          leaf TC5 {
+            type shaping-rate-limit;
+          }
+          leaf TC6 {
+            type shaping-rate-limit;
+          }
+          leaf TC7 {
+            type shaping-rate-limit;
+          }
+        }
+      }
+      container priority-mapping-table {
+        when "../cl-name = \"cee\"";
+        container import {
+          leaf cee {
+            type map-name-type;
+            description
+              "This specifies the cee map config to be imported.";
+          }
+        }
+      }
+    }
+  }
+
+  grouping policy-map-binding {
+    container service-policy {
+      leaf in {
+        type map-name-type;
+      }
+      leaf out {
+        type map-name-type;
+      }
+    }
+  }
+
+  augment "/interface:interface/interface:ethernet" {
+    uses policy-map-binding;
+  }
+  augment "/interface:interface/interface:port-channel" {
+    uses policy-map-binding;
+  }
+  container system-qos {
+    container qos {
+      list service-policy {
+        key "direction policy-map-name";
+        leaf direction {
+          type enumeration {
+            enum "in" {
+              value 1;
+            }
+          }
+        }
+        leaf policy-map-name {
+          type map-name-type;
+        }
+      }
+    }
+  }
+}

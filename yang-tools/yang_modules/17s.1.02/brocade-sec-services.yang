@@ -1,0 +1,259 @@
+/*********************************************************************
+ * Copyright (c) 2011-2012 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ *brocade-sec-services.yang: Brocade Security Services data model
+ *
+ * Jul 2012, Balaji. M
+ *
+ *
+ ********************************************************************/
+module brocade-sec-services {
+  namespace "urn:brocade.com:mgmt:brocade-sec-services";
+  prefix brcd-sec-services;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import brocade-common-def {
+    prefix common-def;
+  }
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-intf-loopback {
+    prefix loopback;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+             San Jose, CA 95134
+              U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "Instrument to configure Telnet Server and SSH Server";
+
+  revision 2012-07-28 {
+    description
+      "Initial version of this module.";
+  }
+
+  typedef source-interface-type {
+    type enumeration {
+      enum "ethernet" {
+        value 2;
+        description
+          "Ethernet interface";
+      }
+      enum "ve" {
+        value 6;
+        description
+          "VE interface";
+      }
+      enum "loopback" {
+        value 7;
+        description
+          "Loopback interface";
+      }
+    }
+  }
+
+  grouping source-interface-name-group {
+    description
+      "This denotes an interface name qualified with the type of
+       the interface. This grouping mainly be used to carry
+       source-interface. The type-name of interface be narrowed down
+       to Loopback, Ethernet, for example.";
+    leaf interface-type {
+      type source-interface-type;
+      description
+        "The type of the interface.";
+    }
+    leaf interface-name {
+      type union {
+        type interface:interface-type;
+        type interface:ve-type;
+        type loopback:intf-loopback-port-type;
+      }
+      description
+        "The Interface value. The interface value is always
+         interpreted within the context of the value of
+         'interface-type' leaf:
+         
+         interface-type         interface-name
+         -----------------      --------------------
+         ethernet               slot/port
+         loopback\t\t\t\tLoopback ID
+         ve                     ve ID
+         
+         The value of an 'interface-name' must always be
+         consistent with the value of the associated
+         'interface-type'.  Attempts to set an interface-name
+         to a value inconsistent with the associated
+         'interface-type' must fail with an error.";
+    }
+  }
+
+  grouping telnet-group {
+    container telnet {
+      container server {
+        leaf shutdown {
+          type empty;
+        }
+        container standby {
+          leaf enable {
+            type empty;
+          }
+        }
+        container telnet-vrf-cont {
+          list use-vrf {
+            key "use-vrf-name";
+            max-elements "6";
+            leaf use-vrf-name {
+              type string {
+                length "0 .. max";
+              }
+            }
+            leaf telnet-vrf-shutdown {
+              type empty;
+            }
+          }
+        }
+      }
+      container client {
+        container source-interface {
+          uses source-interface-name-group;
+        }
+      }
+    }
+  }
+
+  augment "/common-def:show" {
+    container telnet {
+      container server {
+        tailf:action "status" {
+          input;
+          output;
+        }
+      }
+    }
+  }
+  container telnet-sa {
+    uses telnet-group;
+  }
+
+  typedef ecdsa-bits-size {
+    type enumeration {
+      enum "256" {
+        value 256;
+      }
+    }
+  }
+
+  typedef rsa-bits-size {
+    type enumeration {
+      enum "1024" {
+        value 1024;
+      }
+      enum "2048" {
+        value 2048;
+      }
+    }
+  }
+
+  grouping ssh-group {
+    container ssh {
+      container server {
+        leaf shutdown {
+          type empty;
+        }
+        leaf key-exchange {
+          type string;
+        }
+        leaf rekey-interval {
+          type uint32 {
+            range "900..3600";
+          }
+        }
+        leaf ssh-server-port {
+          type uint32 {
+            range "22|1024..49151";
+          }
+        }
+        leaf cipher {
+          type string;
+        }
+        leaf mac {
+          type string;
+        }
+        container standby {
+          leaf enable {
+            type empty;
+          }
+        }
+        container key {
+          leaf rsa {
+            type rsa-bits-size;
+          }
+          leaf ecdsa {
+            type ecdsa-bits-size;
+          }
+          leaf dsa {
+            type empty;
+          }
+        }
+        container ssh-vrf-cont {
+          list use-vrf {
+            key "use-vrf-name";
+            max-elements "6";
+            leaf use-vrf-name {
+              type string {
+                length "0 .. max";
+              }
+            }
+            leaf ssh-vrf-shutdown {
+              type empty;
+            }
+          }
+        }
+      }
+      container client {
+        leaf cipher {
+          type string;
+        }
+        leaf mac {
+          type string;
+        }
+        leaf key-exchange {
+          type string;
+        }
+        container source-interface {
+          uses source-interface-name-group;
+        }
+      }
+    }
+  }
+
+  container ssh-sa {
+    uses ssh-group;
+  }
+  augment "/common-def:show" {
+    container ssh {
+      container server {
+        tailf:action "status" {
+          input;
+          output;
+        }
+      }
+      container client {
+        tailf:action "status" {
+          input;
+          output;
+        }
+      }
+    }
+  }
+}

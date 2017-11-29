@@ -1,0 +1,210 @@
+/*********************************************************************
+ * Copyright (c) 2011 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-qos-cee.yang: Brocade cee-map Data Model
+ *
+ * April 2011, Mobin Mohan
+ *
+ *
+ ********************************************************************/
+module brocade-qos-cee {
+  namespace "urn:brocade.com:mgmt:brocade-qos-cee";
+  prefix qos-cee;
+
+  import brocade-common-def {
+    prefix common-def;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import brocade-system-capabilities {
+    prefix c;
+  }
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-qos-mls {
+    prefix qos-mls;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+             San Jose, CA 95134
+              U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This management submodule is an instrumentation to 
+     manage cee-map feature.";
+
+  revision 2011-04-18 {
+    description
+      "Initial version of the management module cee-map.";
+  }
+
+  typedef qos-type-PGID {
+    type string {
+      pattern "[0-7]|15\\.[0-7]";
+    }
+  }
+
+  typedef cee-map-name-type {
+    type common-def:name-string32;
+    description
+      "The name of CEE map.";
+  }
+
+  typedef nas-ipv4-prefix {
+    type inet:ipv4-prefix;
+  }
+
+  typedef nas-ipv6-prefix {
+    type inet:ipv6-prefix;
+  }
+
+  typedef nas-ip-prefix {
+    type union {
+      type nas-ipv4-prefix;
+      type nas-ipv6-prefix;
+    }
+  }
+
+  list cee-map {
+    key "name";
+    leaf name {
+      type cee-map-name-type;
+    }
+    leaf precedence {
+      description
+        "CEE map precedence value";
+      type int32 {
+        range "1 .. 100";
+      }
+    }
+    list priority-group-table {
+      key "PGID";
+      leaf PGID {
+        type qos-type-PGID;
+      }
+      leaf weight {
+        type int32 {
+          range "1 .. 100";
+        }
+      }
+      leaf pfc {
+        mandatory true;
+        type enumeration {
+          enum "on" {
+            value 1;
+          }
+          enum "off" {
+            value 0;
+          }
+        }
+      }
+    }
+    container priority-table {
+      description
+        "Configure Priority Table";
+      leaf map-cos0-pgid {
+        type string {
+          pattern "[0-7]|15\\.[0-7]";
+          length "1..32";
+        }
+      }
+      leaf map-cos1-pgid {
+        type string {
+          pattern "[0-7]|15\\.[0-7]";
+          length "1..32";
+        }
+      }
+      leaf map-cos2-pgid {
+        type string {
+          pattern "[0-7]|15\\.[0-7]";
+          length "1..32";
+        }
+      }
+      leaf map-cos3-pgid {
+        type string {
+          pattern "[0-7]|15\\.[0-7]";
+          length "1..32";
+        }
+      }
+      leaf map-cos4-pgid {
+        type string {
+          pattern "[0-7]|15\\.[0-7]";
+          length "1..32";
+        }
+      }
+      leaf map-cos5-pgid {
+        type string {
+          pattern "[0-7]|15\\.[0-7]";
+          length "1..32";
+        }
+      }
+      leaf map-cos6-pgid {
+        type string {
+          pattern "[0-7]|15\\.[0-7]";
+          length "1..32";
+        }
+      }
+      leaf map-cos7-pgid {
+        type string {
+          pattern "[0-7]|15\\.[0-7]";
+          length "1..32";
+        }
+      }
+    }
+    container remap {
+      container lossless-priority {
+        leaf lossless-remapped-priority {
+          type int32 {
+            range "0 .. 6";
+          }
+        }
+      }
+    }
+  }
+  container nas {
+    when "((/c:capabilities/c:qos/c:cee/c:nas = \"true\"))";
+    container auto-qos {
+      presence "true";
+      description
+        "This specifies Automatic Quality Of Service
+         parameters";
+      container set {
+        description
+          "This specifies the auto-qos values to be set.";
+        leaf cos {
+          type qos-mls:cos-id-type;
+        }
+        leaf dscp {
+          type qos-mls:dscp-id-type;
+        }
+      }
+    }
+    list server-ip {
+      key "server-ip";
+      leaf server-ip {
+        type nas-ip-prefix;
+      }
+      list vrf {
+        key "vrf-name";
+        leaf vrf-name {
+          type string {
+            length "1..255";
+          }
+        }
+      }
+      list vlan {
+        key "vlan-number";
+        leaf vlan-number {
+          type interface:vlan-type;
+        }
+      }
+    }
+  }
+}

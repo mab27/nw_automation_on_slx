@@ -1,0 +1,187 @@
+/****************************************************************
+* Copyright (c) 2017 by Brocade Communications Systems, Inc.
+* All rights reserved.
+* Management Cluster CLI Yang model that will contain Management Cluster clis
+*
+*  February 2016-2017, Mithun B S 
+*
+*****************************************************************/
+module brocade-cluster {
+  namespace "http://brocade.com/ns/brocade-cluster";
+  prefix brocade-cluster;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import ietf-yang-types {
+    prefix yang;
+  }
+  import brocade-node {
+    prefix node;
+  }
+  import brocade-common-def {
+    prefix common-def;
+  }
+
+  organization "Brocade Communications Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+     San Jose, CA 95134             
+     U.S.A
+     Tel: +1-408-333-6061
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This module provides interface to provision principal priority";
+
+  revision 2017-02-09 {
+    description
+      "Initial version of this management module.";
+  }
+
+  grouping cluster-management-cmds {
+    container cluster {
+      container management {
+        leaf principal-priority {
+          type uint32 {
+            range "1..128";
+          }
+        }
+      }
+    }
+  }
+
+  augment "/node:node-id" {
+    uses cluster-management-cmds;
+  }
+  container mgmt-cluster {
+    description
+      "An intermediary node that separates the cluster related
+       elements of this managed device.";
+    container cluster {
+      container management {
+        container virtual {
+          container ip {
+            list address {
+              key "address";
+              leaf address {
+                type common-def:ipv4-address-prefix-type;
+              }
+            }
+          }
+          container ipv6 {
+            list address {
+              key "ipv6address";
+              leaf ipv6address {
+                type common-def:ipv6-address-prefix;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  grouping cluster-general-info-grouping {
+    leaf principal-switch-mac {
+      type string;
+      description
+        "Management Cluster Co-ordinator node MAC";
+    }
+    leaf total-nodes-in-cluster {
+      type uint16;
+      description
+        "Total number of nodes in cluster";
+    }
+    leaf nodes-disconnected-from-cluster {
+      type uint16;
+      description
+        "Number of nodes disconnected from cluster";
+    }
+  }
+
+  grouping cluster-node-info-grouping {
+    list cluster-node-info {
+      key "node-id";
+      leaf node-num {
+        type uint16;
+        description
+          "Node number";
+      }
+      leaf node-serial-num {
+        type string;
+        description
+          "Switch Serial number";
+      }
+      leaf node-condition {
+        type string;
+        description
+          "Node condition which can be either Good/Degraded/Failed/Online";
+      }
+      leaf node-status {
+        type string;
+        description
+          "Reflects the node status(Standalone/Primary/Secondary) in the cluster";
+      }
+      leaf node-id {
+        type uint16;
+        description
+          "Unique Node Identifier";
+      }
+      leaf node-is-principal {
+        type boolean;
+        description
+          "Whether node is management cluster principal.";
+      }
+      leaf node-switch-mac {
+        type string;
+        description
+          "Node switch mac address";
+      }
+      leaf node-internal-ip-address {
+        type inet:ipv4-address;
+        description
+          "Node internal IP address";
+      }
+      list node-public-ip-addresses {
+        leaf node-public-ip-address {
+          type inet:ipv4-address;
+          description
+            "Node public ip address";
+        }
+      }
+      list node-public-ipv6-addresses {
+        leaf node-public-ipv6-address {
+          type inet:ipv6-address;
+          description
+            "Node public ipv6 address";
+        }
+      }
+      leaf firmware-version {
+        type string;
+        description
+          "Node Firmware version";
+      }
+      leaf node-switchtype {
+        type string;
+        description
+          "Node switchtype.";
+      }
+      leaf node-is-local {
+        type boolean;
+        description
+          "Whether node is local. True indicates the RPC is run from this node in the managment cluster. False indicates its a remote node";
+      }
+    }
+  }
+
+  rpc show-cluster-management {
+    output {
+      uses cluster-general-info-grouping;
+      container cluster-nodes {
+        uses cluster-node-info-grouping;
+      }
+    }
+  }
+}

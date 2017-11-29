@@ -1,0 +1,153 @@
+/*********************************************************************
+ * Copyright (c) 2015 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-ptp.yang : Brocade PTP module.
+ * 
+ * June 2015, Ganesh Sindigi, Sajad Qadri
+ *
+ *
+ ********************************************************************/
+module brocade-ptp {
+  namespace "urn:brocade.com:mgmt:brocade-ptp";
+  prefix ptp;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import brocade-interface {
+    prefix intf;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way
+             San Jose, CA 95134
+             U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     Web: www.brocade.com
+    ";
+  description
+    "This management module is an instrumentation to manage PTP
+     protocol configuration.
+    ";
+
+  revision 2015-06-24 {
+    description
+      "Initial version; defines PTP protocol configurations and
+       interface configuration to enable and disable PTP on it.";
+  }
+
+  grouping port-attribute-group {
+    leaf announce-interval {
+      type uint32 {
+        range "0..4";
+      }
+      units "Log Seconds";
+      default "0";
+      description
+        "Interval between PTP announce messages.";
+    }
+    leaf announce-timeout {
+      type uint32 {
+        range "3..10";
+      }
+      default "3";
+      description
+        "Timeout between PTP announce messages.";
+    }
+    leaf sync-interval {
+      type int32 {
+        range "-4..2";
+      }
+      units "Log Seconds";
+      default "-1";
+      description
+        "Interval between PTP synchronization messages.";
+    }
+    leaf delay-request-min-interval {
+      type int32 {
+        range "-4..2";
+      }
+      units "Log Seconds";
+      default "-1";
+      description
+        "Minimal interval allowed between PTP Delay-Request messages.";
+    }
+    leaf ptp-vlan {
+      type intf:vlan-type;
+      description
+        "Vlan interface number.";
+    }
+  }
+
+  grouping protocol-ptp-port-group {
+    container protocol {
+      description
+        "Protocol configuration";
+      container ptp {
+        presence "true";
+        description
+          "PTP configuration. PTP protocol is enabled when
+           'protocol/ptp/enable' is set.";
+        leaf enable {
+          description
+            "When present indicates PTP protocol is enabled.
+             Disabling PTP protocol will not clear other related 
+             configurations.";
+          type empty;
+        }
+        uses port-attribute-group;
+      }
+    }
+  }
+
+  grouping config_ptp_group {
+    container ptp {
+      presence "true";
+      description
+        "PTP configuration. PTP protocol is enabled when
+         '/protocol/ptp/enable' is set.";
+      leaf enable {
+        description
+          "When present indicates PTP protocol is enabled.
+           Disabling PTP protocol will not clear other related 
+           configurations. In order to disable, either delete
+           'protocol/ptp' or set '/protocol/ptp/no enable'";
+        type empty;
+      }
+      leaf domain {
+        type uint32 {
+          range "0..127";
+        }
+        default "0";
+      }
+      leaf priority1 {
+        type uint32 {
+          range "0..255";
+        }
+        default "255";
+      }
+      leaf priority2 {
+        type uint32 {
+          range "0..255";
+        }
+        default "255";
+      }
+      leaf source-ip {
+        type inet:ipv4-address;
+      }
+    }
+  }
+
+  augment "/intf:protocol" {
+    uses config_ptp_group;
+  }
+  augment "/intf:interface/intf:ethernet" {
+    uses protocol-ptp-port-group;
+  }
+  augment "/intf:interface/intf:port-channel" {
+    uses protocol-ptp-port-group;
+  }
+}

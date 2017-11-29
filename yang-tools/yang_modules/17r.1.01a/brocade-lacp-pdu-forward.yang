@@ -1,0 +1,49 @@
+/*********************************************************************
+ * Copyright (c) 2016 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-lacp-pdu-forward.yang: Brocade LACP PDU Forward Data Model
+ *
+ *
+ *
+ ********************************************************************/
+module brocade-lacp-pdu-forward {
+  namespace "urn:brocade.com:mgmt:brocade-lacp-pdu-forward";
+  prefix lacp-pdu-forward;
+
+  import brocade-interface {
+    prefix interface;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal:\t130 Holger Way
+     San Jose, CA 95134 U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com 
+     web: www.brocade.com.";
+  description
+    "
+     Configuration command to enable LACP PDU Forward on an interface
+    ";
+
+  revision 2016-09-09 {
+    description
+      "First implementation of LACP PDU Forward commands";
+  }
+
+  grouping lacp-pdu-forward-interface-cmds {
+    container lacp-pdu-forward {
+      leaf enable {
+        type empty;
+      }
+    }
+  }
+
+  augment "/interface:interface/interface:ethernet" {
+    uses lacp-pdu-forward-interface-cmds;
+  }
+  augment "/interface:interface/interface:port-channel" {
+    uses lacp-pdu-forward-interface-cmds;
+  }
+}

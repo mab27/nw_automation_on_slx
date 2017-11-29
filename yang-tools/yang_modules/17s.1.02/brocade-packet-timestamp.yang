@@ -1,0 +1,88 @@
+/*********************************************************************
+ * Copyright (c) 2016 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-packet-timestamp.yang: Brocade Packet Timestamp data model
+ *
+ * July 2016, Sajad Qadri
+ *
+ *
+ ********************************************************************/
+module brocade-packet-timestamp {
+  namespace "urn:brocade.com:mgmt:brocade-packet-timestamp";
+  prefix packet-timestamp;
+
+  import brocade-interface {
+    prefix interface;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 1745 Technology Drive,
+         San Jose, CA 95110
+          U.S.A
+     Tel: +1-408-392-6061
+     E-mail: support@Brocade.com
+     web: www.brocade.com";
+  description
+    "This module describes the data model for Packet Timestamping.";
+
+  revision 2016-07-20 {
+    description
+      "Initial version of this management module.";
+  }
+
+  grouping packet_timestamp {
+    container packet-timestamp {
+      description
+        "Packet timestamp setting";
+      leaf ingress {
+        description
+          "Ingress packet-timestamp setting";
+        type enumeration {
+          enum "valid" {
+            value 1;
+            description
+              "Ingress packets have got timestamp in the payload";
+          }
+        }
+      }
+      leaf egress {
+        description
+          "Egress packet-timestamp setting";
+        type enumeration {
+          enum "add" {
+            value 1;
+            description
+              "Append the time of ingress to the end of packets";
+          }
+          enum "remove" {
+            value 2;
+            description
+              "Remove the timestamp from the payload of the packets";
+          }
+          enum "replace" {
+            value 3;
+            description
+              "Replace the timestamp in the ingress payload by the time the packet ingress";
+          }
+        }
+      }
+    }
+  }
+
+  augment "/interface:interface/interface:ethernet" {
+    container system {
+      description
+        "System settings";
+      uses packet_timestamp;
+    }
+  }
+  augment "/interface:interface/interface:port-channel" {
+    container system {
+      description
+        "System settings";
+      uses packet_timestamp;
+    }
+  }
+}

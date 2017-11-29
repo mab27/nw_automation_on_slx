@@ -1,0 +1,1008 @@
+/*********************************************************************
+ * Copyright (c) 2011 by Brocade Communications Systems, Inc.
+ * All rights reserved.
+ * brocade-isis.yang: Brocade BGP data model
+ *
+ *
+ *
+ ********************************************************************/
+module brocade-isis {
+  namespace "urn:brocade.com:mgmt:brocade-isis";
+  prefix isis;
+
+  import brocade-common-def {
+    prefix common-def;
+  }
+  import brocade-interface {
+    prefix interface;
+  }
+  import brocade-ip-config {
+    prefix ip-config;
+  }
+  import brocade-ipv6-config {
+    prefix ipv6-config;
+  }
+  import brocade-intf-loopback {
+    prefix intf-loopback;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Brocade Communications Systems, Inc.";
+  contact
+    "Brocade Communications Systems, Inc.
+     Postal: 130 Holger Way,
+             San Jose, CA 95134
+              U.S.A
+     Tel: +1-408-333-8000
+     E-mail: support@Brocade.com
+     web: www.brocade.com.";
+  description
+    "This management module is an instrumentation to manage
+     ISIS Protocol.";
+
+  revision 2013-10-02 {
+    description
+      "Initial version of this management module.";
+  }
+
+  typedef conn-metric {
+    type uint32 {
+      range "1..4261412863";
+    }
+  }
+
+  typedef rmap-type {
+    type string {
+      length "1..63";
+    }
+  }
+
+  typedef is-metric-type-t {
+    type enumeration {
+      enum "internal" {
+        value 1;
+        description
+          "internal";
+      }
+      enum "external" {
+        value 2;
+        description
+          "external";
+      }
+    }
+  }
+
+  typedef net-type {
+    type string {
+      pattern "([0-9a-fA-F]{2}((\\.[0-9a-fA-F]{4}){3,9})\\.00)";
+    }
+  }
+
+  grouping isis-cmds {
+    container isis {
+      presence "true";
+      container router-isis-cmds-holder {
+        uses isis-net-cmd;
+        uses router-isis-cmds;
+        uses address-family-group;
+      }
+    }
+  }
+
+  grouping isis-net-cmd {
+    list net {
+      key "net-cmd";
+      leaf net-cmd {
+        type net-type;
+      }
+    }
+  }
+
+  grouping router-isis-cmds {
+    container router-isis-attributes {
+      container auth-check {
+        container auth-check-level1 {
+          leaf auth-check-level1-disable {
+            type empty;
+          }
+        }
+        container auth-check-level2 {
+          leaf auth-check-level2-disable {
+            type empty;
+          }
+        }
+      }
+      container auth-mode {
+        container md5 {
+          leaf auth-mode-md5-level1 {
+            type empty;
+          }
+          leaf auth-mode-md5-level2 {
+            type empty;
+          }
+        }
+      }
+      container auth-key {
+        leaf auth-key-level1-str {
+          description
+            "Auth-key for Level-1 ISIS Router";
+          type string;
+        }
+        leaf auth-key-level2-str {
+          description
+            "Auth-key for Level-2 ISIS Router";
+          type string;
+        }
+      }
+      container bfd {
+        leaf bfd-global-enable {
+          type empty;
+        }
+        leaf bfd-holdover-interval {
+          type uint16 {
+            range "0..20";
+          }
+          units "Seconds";
+          description
+            "Holdover-interval is the time by which the BFD session DOWN notification to ISIS is delayed.If within that holdover time, the BFD session is UP then ISIS is not notified of the BFD session flap";
+        }
+      }
+      leaf csnp-interval {
+        type uint32 {
+          range "0..65535";
+        }
+        default "10";
+      }
+      leaf disable-inc-stct-spf-opt {
+        type empty;
+      }
+      leaf disable-incremental-spf-opt {
+        type empty;
+      }
+      leaf disable-partial-spf-opt {
+        type empty;
+      }
+      container fast-flood {
+        presence "true";
+        leaf fast-flood-value {
+          type uint32 {
+            range "1..15";
+          }
+        }
+      }
+      container graceful-restart {
+        description
+          "Enables the ISIS graceful restart capability";
+        leaf gr-helper-disable {
+          type empty;
+          description
+            "To disable ISIS Graceful Restart helper mode.The default behavior is to help the restarting neighbors";
+        }
+      }
+      container hello {
+        container padding {
+          container hello-padding-point-to-point {
+            leaf hello-padding-ptp-disable {
+              type empty;
+            }
+          }
+          leaf hello-padding-disable {
+            type empty;
+          }
+        }
+      }
+      container hostname {
+        leaf hostname-disable {
+          type empty;
+        }
+      }
+      leaf is-type {
+        type enumeration {
+          enum "level-1" {
+            value 1;
+            description
+              "Level-1 Only";
+          }
+          enum "level-2" {
+            value 2;
+            description
+              "Level-2 Only";
+          }
+          enum "level-1-2" {
+            value 3;
+            description
+              "Level-1 and Level-2";
+          }
+        }
+      }
+      container log {
+        leaf adjacency {
+          type empty;
+        }
+        leaf invalid-lsp-packets {
+          type empty;
+        }
+      }
+      leaf lsp-gen-interval {
+        type uint32 {
+          range "1..120";
+        }
+        default "10";
+      }
+      leaf lsp-interval {
+        type uint32 {
+          range "1..4294967295";
+        }
+        default "33";
+      }
+      leaf lsp-refresh-interval {
+        type uint32 {
+          range "1..65535";
+        }
+        default "900";
+      }
+      leaf max-lsp-lifetime {
+        type uint32 {
+          range "1..65535";
+        }
+        default "1200";
+      }
+      leaf nonstop-routing {
+        type empty;
+      }
+      container partial-spf-interval {
+        leaf pspf-max-hold-time {
+          type uint32 {
+            range "0..120000";
+          }
+        }
+        leaf pspf-init-delay {
+          type uint32 {
+            range "0..120000";
+          }
+        }
+        leaf pspf-hold-time {
+          type uint32 {
+            range "0..120000";
+          }
+        }
+      }
+      leaf retransmit-interval {
+        type uint32 {
+          range "0..65535";
+        }
+        default "5";
+      }
+      container set-debug {
+        leaf nsr {
+          type empty;
+        }
+      }
+      container set-overload-bit {
+        presence "true";
+        container on-startup {
+          choice ch-on-startup {
+            case ca-on-startup {
+              leaf on-startup-overloadtime {
+                type uint32 {
+                  range "5..86400";
+                }
+              }
+            }
+            case ca-on-startup-wfbgp {
+              container wait-for-bgp {
+                presence "true";
+                leaf wait-for-bgp-value {
+                  type uint32 {
+                    range "5..86400";
+                  }
+                  default "600";
+                }
+              }
+            }
+          }
+        }
+      }
+      list spf-interval {
+        key "spf-interval-level";
+        leaf spf-interval-level {
+          type enumeration {
+            enum "level-1" {
+              value 1;
+              description
+                "Authentication key for Level-1 LSPs, CSNP, PSNP";
+            }
+            enum "level-2" {
+              value 2;
+              description
+                "Authentication key for Level-2 LSPs, CSNP, PSNP";
+            }
+          }
+        }
+        leaf spf-interval-max-hold-time {
+          type uint32 {
+            range "0..120";
+          }
+        }
+        leaf spf-interval-initial-delay {
+          type uint32 {
+            range "0..120000";
+          }
+        }
+        leaf spf-interval-hold-time {
+          type uint32 {
+            range "0..120000";
+          }
+        }
+      }
+      container reverse-metric {
+        presence "true";
+        container reverse_metric_tlv {
+          leaf rev-metric-tlv-type {
+            type uint16;
+          }
+        }
+        uses isis-rev-metric-common-cmds;
+      }
+    }
+  }
+
+  grouping isis-rev-metric-common-cmds {
+    container rev-metric-common-attributes {
+      leaf rev-metric-val {
+        type uint32 {
+          range "0..16777214";
+        }
+        default "0";
+      }
+      leaf rev-metric-whole-lan {
+        type empty;
+      }
+      leaf rev-metric-te-def-metric {
+        type empty;
+      }
+    }
+  }
+
+  grouping address-family-group {
+    container address-family {
+      container ipv4 {
+        container af-ipv4-unicast {
+          presence "true";
+          uses af-ipv4-cmds;
+        }
+      }
+      container ipv6 {
+        container af-ipv6-unicast {
+          presence "true";
+          uses af-ipv6-cmds;
+        }
+      }
+    }
+  }
+
+  grouping af-common-cmds {
+    container af-common-attributes {
+      container default-information-originate {
+        presence "true";
+        leaf default-information-originate-route-map {
+          type string {
+            length "1..63";
+          }
+        }
+      }
+      leaf default-metric {
+        type uint32 {
+          range "0..65535";
+        }
+        default "0";
+      }
+      leaf distance {
+        type uint32 {
+          range "1..255";
+        }
+        default "115";
+      }
+      leaf maximum-paths {
+        type uint32 {
+          range "1..64";
+        }
+        default "8";
+      }
+      container redistribute {
+        container connected {
+          presence "true";
+          leaf connected-metric {
+            type conn-metric;
+          }
+          leaf connected-route-map {
+            type rmap-type;
+          }
+          choice ch-connected-levels {
+            case ca-connected-level1 {
+              leaf connected-level1 {
+                type empty;
+              }
+            }
+            case ca-connected-level2 {
+              leaf connected-level2 {
+                type empty;
+              }
+            }
+            case ca-connected-level12 {
+              leaf connected-level12 {
+                type empty;
+              }
+            }
+          }
+          leaf connected-metric-type {
+            type is-metric-type-t;
+            default "internal";
+          }
+        }
+        container ospf {
+          presence "true";
+          container match {
+            leaf ospf-internal {
+              type empty;
+            }
+            leaf ospf-external1 {
+              type empty;
+            }
+            leaf ospf-external2 {
+              type empty;
+            }
+          }
+          leaf ospf-metric {
+            type conn-metric;
+          }
+          leaf ospf-route-map {
+            type rmap-type;
+          }
+          choice ch-ospf-levels {
+            case ca-ospf-level1 {
+              leaf ospf-level1 {
+                type empty;
+              }
+            }
+            case ca-ospf-level2 {
+              leaf ospf-level2 {
+                type empty;
+              }
+            }
+            case ca-ospf-level12 {
+              leaf ospf-level12 {
+                type empty;
+              }
+            }
+          }
+          leaf ospf-metric-type {
+            type is-metric-type-t;
+            default "internal";
+          }
+        }
+        container static {
+          presence "true";
+          leaf static-metric {
+            type conn-metric;
+          }
+          leaf static-route-map {
+            type rmap-type;
+          }
+          choice ch-static-levels {
+            case ca-static-level1 {
+              leaf static-level1 {
+                type empty;
+              }
+            }
+            case ca-static-level2 {
+              leaf static-level2 {
+                type empty;
+              }
+            }
+            case ca-static-level12 {
+              leaf static-level12 {
+                type empty;
+              }
+            }
+          }
+          leaf static-metric-type {
+            type is-metric-type-t;
+            default "internal";
+          }
+        }
+        container bgp {
+          presence "true";
+          leaf bgp-metric {
+            type conn-metric;
+          }
+          leaf bgp-route-map {
+            type common-def:name-string63;
+          }
+          choice ch-bgp-levels {
+            case ca-bgp-level1 {
+              leaf bgp-level1 {
+                type empty;
+              }
+            }
+            case ca-bgp-level2 {
+              leaf bgp-level2 {
+                type empty;
+              }
+            }
+            case ca-bgp-level12 {
+              leaf bgp-level12 {
+                type empty;
+              }
+            }
+          }
+          leaf bgp-metric-type {
+            type is-metric-type-t;
+            default "internal";
+          }
+        }
+        container isis {
+          container level-1 {
+            container into {
+              container level1-into-level2 {
+                choice ch-prefix-list-level1-disable {
+                  case ca-prefix-list-level1 {
+                    leaf prefix-list-level1 {
+                      type string {
+                        length "1..63";
+                      }
+                    }
+                  }
+                  case ca-leve11-into-level2-disable {
+                    leaf level1-into-level2-disable {
+                      type empty;
+                    }
+                  }
+                }
+              }
+            }
+          }
+          container level-2 {
+            container into {
+              container level2-into-level1 {
+                presence "true";
+                leaf prefix-list-level2 {
+                  type string {
+                    length "1..63";
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  grouping af-ipv4-cmds {
+    container af-ipv4-attributes {
+      container metric-style {
+        container wide {
+          leaf metric-style-wide-level1 {
+            type empty;
+          }
+          leaf metric-style-wide-level2 {
+            type empty;
+          }
+        }
+      }
+      list summary-address {
+        key "summary-ip summary-ip-mask";
+        leaf summary-ip {
+          type inet:ipv4-address;
+        }
+        leaf summary-ip-mask {
+          type inet:ipv4-address;
+        }
+        leaf summary-ip-level1 {
+          type empty;
+        }
+        leaf summary-ip-level2 {
+          type empty;
+        }
+      }
+      container ldp-sync {
+        presence "true";
+        leaf ldp-sync-hold-down {
+          type uint32 {
+            range "1..65535";
+          }
+        }
+      }
+      container default-link-metric {
+        leaf default-link-metric-level1 {
+          description
+            "Default Link Metric for Level-1";
+          type uint32 {
+            range "1..16777215";
+          }
+          default "10";
+        }
+        leaf default-link-metric-level2 {
+          description
+            "Default Link Metric for Level-2";
+          type uint32 {
+            range "1..16777215";
+          }
+          default "10";
+        }
+      }
+      uses af-common-cmds;
+    }
+  }
+
+  grouping af-ipv6-cmds {
+    container af-ipv6-attributes {
+      leaf disable-adjacency-check {
+        type empty;
+      }
+      list summary-prefix {
+        key "summary-prefix-ipv6";
+        leaf summary-prefix-ipv6 {
+          type common-def:ipv6-address-prefix;
+        }
+        leaf summary-prefix-level1 {
+          type empty;
+        }
+        leaf summary-prefix-level2 {
+          type empty;
+        }
+      }
+      container ipv6-default-link-metric {
+        leaf ipv6-default-link-metric-level1 {
+          description
+            "Default Link Metric for Level-1";
+          type uint32 {
+            range "1..16777215";
+          }
+          default "10";
+        }
+        leaf ipv6-default-link-metric-level2 {
+          description
+            "Default Link Metric for Level-2";
+          type uint32 {
+            range "1..16777215";
+          }
+          default "10";
+        }
+      }
+      container multi-topology {
+        presence "true";
+        leaf multi-topology-transition {
+          type empty;
+        }
+      }
+      list spf6-interval {
+        key "spf6-interval-level";
+        leaf spf6-interval-level {
+          type enumeration {
+            enum "level-1" {
+              value 1;
+              description
+                "Authentication key for Level-1 LSPs, CSNP, PSNP";
+            }
+            enum "level-2" {
+              value 2;
+              description
+                "Authentication key for Level-2 LSPs, CSNP, PSNP";
+            }
+          }
+        }
+        leaf spf6-interval-max-hold-time {
+          type uint32 {
+            range "0..120";
+          }
+        }
+        leaf spf6-interval-initial-delay {
+          type uint32 {
+            range "0..120000";
+          }
+        }
+        leaf spf6-interval-hold-time {
+          type uint32 {
+            range "0..120000";
+          }
+        }
+      }
+      container partial6-spf-interval {
+        leaf pspf6-max-hold-time {
+          type uint32 {
+            range "0..120000";
+          }
+        }
+        leaf pspf6-init-delay {
+          type uint32 {
+            range "0..120000";
+          }
+        }
+        leaf pspf6-hold-time {
+          type uint32 {
+            range "0..120000";
+          }
+        }
+      }
+      uses af-common-cmds;
+    }
+  }
+
+  grouping interface-router-isis {
+    container intf-router-isis {
+      container int-router-isis {
+        leaf interface-ip-router-isis {
+          type empty;
+        }
+      }
+    }
+  }
+
+  grouping interface-ipv6-router-isis {
+    container intf-ipv6-router-isis {
+      container int-ipv6-router-isis {
+        leaf interface-ipv6-router-isis {
+          type empty;
+        }
+      }
+    }
+  }
+
+  grouping interface-isis-group {
+    container intf-isis {
+      presence "true";
+      container interface-isis {
+        container auth-check {
+          container auth-check-level1 {
+            leaf interface-auth-check-level1-disable {
+              type empty;
+            }
+          }
+          container auth-check-level2 {
+            leaf interface-auth-check-level2-disable {
+              type empty;
+            }
+          }
+        }
+        container interface-reverse-metric {
+          presence "true";
+          uses isis-rev-metric-common-cmds;
+        }
+        container interface-auth-mode {
+          container interface-md5 {
+            leaf interface-auth-mode-md5-level1 {
+              type empty;
+            }
+            leaf interface-auth-mode-md5-level2 {
+              type empty;
+            }
+          }
+        }
+        list interface-auth-key {
+          key "interface-auth-key-level";
+          leaf interface-auth-key-level {
+            type enumeration {
+              enum "level-1" {
+                value 1;
+                description
+                  "Authentication key for Level-1 LSPs, CSNP, PSNP";
+              }
+              enum "level-2" {
+                value 2;
+                description
+                  "Authentication key for Level-2 LSPs, CSNP, PSNP";
+              }
+            }
+          }
+          leaf interface-auth-key-str {
+            type string;
+          }
+        }
+        container interface-hello {
+          container interface-hello-padding {
+            leaf interface-hello-padding-disable {
+              type empty;
+            }
+          }
+        }
+        list interface-hello-interval {
+          key "interface-hello-interval-level";
+          leaf interface-hello-interval-level {
+            type enumeration {
+              enum "level-1" {
+                value 1;
+                description
+                  "Time interval for Level-1 Hello PDUs";
+              }
+              enum "level-2" {
+                value 2;
+                description
+                  "Time interval for Level-2 Hello PDUs";
+              }
+            }
+          }
+          leaf interface-hello-interval-val {
+            type uint32 {
+              range "1..65535";
+            }
+            default "10";
+          }
+        }
+        list interface-hello-multiplier {
+          key "interface-hello-multiplier-level";
+          leaf interface-hello-multiplier-level {
+            type enumeration {
+              enum "level-1" {
+                value 1;
+                description
+                  "Hello Multiplier for Level-1 Neighbors";
+              }
+              enum "level-2" {
+                value 2;
+                description
+                  "Hello multiplier for Level-2 Neighbors";
+              }
+            }
+          }
+          leaf interface-hello-multiplier-val {
+            type uint32 {
+              range "3..1000";
+            }
+            default "3";
+          }
+        }
+        leaf circuit-type {
+          type enumeration {
+            enum "level-1" {
+              value 1;
+              description
+                "Level-1 Only";
+            }
+            enum "level-2" {
+              value 2;
+              description
+                "Level-2 Only";
+            }
+            enum "level-1-2" {
+              value 3;
+              description
+                "Level-1 and Level-2";
+            }
+          }
+        }
+        container interface-ipv6 {
+          list interface-ipv6-metric {
+            key "interface-ipv6-metric-level";
+            leaf interface-ipv6-metric-level {
+              type enumeration {
+                enum "level-1" {
+                  value 1;
+                  description
+                    "Metric for Level-1 ISIS";
+                }
+                enum "level-2" {
+                  value 2;
+                  description
+                    "Metric for Level-2 ISIS";
+                }
+              }
+            }
+            leaf interface-ipv6-metric-val {
+              type uint32 {
+                range "1..16777215";
+              }
+            }
+          }
+        }
+        list interface-metric {
+          key "interface-metric-level";
+          leaf interface-metric-level {
+            type enumeration {
+              enum "level-1" {
+                value 1;
+                description
+                  "Metric for Level-1 ISIS";
+              }
+              enum "level-2" {
+                value 2;
+                description
+                  "Metric for Level-2 ISIS";
+              }
+            }
+          }
+          leaf interface-metric-val {
+            type uint32 {
+              range "1..16777215";
+            }
+          }
+        }
+        leaf interface-point-to-point {
+          type empty;
+        }
+        leaf interface-passive {
+          type empty;
+        }
+        container interface-priority {
+          leaf interface-priority-level1 {
+            description
+              "Priority for Level-1 ISIS Router";
+            type uint32 {
+              range "0..127";
+            }
+            default "64";
+          }
+          leaf interface-priority-level2 {
+            description
+              "Priority for Level-2 ISIS Router";
+            type uint32 {
+              range "0..127";
+            }
+            default "64";
+          }
+        }
+        container interface-bfd {
+          description
+            "Set Bidirectional Forwarding Detection operation mode on this interface";
+          leaf interface-bfd-enable {
+            type empty;
+          }
+        }
+        leaf interface-ldp-sync {
+          type enumeration {
+            enum "enable" {
+              value 1;
+              description
+                "Enable LDP sync";
+            }
+            enum "disable" {
+              value 2;
+              description
+                "Disable LDP Sync";
+            }
+          }
+        }
+      }
+    }
+  }
+
+  grouping interface-eth-isis {
+    container interface-eth-isis-conf {
+      uses interface-isis-group;
+    }
+  }
+
+  augment "/interface:interface/interface:ethernet/interface:ip" {
+    uses interface-router-isis;
+  }
+  augment "/interface:interface/interface:ethernet/interface:ipv6" {
+    uses interface-ipv6-router-isis;
+  }
+  augment "/interface:interface/interface:ethernet" {
+    uses interface-eth-isis;
+  }
+  augment "/common-def:routing-system/common-def:router" {
+    uses isis-cmds;
+  }
+  augment "/common-def:routing-system/interface:interface/interface:ve/ip-config:ip" {
+    uses interface-router-isis;
+  }
+  augment "/common-def:routing-system/interface:interface/interface:ve/ipv6-config:ipv6" {
+    uses interface-ipv6-router-isis;
+  }
+  augment "/common-def:routing-system/interface:interface/intf-loopback:loopback/ip-config:ip" {
+    uses interface-router-isis;
+  }
+  augment "/common-def:routing-system/interface:interface/intf-loopback:loopback/ipv6-config:ipv6" {
+    uses interface-ipv6-router-isis;
+  }
+  augment "/common-def:routing-system/interface:interface/interface:ve" {
+    uses interface-isis-group;
+  }
+  augment "/common-def:routing-system/interface:interface/intf-loopback:loopback" {
+    uses interface-isis-group;
+  }
+}
