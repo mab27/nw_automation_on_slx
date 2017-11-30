@@ -1,16 +1,30 @@
 # RESTCONF on SLX
 
+- Content:
+	- [Introduction to RESTCONF]()
+	- [RESTCONF the context of SLX-OS]()
+	- [Running Configuration API]()
+		- [Entire running config]()
+		- [Interface Port-channel]()
+		- [Switchport configuration of an interface Port-channel]()
+	- [Operations API]()
+		- [get lldp neighbors]()
+		- [get vlan brief]()
+		- [get ip interface]()
+	- [Operational-state API]()
+		- []()
+
 ## Introduction to RESTCONF:
 - 
 - 
 - 
 
-## In the context of SLX-OS:
+## RESTCONF the context of SLX-OS:
 - The base URI (http://host:port/rest/) is the entry point to access and manage all the resources defined in the system.By default, the HTTP port number is 80.
-- The base resource consists of 
-	- Configuration resource (**/config**)
-	- YANG-RPC Operations resource (**/operations**)
-	- Operational-state (**/operational-state**) resources as first-level child resources.
+- First-level child resources. The base resource consists of 
+	- Configuration resource: **/config**. (POST, PUT, PATCH, DELETE and GET).
+	- YANG-RPC Operations resource: **/operations**. (POST only)
+	- Operational-state: **/operational-state**. (GET only)
 - The URI path conveys a resource model that is similar to the YANG model, with each forward slash-separated path segment corresponding to a unique resource within the model's hierarchy (using the following syntax: <base_URI>/path1/path2/{key1},{key2}/path3/...).
 - URI encoding:
 	- A key that contains a forward slash (/) must be contained within a pair of double quotes("). The double quotes character is encoded as %22. For example, a value of 1/1 for {interface-name} is represented in a URI as "1/1", which is encoded as %221/1%22.
@@ -844,9 +858,518 @@ mab@mab-infra:~$
 
 ## Operations API:
 
-### Title 1:
+### get lldp neighbors:
+```
+mab@mab-infra:~$ st2 run core.http username=admin password=********** url=http://192.168.254.115:80/rest/operations/get-lldp-neighbor-detail body="<get-lldp-neighbor-detail></get-lldp-neighbor-detail>"
+.
+id: 5a203c937cae220a3a558839
+status: succeeded
+parameters: 
+  body: <get-lldp-neighbor-detail></get-lldp-neighbor-detail>
+  password: **********
+  url: http://192.168.254.115:80/rest/operations/get-lldp-neighbor-detail
+  username: admin
+result: 
+  body: "<output xmlns='urn:brocade.com:mgmt:brocade-lldp-ext'>\n  <lldp-neighbor-detail>\n    <local-interface-name>Eth 0/1</local-interface-name>\n    <local-interface-ifindex>201335040</local-interface-ifindex>\n    <local-interface-mac>78a6.e13a.9405</local-interface-mac>\n    <remote-interface-name>Ethernet 0/1</remote-interface-name>\n    <remote-interface-mac>78a6.e13a.f005</remote-interface-mac>\n    <dead-interval>120</dead-interval>\n    <remaining-life>104</remaining-life>\n    <remote-chassis-id>78a6.e13a.f000</remote-chassis-id>\n    <lldp-pdu-transmitted>370</lldp-pdu-transmitted>\n    <lldp-pdu-received>248</lldp-pdu-received>\n    <remote-port-description>Eth 0/1</remote-port-description>\n    <remote-system-name>spine2</remote-system-name>\n  </lldp-neighbor-detail>\n  <lldp-neighbor-detail>\n    <local-interface-name>Eth 0/7</local-interface-name>\n    <local-interface-ifindex>201384192</local-interface-ifindex>\n    <local-interface-mac>78a6.e13a.940b</local-interface-mac>\n    <remote-interface-name>Ethernet 0/7</remote-interface-name>\n    <remote-interface-mac>78a6.e13a.f00b</remote-interface-mac>\n    <dead-interval>120</dead-interval>\n    <remaining-life>113</remaining-life>\n    <remote-chassis-id>78a6.e13a.f000</remote-chassis-id>\n    <lldp-pdu-transmitted>9420</lldp-pdu-transmitted>\n    <lldp-pdu-received>9420</lldp-pdu-received>\n    <remote-port-description>Eth 0/7</remote-port-description>\n    <remote-system-name>spine2</remote-system-name>\n  </lldp-neighbor-detail>\n  <has-more>false</has-more>\n</output>\n"
+  headers:
+    Authentication-Token: Q3heQWtCRTxSa3BobDZMeUVaSkhpa2pveDB7OnNbMXs=
+    Cache-control: private, no-cache, must-revalidate, proxy-revalidate
+    Connection: Keep-Alive
+    Content-Length: '1528'
+    Content-Type: application/vnd.yang.operation+xml
+    Date: Fri, 01 Dec 2017 01:14:09 GMT
+    Keep-Alive: timeout=180, max=100
+    Server: SLX-OS WWW
+  parsed: false
+  status_code: 200
+mab@mab-infra:~$
+mab@mab-infra:~$ st2 execution get 5a203c937cae220a3a558839 -k body
+<output xmlns='urn:brocade.com:mgmt:brocade-lldp-ext'>
+  <lldp-neighbor-detail>
+    <local-interface-name>Eth 0/1</local-interface-name>
+    <local-interface-ifindex>201335040</local-interface-ifindex>
+    <local-interface-mac>78a6.e13a.9405</local-interface-mac>
+    <remote-interface-name>Ethernet 0/1</remote-interface-name>
+    <remote-interface-mac>78a6.e13a.f005</remote-interface-mac>
+    <dead-interval>120</dead-interval>
+    <remaining-life>104</remaining-life>
+    <remote-chassis-id>78a6.e13a.f000</remote-chassis-id>
+    <lldp-pdu-transmitted>370</lldp-pdu-transmitted>
+    <lldp-pdu-received>248</lldp-pdu-received>
+    <remote-port-description>Eth 0/1</remote-port-description>
+    <remote-system-name>spine2</remote-system-name>
+  </lldp-neighbor-detail>
+  <lldp-neighbor-detail>
+    <local-interface-name>Eth 0/7</local-interface-name>
+    <local-interface-ifindex>201384192</local-interface-ifindex>
+    <local-interface-mac>78a6.e13a.940b</local-interface-mac>
+    <remote-interface-name>Ethernet 0/7</remote-interface-name>
+    <remote-interface-mac>78a6.e13a.f00b</remote-interface-mac>
+    <dead-interval>120</dead-interval>
+    <remaining-life>113</remaining-life>
+    <remote-chassis-id>78a6.e13a.f000</remote-chassis-id>
+    <lldp-pdu-transmitted>9420</lldp-pdu-transmitted>
+    <lldp-pdu-received>9420</lldp-pdu-received>
+    <remote-port-description>Eth 0/7</remote-port-description>
+    <remote-system-name>spine2</remote-system-name>
+  </lldp-neighbor-detail>
+  <has-more>false</has-more>
+</output>
+
+mab@mab-infra:~$
 ```
 
+### get vlan brief:
+```
+mab@mab-infra:~$ st2 run core.http username=admin password=********** url=http://192.168.254.115:80/rest/operations/get-vlan-brief body="<get-vlan-brief></get-vlan-brief>"
+.
+id: 5a203d027cae220a3a55883c
+status: succeeded
+parameters: 
+  body: <get-vlan-brief></get-vlan-brief>
+  password: **********
+  url: http://192.168.254.115:80/rest/operations/get-vlan-brief
+  username: admin
+result: 
+  body: "<output xmlns='urn:brocade.com:mgmt:brocade-interface-ext'>\n  <configured-vlans-count>3</configured-vlans-count>\n  <provisioned-vlans-count>3</provisioned-vlans-count>\n  <unprovisioned-vlans-count>0</unprovisioned-vlans-count>\n  <vlan>\n    <vlan-id>1</vlan-id>\n    <vlan-type>static</vlan-type>\n    <vlan-name>default</vlan-name>\n    <vlan-state>active</vlan-state>\n    <interface>\n      <interface-type>port-channel</interface-type>\n      <interface-name>30</interface-name>\n      <tag>tagged</tag>\n    </interface>\n  </vlan>\n  <vlan>\n    <vlan-id>10</vlan-id>\n    <vlan-type>static</vlan-type>\n    <vlan-name>VLAN0010</vlan-name>\n    <vlan-state>suspend</vlan-state>\n  </vlan>\n  <vlan>\n    <vlan-id>200</vlan-id>\n    <vlan-type>static</vlan-type>\n    <vlan-name>VLAN0200</vlan-name>\n    <vlan-state>active</vlan-state>\n    <interface>\n      <interface-type>ethernet</interface-type>\n      <interface-name>0/1</interface-name>\n      <tag>untagged</tag>\n    </interface>\n  </vlan>\n  <last-vlan-id>200</last-vlan-id>\n  <has-more>false</has-more>\n</output>\n"
+  headers:
+    Authentication-Token: WXdHb3BcMF1rb2tiQXo0U0BYTmMve3lDanZjcWYyNGI=
+    Cache-control: private, no-cache, must-revalidate, proxy-revalidate
+    Connection: Keep-Alive
+    Content-Length: '1055'
+    Content-Type: application/vnd.yang.operation+xml
+    Date: Fri, 01 Dec 2017 01:15:59 GMT
+    Keep-Alive: timeout=180, max=100
+    Server: SLX-OS WWW
+  parsed: false
+  status_code: 200
+mab@mab-infra:~/mab_automate/nw_automation_on_slx$ 
+mab@mab-infra:~/mab_automate/nw_automation_on_slx$ st2 execution get 5a203d027cae220a3a55883c -k body
+<output xmlns='urn:brocade.com:mgmt:brocade-interface-ext'>
+  <configured-vlans-count>3</configured-vlans-count>
+  <provisioned-vlans-count>3</provisioned-vlans-count>
+  <unprovisioned-vlans-count>0</unprovisioned-vlans-count>
+  <vlan>
+    <vlan-id>1</vlan-id>
+    <vlan-type>static</vlan-type>
+    <vlan-name>default</vlan-name>
+    <vlan-state>active</vlan-state>
+    <interface>
+      <interface-type>port-channel</interface-type>
+      <interface-name>30</interface-name>
+      <tag>tagged</tag>
+    </interface>
+  </vlan>
+  <vlan>
+    <vlan-id>10</vlan-id>
+    <vlan-type>static</vlan-type>
+    <vlan-name>VLAN0010</vlan-name>
+    <vlan-state>suspend</vlan-state>
+  </vlan>
+  <vlan>
+    <vlan-id>200</vlan-id>
+    <vlan-type>static</vlan-type>
+    <vlan-name>VLAN0200</vlan-name>
+    <vlan-state>active</vlan-state>
+    <interface>
+      <interface-type>ethernet</interface-type>
+      <interface-name>0/1</interface-name>
+      <tag>untagged</tag>
+    </interface>
+  </vlan>
+  <last-vlan-id>200</last-vlan-id>
+  <has-more>false</has-more>
+</output>
+
+mab@mab-infra:~$ 
+```
+
+
+### get ip interface:
+```
+mab@mab-infra:~$  st2 run core.http username=admin password=********** url=http://192.168.254.115:80/rest/operations/get-ip-interface body="<get-ip-interface></get-ip-interface>"
+.
+id: 5a203dd87cae220a3a55883f
+status: succeeded
+parameters: 
+  body: <get-ip-interface></get-ip-interface>
+  password: **********
+  url: http://192.168.254.115:80/rest/operations/get-ip-interface
+  username: admin
+result: 
+  body: "<output xmlns='urn:brocade.com:mgmt:brocade-interface-ext'>\n  <interface>\n    <interface-type>port-channel</interface-type>\n    <interface-name>30</interface-name>\n    <if-name>Port-channel 30</if-name>\n    <if-state>up</if-state>\n    <line-protocol-state>up</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/1</interface-name>\n    <if-name>Ethernet 0/1</if-name>\n    <if-state>up</if-state>\n    <line-protocol-state>up</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/2</interface-name>\n    <if-name>Ethernet 0/2</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/3</interface-name>\n    <if-name>Ethernet 0/3</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/4</interface-name>\n    <if-name>Ethernet 0/4</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/5</interface-name>\n    <if-name>Ethernet 0/5</if-name>\n    <if-state>up</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/6</interface-name>\n    <if-name>Ethernet 0/6</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/7</interface-name>\n    <if-name>Ethernet 0/7</if-name>\n    <if-state>up</if-state>\n    <line-protocol-state>up</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/8</interface-name>\n    <if-name>Ethernet 0/8</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/9</interface-name>\n    <if-name>Ethernet 0/9</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/10</interface-name>\n    <if-name>Ethernet 0/10</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/11</interface-name>\n    <if-name>Ethernet 0/11</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/12</interface-name>\n    <if-name>Ethernet 0/12</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/13</interface-name>\n    <if-name>Ethernet 0/13</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/14</interface-name>\n    <if-name>Ethernet 0/14</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/15</interface-name>\n    <if-name>Ethernet 0/15</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/16</interface-name>\n    <if-name>Ethernet 0/16</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/17</interface-name>\n    <if-name>Ethernet 0/17</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/18</interface-name>\n    <if-name>Ethernet 0/18</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/19</interface-name>\n    <if-name>Ethernet 0/19</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/20</interface-name>\n    <if-name>Ethernet 0/20</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/21</interface-name>\n    <if-name>Ethernet 0/21</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/22</interface-name>\n    <if-name>Ethernet 0/22</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/23</interface-name>\n    <if-name>Ethernet 0/23</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/24</interface-name>\n    <if-name>Ethernet 0/24</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/25</interface-name>\n    <if-name>Ethernet 0/25</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/26</interface-name>\n    <if-name>Ethernet 0/26</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/27</interface-name>\n    <if-name>Ethernet 0/27</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/28</interface-name>\n    <if-name>Ethernet 0/28</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/29</interface-name>\n    <if-name>Ethernet 0/29</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/30</interface-name>\n    <if-name>Ethernet 0/30</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/31</interface-name>\n    <if-name>Ethernet 0/31</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>ethernet</interface-type>\n    <interface-name>0/32</interface-name>\n    <if-name>Ethernet 0/32</if-name>\n    <if-state>down</if-state>\n    <line-protocol-state>down</line-protocol-state>\n    <ip-address>\n      <ipv4>unassigned</ipv4>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>unknown</interface-type>\n    <interface-name></interface-name>\n    <if-name>Ve 100</if-name>\n    <if-state>up</if-state>\n    <line-protocol-state>up</line-protocol-state>\n    <ip-address>\n      <ipv4>172.16.10.115/24</ipv4>\n      <ipv4-type>primary</ipv4-type>\n      <broadcast>172.16.10.255/24</broadcast>\n    </ip-address>\n  </interface>\n  <interface>\n    <interface-type>unknown</interface-type>\n    <interface-name></interface-name>\n    <if-name>Ve 200</if-name>\n    <if-state>up</if-state>\n    <line-protocol-state>up</line-protocol-state>\n    <ip-address>\n      <ipv4>10.2.2.1/24</ipv4>\n      <ipv4-type>primary</ipv4-type>\n      <broadcast>10.2.2.255/24</broadcast>\n    </ip-address>\n  </interface>\n  <has-more>false</has-more>\n</output>\n"
+  headers:
+    Authentication-Token: RjQybl9rN1tdXFd0P0UxfF07L2hOXG1vbXBLYVxuV1I=
+    Cache-control: private, no-cache, must-revalidate, proxy-revalidate
+    Connection: Keep-Alive
+    Content-Length: '10744'
+    Content-Type: application/vnd.yang.operation+xml
+    Date: Fri, 01 Dec 2017 01:19:34 GMT
+    Keep-Alive: timeout=180, max=100
+    Server: SLX-OS WWW
+  parsed: false
+  status_code: 200
+mab@mab-infra:~$ 
+mab@mab-infra:~$ st2 execution get 5a203dd87cae220a3a55883f -k body
+<output xmlns='urn:brocade.com:mgmt:brocade-interface-ext'>
+  <interface>
+    <interface-type>port-channel</interface-type>
+    <interface-name>30</interface-name>
+    <if-name>Port-channel 30</if-name>
+    <if-state>up</if-state>
+    <line-protocol-state>up</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/1</interface-name>
+    <if-name>Ethernet 0/1</if-name>
+    <if-state>up</if-state>
+    <line-protocol-state>up</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/2</interface-name>
+    <if-name>Ethernet 0/2</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/3</interface-name>
+    <if-name>Ethernet 0/3</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/4</interface-name>
+    <if-name>Ethernet 0/4</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/5</interface-name>
+    <if-name>Ethernet 0/5</if-name>
+    <if-state>up</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/6</interface-name>
+    <if-name>Ethernet 0/6</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/7</interface-name>
+    <if-name>Ethernet 0/7</if-name>
+    <if-state>up</if-state>
+    <line-protocol-state>up</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/8</interface-name>
+    <if-name>Ethernet 0/8</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/9</interface-name>
+    <if-name>Ethernet 0/9</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/10</interface-name>
+    <if-name>Ethernet 0/10</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/11</interface-name>
+    <if-name>Ethernet 0/11</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/12</interface-name>
+    <if-name>Ethernet 0/12</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/13</interface-name>
+    <if-name>Ethernet 0/13</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/14</interface-name>
+    <if-name>Ethernet 0/14</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/15</interface-name>
+    <if-name>Ethernet 0/15</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/16</interface-name>
+    <if-name>Ethernet 0/16</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/17</interface-name>
+    <if-name>Ethernet 0/17</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/18</interface-name>
+    <if-name>Ethernet 0/18</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/19</interface-name>
+    <if-name>Ethernet 0/19</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/20</interface-name>
+    <if-name>Ethernet 0/20</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/21</interface-name>
+    <if-name>Ethernet 0/21</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/22</interface-name>
+    <if-name>Ethernet 0/22</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/23</interface-name>
+    <if-name>Ethernet 0/23</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/24</interface-name>
+    <if-name>Ethernet 0/24</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/25</interface-name>
+    <if-name>Ethernet 0/25</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/26</interface-name>
+    <if-name>Ethernet 0/26</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/27</interface-name>
+    <if-name>Ethernet 0/27</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/28</interface-name>
+    <if-name>Ethernet 0/28</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/29</interface-name>
+    <if-name>Ethernet 0/29</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/30</interface-name>
+    <if-name>Ethernet 0/30</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/31</interface-name>
+    <if-name>Ethernet 0/31</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>ethernet</interface-type>
+    <interface-name>0/32</interface-name>
+    <if-name>Ethernet 0/32</if-name>
+    <if-state>down</if-state>
+    <line-protocol-state>down</line-protocol-state>
+    <ip-address>
+      <ipv4>unassigned</ipv4>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>unknown</interface-type>
+    <interface-name></interface-name>
+    <if-name>Ve 100</if-name>
+    <if-state>up</if-state>
+    <line-protocol-state>up</line-protocol-state>
+    <ip-address>
+      <ipv4>172.16.10.115/24</ipv4>
+      <ipv4-type>primary</ipv4-type>
+      <broadcast>172.16.10.255/24</broadcast>
+    </ip-address>
+  </interface>
+  <interface>
+    <interface-type>unknown</interface-type>
+    <interface-name></interface-name>
+    <if-name>Ve 200</if-name>
+    <if-state>up</if-state>
+    <line-protocol-state>up</line-protocol-state>
+    <ip-address>
+      <ipv4>10.2.2.1/24</ipv4>
+      <ipv4-type>primary</ipv4-type>
+      <broadcast>10.2.2.255/24</broadcast>
+    </ip-address>
+  </interface>
+  <has-more>false</has-more>
+</output>
+
+mab@mab-infra:~$  
 ```
 
 ## Operational-state API:
