@@ -1,17 +1,19 @@
 # Lab_1
 
 ## Overview:
-- Invoking standard actions from the **network_essentials** pack.
+- Invoking actions from the **network_essentials** pack.
 - Sections:
     - [Getters (show commands)](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/labs/lab_1#getters-show-commands)
     	- [get_os_version](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/labs/lab_1#get_os_version)
       	- [validate_interface_state](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/labs/lab_1#validate_interface_state)
       	- [validate_L2_port_channel_state](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/labs/lab_1#validate_l2_port_channel_state)
       	- [ping](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/labs/lab_1#ping)
+      	- [execute_cli (to get an arbitrary list of show commands)]()
     - [Setters (configuration commands)](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/labs/lab_1#setters-configuration-commands)
     	- [create_acl]()
     	- [add_ipv4_rule_acl]()
     	- [apply_acl]()
+      	- [execute_cli (to send an arbitrary list of config commands)]()
 
 ## Getters (show commands):
 
@@ -165,6 +167,45 @@ result:
     '
 mab@mab-infra:~$ 
 ```
+
+### execute_cli (to get an arbitrary list of show commands):
+```
+mab@mab-infra:~$ st2 run network_essentials.execute_cli mgmt_ip=spine1 username=admin password==********** cli_cmd="show interface port-channel 30","show access-list ip".....
+id: 5a1fe0707cae220a3a558791
+status: succeeded
+parameters: 
+  cli_cmd:
+  - show interface port-channel 30
+  - show access-list ip
+  mgmt_ip: spine1
+  password: '********'
+  username: admin
+result: 
+  exit_code: 0
+  result:
+    show access-list ip: "Interface Port-channel 30\n   Inbound access-list is acl_10 (From User)\n   Outbound access-list is not set\n"
+    show interface port-channel 30: "Port-channel 30 is up, line protocol is up\nHardware is AGGREGATE, address is 78a6.e13a.9487\n    Current address is 78a6.e13a.9487\nInterface index (ifindex) is 671088670\nMinimum number of links to bring Port-channel up is 1\nMTU 1548 bytes\nLineSpeed Actual     : 200000 Mbit\nAllowed Member Speed : 100000 Mbit\nPriority Tag disable\nLast clearing of show interface counters: 3d00h02m\nQueueing strategy: fifo\nFEC Mode - Disabled\nReceive Statistics:\n    54894 packets, 4579320 bytes\n    Unicasts: 37607, Multicasts: 17268, Broadcasts: 19\n    64-byte pkts: 0, Over 64-byte pkts: 54894, Over 127-byte pkts: 0\n    Over 255-byte pkts: 0, Over 511-byte pkts: 0, Over 1023-byte pkts: 0\n    Over 1518-byte pkts(Jumbo): 0\n    Runts: 0, Jabbers: 0, CRC: 0, Overruns: 0\n    Errors: 0, Discards: 0\nTransmit Statistics:\n    54885 packets, 4728780 bytes\n    Unicasts: 37606, Multicasts: 17268, Broadcasts: 11\n    Underruns: 0\n    Errors: 0, Discards: 0\nRate info:\n    Input 0.000000 Mbits/sec, 0 packets/sec, 0.00% of line-rate\n    Output 0.000000 Mbits/sec, 0 packets/sec, 0.00% of line-rate\nTime since last interface status change: 2d23h54m\n"
+  stderr: 'st2.actions.python.CliCMD: INFO     successfully connected to spine1 to find execute CLI [u''show interface port-channel 30'', u''show access-list ip'']
+
+    st2.actions.python.CliCMD: INFO     successfully connected to spine1 to find execute CLI [u''show interface port-channel 30'', u''show access-list ip'']
+
+    st2.actions.python.CliCMD: INFO     successfully executed cli show interface port-channel 30
+
+    st2.actions.python.CliCMD: INFO     successfully executed cli show access-list ip
+
+    st2.actions.python.CliCMD: INFO     closing connection to spine1 after executions cli cmds -- all done!
+
+    st2.actions.python.CliCMD: INFO     closing connection to spine1 after executions cli cmds -- all done!
+
+    '
+  stdout: 'SSH connection established to spine1:22
+
+    Interactive SSH session established
+
+    '
+mab@mab-infra:~$ 
+```
+
 
 ## Setters (configuration commands):
 
@@ -342,8 +383,7 @@ ip access-list acl_10 on Port-channel 30 at Ingress (From User)
 spine1# 
 ```
 
-### set_:
-
+### execute_cli (to send an arbitrary list of config commands)
 ```
 ```
 
@@ -352,3 +392,7 @@ spine1#
 ```
 ```
 
+### set_:
+
+```
+```
