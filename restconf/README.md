@@ -1,33 +1,44 @@
 # RESTCONF on SLX
 
 - Content:
-	- [Introduction to RESTCONF]()
+	- [Introduction to RESTCONF](https://github.com/mab27/nw_automation_on_slx/tree/master/restconf#introduction-to-restconf)
 	- [RESTCONF the context of SLX-OS]()
-	- [Running Configuration API]()
-		- [Entire running config]()
-		- [Interface Port-channel]()
-		- [Switchport configuration of an interface Port-channel]()
-	- [Operations API]()
+	- [Running Configuration API](https://github.com/mab27/nw_automation_on_slx/tree/master/restconf#running-configuration-api)
+		- [Entire running config](https://github.com/mab27/nw_automation_on_slx/tree/master/restconf#entire-running-config)
+		- [Interface Port-channel](https://github.com/mab27/nw_automation_on_slx/tree/master/restconf#interface-port-channel)
+		- [Switchport configuration of an interface Port-channel](https://github.com/mab27/nw_automation_on_slx/tree/master/restconf#switchport-configuration-of-an-interface-port-channel)
+	- [Operations API](https://github.com/mab27/nw_automation_on_slx/tree/master/restconf#operations-api)
 		- [get lldp neighbors]()
 		- [get vlan brief]()
 		- [get ip interface]()
-	- [Operational-state API]()
+	- [Operational-state API](https://github.com/mab27/nw_automation_on_slx/tree/master/restconf#operational-state-api)
 		- []()
 
 ## Introduction to RESTCONF:
 - 
 - 
+- Vocabulary:
+	- A resource is an object with a type, associated data, relationships to other resources, and a set of methods that operate on it.
 - 
 
+
 ## RESTCONF the context of SLX-OS:
-- The base URI (http://host:port/rest/) is the entry point to access and manage all the resources defined in the system.By default, the HTTP port number is 80.
+- The base URI (**http://host:port/rest/**) is the entry point to access and manage all the resources defined in the system.By default, the HTTP port number is 80.
 - First-level child resources. The base resource consists of 
 	- Configuration resource: **/config**. (POST, PUT, PATCH, DELETE and GET).
-	- YANG-RPC Operations resource: **/operations**. (POST only)
-	- Operational-state: **/operational-state**. (GET only)
-- The URI path conveys a resource model that is similar to the YANG model, with each forward slash-separated path segment corresponding to a unique resource within the model's hierarchy (using the following syntax: <base_URI>/path1/path2/{key1},{key2}/path3/...).
+	- YANG-RPC Operations resource: **/operations**. (POST only).
+	- Operational-state: **/operational-state**. (GET only).
+- Verbs:
+	- The **GET** method is used to retrieve the representation of the resource.
+	- The **PUT** method is used to update or replace an existing "Container" resource completely. If the URI does not identify the resource to be replaced, then the resource in the request URI is newly created, and the URI of the newly created resource is mentioned in the "Location" header of the response.
+	- The **PATCH** method is used to edit or update the leaf attributes of the resource (List or Container), if the system supports the modification. For example, modifying the leaf or list child resource of the ACL sequence command is not possible, as it is not allowed in the system.
+	- The **DELETE** method is used to delete the known resource.
+	- The **HEAD** method is used to retrieve the metadata information of the resource, identified by the given request. The response to this operation contains only the headers and an empty response body.
+	- The **OPTIONS** method is used to retrieve the allowed methods on the resource identified by the given request. The response to thisoperation contains the headers and an empty response body. The "Allow" header contains the allowed operations on the resource.
+- The URI path conveys a resource model that is similar to the YANG model, with each forward slash-separated path segment corresponding to a unique resource within the model's hierarchy (using the following syntax: **<base_URI>/path1/path2/{key1},{key2}/path3/...)**.
 - URI encoding:
-	- A key that contains a forward slash (/) must be contained within a pair of double quotes("). The double quotes character is encoded as %22. For example, a value of 1/1 for {interface-name} is represented in a URI as "1/1", which is encoded as %221/1%22.
+	- A key that contains a forward slash (**/**) must be contained within a pair of double quotes(**"**). The double quotes character is encoded as **%22**. For example, a value of **1/1** for **{interface-name}** is represented in a URI as **"1/1"**, which is encoded as **%221/1%22**.
+- To log out from the device, you must delete the session created using the **DELETE** operation. The URI is **http://host:port/rest/session/<session-id>**.
 
 
 ## Running Configuration API:
