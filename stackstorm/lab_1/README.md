@@ -3,20 +3,20 @@
 ## Overview:
 - Invoking actions from the **network_essentials** pack.
 - Sections:
-    - [Getters (show commands)]()
-    	- [get_os_version]()
-      	- [validate_interface_state]()
-      	- [validate_L2_port_channel_state]()
-      	- [ping]()
-      	- [execute_cli (to get an arbitrary list of show commands)]()
-    - [Setters (configuration commands)]()
-    	- [create_vlan / delete_vlan]()
-		- [create_ve / delete_ve]()
-		- [set_intf_admin_state]()
-    	- [create_acl / delete_acl]()
-    	- [add_ipv4_rule_acl]()
-    	- [apply_acl / remove_acl]()
-      	- [execute_cli (to send an arbitrary list of config commands)]()
+    - [Getters (show commands)](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/lab_1#getters-show-commands)
+    	- [get_os_version](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/lab_1#get_os_version)
+      	- [validate_interface_state](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/lab_1#validate_interface_state)
+      	- [validate_L2_port_channel_state](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/lab_1#validate_l2_port_channel_state)
+      	- [ping](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/lab_1#ping)
+      	- [execute_cli (to get an arbitrary list of show commands)](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/lab_1#execute_cli-to-get-an-arbitrary-list-of-show-commands)
+    - [Setters (configuration commands)](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/lab_1#setters-configuration-commands)
+    	- [create_vlan / delete_vlan](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/lab_1#create_vlan--delete_vlan)
+		- [create_ve / delete_ve](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/lab_1#create_ve--delete_ve)
+		- [set_intf_admin_state](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/lab_1#set_intf_admin_state)
+    	- [create_acl / delete_acl](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/lab_1#create_acl--delete_acl)
+    	- [add_ipv4_rule_acl](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/lab_1#add_ipv4_rule_acl)
+    	- [apply_acl / remove_acl](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/lab_1#apply_acl--remove_acl)
+      	- [execute_cli (to send an arbitrary list of config commands)](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/lab_1#execute_cli-to-send-an-arbitrary-list-of-config-commands)
 
 ## Getters (show commands):
 
@@ -321,6 +321,56 @@ result:
   stdout: ''
 mab@mab-infra:~$
 ```
+
+
+### create_switchport_access:
+
+```
+mab@mab-infra:~$ st2 run network_essentials.create_switchport_access mgmt_ip=spine1 username=admin password=Fibrane123 intf_type=ethernet intf_name=0/1 vlan_id=200
+........
+id: 5a202b087cae220a3a5587fd
+status: succeeded
+parameters: 
+  intf_name: 0/1
+  intf_type: ethernet
+  mgmt_ip: spine1
+  password: '********'
+  username: admin
+  vlan_id: '200'
+result: 
+  exit_code: 0
+  result:
+    L2_interface_check: true
+    switchport_access_config: true
+    switchport_doesnot_exists: true
+    vlan_exist: null
+  stderr: 'st2.actions.python.CreateSwitchPort: INFO     successfully connected to spine1 to create switchport on Interface
+
+    st2.actions.python.CreateSwitchPort: INFO     Interface is L2 interface.
+
+    st2.actions.python.CreateSwitchPort: INFO     Configuring Switch port access on intf_name 0/1
+
+    st2.actions.python.CreateSwitchPort: INFO     closing connection to spine1 after configuring switch port on interface -- all done!
+
+    '
+  stdout: ''
+mab@mab-infra:~$
+```
+
+
+- Check on the device (via ssh):
+```
+spine1# show running-config interface Ethernet 0/1
+interface Ethernet 0/1
+ description ESX 110
+ switchport
+ switchport mode access
+ switchport access vlan 200
+ no shutdown
+!
+spine1#
+```
+
 
 - Check on the device (via ssh):
 ```
