@@ -1,16 +1,17 @@
 # YANG for SLX-OS (Using YANG tools):
 
-## Introduction:
+## Introduction to YANG:
 - YANG is ...
 - Some links:
   - https://github.com/mbj4668/pyang/wiki/Tutorial
   - https://www.ietf.org/edu/tutorials/90-YANG-Tutorial.pdf
 
 ## Content of this repo:
-- [Validate yang modules](https://github.com/mab27/nw_automation_on_slx/tree/master/yang#validate-yang-modules)
-- [Convert yang into yin](https://github.com/mab27/nw_automation_on_slx/tree/master/yang#convert-yang-into-yin)
-- [Generate a tree representation of YANG models](https://github.com/mab27/nw_automation_on_slx/tree/master/yang#validate-yang-modules)
-- [Generates Python classes from a YANG module](https://github.com/mab27/nw_automation_on_slx/tree/master/yang#generates-python-classes-from-a-yang-module)
+- [Validate yang modules]()
+- [Convert yang into yin]()
+- [Generate a tree representation of YANG models]()
+- [Generates Python classes from a YANG module]()
+- [Obtain YANG paths for for specific ressources]()
 
 ## Validate yang modules:
 ```
@@ -24,8 +25,7 @@
 
 ## Generate a tree representation of YANG models:
 
-- This is helpful for quick visualization:
-- Let's look a sample data-model and display it all:
+- This is helpful for quick visualization. Let's look a sample data-model and display it all:
 
 ```
 mab@mab-infra:~/mab_automate/nw_automation_on_slx/yang/yang_modules/17r.1.01a$ pyang -f tree brocade-interface.yang 
@@ -443,7 +443,7 @@ mab@mab-infra:~/mab_automate/nw_automation_on_slx/yang/yang_modules/17r.1.01a$
 
 ## Generates Python classes from a YANG module:
 
-### Introduction to pyangbind (a pyang plugin)
+### Introduction to pyangbind (a pyang plugin):
 
 WORK IN PROGRESS !!!
 
@@ -465,3 +465,75 @@ mab@mab-infra:~$
 
 ```
 
+## Obtain YANG paths for for specific ressources:
+
+- You must be in configuration mode:
+
+```
+spine1(config)# 
+spine1(config)# describe vlan    
+Common
+    Source          : YANG
+    Module          : brocade-interface
+    Namespace       : urn:brocade.com:mgmt:brocade-interface
+    Path            : /interface-vlan/vlan
+    Node            : list
+    Revision        : 2012-04-24
+    Exported agents : all
+    Checksum        : d0fd5a7325a8774461f63858f60eda88
+
+Callpoint 'interface_vlan'
+    Daemon name : NOS Distributed Configuration Manager
+    Daemon id   : 0
+spine1(config)# 
+spine1(config)# 
+spine1(config)# describe vlan 200
+Common
+    Source          : YANG
+    Module          : brocade-interface
+    Namespace       : urn:brocade.com:mgmt:brocade-interface
+    Path            : /interface-vlan/vlan{200}
+    Node            : list
+    Revision        : 2012-04-24
+    Exported agents : all
+    Checksum        : d0fd5a7325a8774461f63858f60eda88
+
+Callpoint 'interface_vlan'
+    Daemon name : NOS Distributed Configuration Manager
+    Daemon id   : 0
+spine1(config)# 
+spine1(config)# 
+spine1(config)# 
+spine1(config)# 
+spine1(config)# describe interface Port-channel 
+Common
+    Source          : YANG
+    Module          : brocade-interface
+    Namespace       : urn:brocade.com:mgmt:brocade-interface
+    Path            : /interface/port-channel
+    Node            : list
+    Revision        : 2012-04-24
+    Exported agents : all
+    Checksum        : d0fd5a7325a8774461f63858f60eda88
+
+Callpoint 'interface_po'
+    Daemon name : NOS Distributed Configuration Manager
+    Daemon id   : 0
+spine1(config)# 
+spine1(config)# describe interface Port-channel 30
+Common
+    Source          : YANG
+    Module          : brocade-interface
+    Namespace       : urn:brocade.com:mgmt:brocade-interface
+    Path            : /interface/port-channel{30}
+    Node            : list
+    Revision        : 2012-04-24
+    Exported agents : all
+    Checksum        : d0fd5a7325a8774461f63858f60eda88
+
+Callpoint 'interface_po'
+    Daemon name : NOS Distributed Configuration Manager
+    Daemon id   : 0
+spine1(config)#
+spine1(config)# 
+```

@@ -10,6 +10,8 @@
       	- [ping](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/labs/lab_1#ping)
       	- [execute_cli (to get an arbitrary list of show commands)]()
     - [Setters (configuration commands)](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/labs/lab_1#setters-configuration-commands)
+    	- []()
+		- []()
     	- [create_acl]()
     	- [add_ipv4_rule_acl]()
     	- [apply_acl]()
@@ -209,8 +211,184 @@ mab@mab-infra:~$
 
 ## Setters (configuration commands):
 
-### create_acl:
+### create_vlan / delete_vlan:
+```
+mab@mab-infra:~$ st2 run network_essentials.create_vlan mgmt_ip=spine1 username=admin password=Fibrane123 vlan_id=200 vlan_desc="Customer BigCompany"
+......
+id: 5a201c967cae220a3a5587ee
+status: succeeded
+parameters: 
+  mgmt_ip: spine1
+  password: '********'
+  username: admin
+  vlan_desc: Customer BigCompany
+  vlan_id: '200'
+result: 
+  exit_code: 0
+  result:
+    vlan: true
+  stderr: 'st2.actions.python.CreateVlan: INFO     Successfully connected to spine1 to create interface vlans
 
+    st2.actions.python.CreateVlan: INFO     Creating Vlans
+
+    st2.actions.python.CreateVlan: INFO     Closing connection to spine1 after creating vlan -- all done!
+
+    '
+  stdout: ''
+mab@mab-infra:~$
+```
+
+- Check on the device (via ssh):
+```
+spine1# show running-config vlan 200
+vlan 200
+ router-interface Ve 200
+ description Customer BigCompany
+!
+spine1# 
+```
+
+### create_ve / delete_ve:
+```
+mab@mab-infra:~$ st2 run network_essentials.create_ve mgmt_ip=spine1 username=admin password=Fibrane123 vlan_id=200 ip_address=10.2.2.1/24
+........
+id: 5a201d107cae220a3a5587f1
+status: succeeded
+parameters: 
+  ip_address:
+  - 10.2.2.1/24
+  mgmt_ip: spine1
+  password: '********'
+  username: admin
+  vlan_id: '200'
+result: 
+  exit_code: 0
+  result:
+    assign_ip: null
+    create_ve: null
+    pre_validation_ip: true
+  stderr: 'st2.actions.python.CreateVe: INFO     successfully connected to spine1 to create Ve
+
+    st2.actions.python.CreateVe: INFO     Creating VE 200 on rbridge-id None
+
+    st2.actions.python.CreateVe: INFO     Assiging IP address 10.2.2.1/24 to VE 200 on rbridge-id None
+
+    st2.actions.python.CreateVe: INFO     Admin state setting on Ve 200 is successfull
+
+    st2.actions.python.CreateVe: INFO     closing connection to spine1 after creating Ve -- all done!
+
+    '
+  stdout: ''
+mab@mab-infra:~$
+```
+
+- Check on the device (via ssh):
+```
+spine1# show running-config interface Ve 200
+interface Ve 200
+ ip proxy-arp
+ ip address 10.2.2.1/24
+ no shutdown
+!
+spine1# 
+```
+
+### set_intf_admin_state:
+```
+mab@mab-infra:~$ st2 run network_essentials.set_intf_admin_state mgmt_ip=spine1 username=admin password=Fibrane123 intf_type=ethernet intf_name=0/1 intf_desc="ESX 110"
+.......
+id: 5a201ff77cae220a3a5587f4
+status: succeeded
+parameters: 
+  intf_desc: ESX 110
+  intf_name: 0/1
+  intf_type: ethernet
+  mgmt_ip: spine1
+  password: '********'
+  username: admin
+result: 
+  exit_code: 0
+  result:
+    interface: true
+  stderr: 'st2.actions.python.SetIntfAdminState: INFO     successfully connected to spine1 to enable interface
+
+    st2.actions.python.SetIntfAdminState: INFO     Setting admin state on intf-type-ethernet intf-name-0/1
+
+    st2.actions.python.SetIntfAdminState: INFO     closing connection to spine1 after configuring enable interface -- all done!
+
+    '
+  stdout: ''
+mab@mab-infra:~$
+```
+
+- Check on the device (via ssh):
+```
+spine1# show interface ethernet 0/1
+Ethernet 0/1 is up, line protocol is up (connected)
+Hardware is Ethernet, address is 78a6.e13a.9405
+    Current address is 78a6.e13a.9405
+Pluggable media present
+Description: ESX 110
+Interface index (ifindex) is 201335040
+MTU 1548 bytes
+Maximum Speed        : 100G
+LineSpeed Actual     : 100000 Mbit
+LineSpeed Configured : Auto, Duplex: Full
+Priority Tag disable
+Last clearing of show interface counters: 1w1d00h
+Queueing strategy: fifo
+FEC Mode - RS-FEC
+Receive Statistics:
+    125 packets, 14625 bytes
+    Unicasts: 0, Multicasts: 125, Broadcasts: 0
+    64-byte pkts: 0, Over 64-byte pkts: 125, Over 127-byte pkts: 0
+    Over 255-byte pkts: 0, Over 511-byte pkts: 0, Over 1023-byte pkts: 0
+    Over 1518-byte pkts(Jumbo): 0
+    Runts: 0, Jabbers: 0, CRC: 0, Overruns: 0
+    Errors: 0, Discards: 0
+Transmit Statistics:
+    131 packets, 15229 bytes
+    Unicasts: 0, Multicasts: 129, Broadcasts: 2
+    Underruns: 0
+    Errors: 0, Discards: 0
+Rate info:
+    Input 0.000000 Mbits/sec, 0 packets/sec, 0.00% of line-rate
+    Output 0.000000 Mbits/sec, 0 packets/sec, 0.00% of line-rate
+Time since last interface status change: 00:02:33
+
+spine1# 
+```
+
+- Validate Interf:ace state via **validate_interface_state** action:
+```
+mab@mab-infra:~$ st2 run network_essentials.validate_interface_state  mgmt_ip=spine1 username=admin password=Fibrane123 intf_type=ethernet intf_name=0/1 intf_state=up
+......
+id: 5a20213f7cae220a3a5587f7
+status: succeeded
+parameters: 
+  intf_name: 0/1
+  intf_state: up
+  intf_type: ethernet
+  mgmt_ip: spine1
+  password: '********'
+  username: admin
+result: 
+  exit_code: 0
+  result:
+    intf: true
+    state: up
+  stderr: 'st2.actions.python.ValidateInterfaceState: INFO     successfully connected to spine1 to validate interface state
+
+    st2.actions.python.ValidateInterfaceState: INFO     Successfully Validated port channel/physical interface state as up
+
+    st2.actions.python.ValidateInterfaceState: INFO     closing connection to spine1 after Validating interface state -- all done!
+
+    '
+  stdout: ''
+mab@mab-infra:~
+```
+
+### create_acl / delete_acl:
 ```
 mab@mab-infra:~$ st2 run network_essentials.create_acl mgmt_ip=spine1 username=admin password=********** acl_type=extended acl_name=acl_10
 ...
@@ -346,7 +524,7 @@ result:
 mab@mab-infra:~$
 ```
 
-### apply_acl:
+### apply_acl / remove_acl:
 
 ```
 mab@mab-infra:~$ st2 run network_essentials.apply_acl mgmt_ip=spine1 username=admin password=********** acl_name=acl_10 intf_type=port_channel intf_name=30 acl_direction=in 
@@ -385,6 +563,82 @@ spine1#
 
 ### execute_cli (to send an arbitrary list of config commands)
 ```
+mab@mab-infra:~$ st2 run network_essentials.execute_cli mgmt_ip=spine1 username=admin password=********** cli_cmd="interface ve 200","ip address 10.2.2.1/24","no shutdown" config_operation=true
+......
+id: 5a2003f97cae220a3a5587b2
+status: succeeded
+parameters: 
+  cli_cmd:
+  - interface ve 200
+  - ip address 10.2.2.1/24
+  - no shutdown
+  config_operation: true
+  mgmt_ip: spine1
+  password: '********'
+  username: admin
+result: 
+  exit_code: 0
+  result:
+    output: 'config term
+
+      Entering configuration mode terminal
+
+      spine1(config)# interface ve 200
+
+      spine1(config-if-Ve-200)# ip address 10.2.2.1/24
+
+      spine1(config-if-Ve-200)# no shutdown
+
+      spine1(config-if-Ve-200)# end
+
+      spine1# '
+  stderr: 'st2.actions.python.CliCMD: INFO     successfully connected to spine1 to find execute CLI [u''interface ve 200'', u''ip address 10.2.2.1/24'', u''no shutdown'']
+
+    st2.actions.python.CliCMD: INFO     successfully connected to spine1 to find execute CLI [u''interface ve 200'', u''ip address 10.2.2.1/24'', u''no shutdown'']
+
+    st2.actions.python.CliCMD: INFO     successfully executed config cli [u''interface ve 200'', u''ip address 10.2.2.1/24'', u''no shutdown'']
+
+    st2.actions.python.CliCMD: INFO     closing connection to spine1 after executions cli cmds -- all done!
+
+    st2.actions.python.CliCMD: INFO     closing connection to spine1 after executions cli cmds -- all done!
+
+    '
+  stdout: 'SSH connection established to spine1:22
+
+    Interactive SSH session established
+
+    '
+mab@mab-infra:~$
+mab@mab-infra:~$ st2 run network_essentials.execute_cli mgmt_ip=spine1 username=admin password=********** cli_cmd="show running-config interface ve 200".....
+id: 5a20040a7cae220a3a5587b5
+status: succeeded
+parameters: 
+  cli_cmd:
+  - show running-config interface ve 200
+  mgmt_ip: spine1
+  password: '********'
+  username: admin
+result: 
+  exit_code: 0
+  result:
+    show running-config interface ve 200: "interface Ve 200\n ip proxy-arp\n ip address 10.2.2.1/24\n no shutdown\n!"
+  stderr: 'st2.actions.python.CliCMD: INFO     successfully connected to spine1 to find execute CLI [u''show running-config interface ve 200'']
+
+    st2.actions.python.CliCMD: INFO     successfully connected to spine1 to find execute CLI [u''show running-config interface ve 200'']
+
+    st2.actions.python.CliCMD: INFO     successfully executed cli show running-config interface ve 200
+
+    st2.actions.python.CliCMD: INFO     closing connection to spine1 after executions cli cmds -- all done!
+
+    st2.actions.python.CliCMD: INFO     closing connection to spine1 after executions cli cmds -- all done!
+
+    '
+  stdout: 'SSH connection established to spine1:22
+
+    Interactive SSH session established
+
+    '
+mab@mab-infra:~$
 ```
 
 ### set_:
