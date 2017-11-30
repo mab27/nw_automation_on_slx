@@ -3,18 +3,19 @@
 ## Overview:
 - Invoking actions from the **network_essentials** pack.
 - Sections:
-    - [Getters (show commands)](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/labs/lab_1#getters-show-commands)
-    	- [get_os_version](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/labs/lab_1#get_os_version)
-      	- [validate_interface_state](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/labs/lab_1#validate_interface_state)
-      	- [validate_L2_port_channel_state](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/labs/lab_1#validate_l2_port_channel_state)
-      	- [ping](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/labs/lab_1#ping)
+    - [Getters (show commands)]()
+    	- [get_os_version]()
+      	- [validate_interface_state]()
+      	- [validate_L2_port_channel_state]()
+      	- [ping]()
       	- [execute_cli (to get an arbitrary list of show commands)]()
-    - [Setters (configuration commands)](https://github.com/mab27/nw_automation_on_slx/tree/master/stackstorm/labs/lab_1#setters-configuration-commands)
-    	- []()
-		- []()
-    	- [create_acl]()
+    - [Setters (configuration commands)]()
+    	- [create_vlan / delete_vlan]()
+		- [create_ve / delete_ve]()
+		- [set_intf_admin_state]()
+    	- [create_acl / delete_acl]()
     	- [add_ipv4_rule_acl]()
-    	- [apply_acl]()
+    	- [apply_acl / remove_acl]()
       	- [execute_cli (to send an arbitrary list of config commands)]()
 
 ## Getters (show commands):
@@ -213,7 +214,7 @@ mab@mab-infra:~$
 
 ### create_vlan / delete_vlan:
 ```
-mab@mab-infra:~$ st2 run network_essentials.create_vlan mgmt_ip=spine1 username=admin password=Fibrane123 vlan_id=200 vlan_desc="Customer BigCompany"
+mab@mab-infra:~$ st2 run network_essentials.create_vlan mgmt_ip=spine1 username=admin password=********** vlan_id=200 vlan_desc="Customer BigCompany"
 ......
 id: 5a201c967cae220a3a5587ee
 status: succeeded
@@ -250,7 +251,7 @@ spine1#
 
 ### create_ve / delete_ve:
 ```
-mab@mab-infra:~$ st2 run network_essentials.create_ve mgmt_ip=spine1 username=admin password=Fibrane123 vlan_id=200 ip_address=10.2.2.1/24
+mab@mab-infra:~$ st2 run network_essentials.create_ve mgmt_ip=spine1 username=admin password=********** vlan_id=200 ip_address=10.2.2.1/24
 ........
 id: 5a201d107cae220a3a5587f1
 status: succeeded
@@ -295,7 +296,7 @@ spine1#
 
 ### set_intf_admin_state:
 ```
-mab@mab-infra:~$ st2 run network_essentials.set_intf_admin_state mgmt_ip=spine1 username=admin password=Fibrane123 intf_type=ethernet intf_name=0/1 intf_desc="ESX 110"
+mab@mab-infra:~$ st2 run network_essentials.set_intf_admin_state mgmt_ip=spine1 username=admin password=********** intf_type=ethernet intf_name=0/1 intf_desc="ESX 110"
 .......
 id: 5a201ff77cae220a3a5587f4
 status: succeeded
@@ -361,7 +362,7 @@ spine1#
 
 - Validate Interf:ace state via **validate_interface_state** action:
 ```
-mab@mab-infra:~$ st2 run network_essentials.validate_interface_state  mgmt_ip=spine1 username=admin password=Fibrane123 intf_type=ethernet intf_name=0/1 intf_state=up
+mab@mab-infra:~$ st2 run network_essentials.validate_interface_state  mgmt_ip=spine1 username=admin password=********** intf_type=ethernet intf_name=0/1 intf_state=up
 ......
 id: 5a20213f7cae220a3a5587f7
 status: succeeded
